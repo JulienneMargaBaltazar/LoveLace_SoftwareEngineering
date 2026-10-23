@@ -4,6 +4,7 @@ about: Each task is one planned PR.
 title: 'Task: [ID] - [Short task name]'
 labels: 'task'
 ---
+### Task ID
 
 ### Description
 <!-- Explain what needs to be accomplished and why it matters to the Sprint 1 milestone. Reference any dependent task IDs. -->
