@@ -9,13 +9,8 @@ labels: 'task'
 ### Description
 <!-- Explain what needs to be accomplished and why it matters to the Sprint 1 milestone. Reference any dependent task IDs. -->
 
-### Assigned Role Profile
-- [ ] **Developer** (Frontend, Backend, System Permissions)
-- [ ] **DB Admin** (Schemas, Seeds, Migration Tracks)
-- [ ] **UI/UX Designer** (Wireframes, Mockups, Reviews)
-- [ ] **Tester** (Plans, Manual Matrix Execution, Automation)
-- [ ] **Scrum Master** (Governance, Impediments, Reviews)
-
+### Assignee 
+Name, Role
 ### Functional Acceptance Criteria
 <!-- Break down the functional expectations needed to satisfy this task. For example, edge cases, role permission constraints, or error guards. -->
 - [ ] Requirement 1: 
