@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS system_metadata (
+  id SERIAL PRIMARY KEY,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  description TEXT
+);
