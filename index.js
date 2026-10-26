@@ -1,23 +1,36 @@
+import 'dotenv/config';
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import authRoutes from './src/routes/authRoutes.js';
 import { supabase } from './src/config/supabaseClient.js';
 
-async function verifyDatabaseConnection() {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Routes
+app.use('/api/auth', authRoutes);
+
+// Test database connection on startup
+async function testConnection() {
   console.log('🔄 Pinging Supabase database instance...');
-
-  try {
-    const { data, error } = await supabase
-      .from('customer_active')
-      .select('*')
-      .limit(1);
-
-    if (error) {
-      throw error;
-    }
-
+  const { data, error } = await supabase.from('profiles').select('*').limit(1);
+  if (error) {
+    console.error('❌ Connection failed:', error.message);
+  } else {
     console.log('✅ Active connection ping successful!');
     console.log('QueryResult:', data);
-  } catch (err) {
-    console.error('❌ Database connection ping failed:', err.message);
-    process.exit(1);
   }
 }
-verifyDatabaseConnection();
+
+app.listen(PORT, async () => {
+  console.log(`🚀 Server is running on port ${PORT}`);
+  await testConnection();
+});
