@@ -32,16 +32,15 @@
         </form>
         <p id="message"></p>
         <div class="auth-footer">
-            <p>Already have an account? <a href="#">Sign in</a></p>
+            <p>Already have an account? <a href="/login.html">Sign in</a></p>
         </div>
     </div>
 
     <script>
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const firstName = document.getElementById('firstName').value;
-            const lastName = document.getElementById('lastName').value;
-            const fullName = `${firstName} ${lastName}`;
+            const first_name = document.getElementById('firstName').value;
+            const last_name = document.getElementById('lastName').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const msgEl = document.getElementById('message');
@@ -50,10 +49,11 @@
             msgEl.textContent = 'Processing registration...';
 
             try {
-                const response = await fetch('/api/auth/register', {
+                // FIXED: Target '/api/auth/signup' and send separate first_name / last_name
+                const response = await fetch('/api/auth/signup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ fullName, email, password })
+                    body: JSON.stringify({ first_name, last_name, email, password })
                 });
 
                 const data = await response.json();

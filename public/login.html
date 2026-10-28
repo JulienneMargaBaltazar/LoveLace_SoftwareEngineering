@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoveLace - Login</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="card">
+        <h2>Welcome Back to LoveLace</h2>
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="jane@example.com" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit">Sign In</button>
+        </form>
+        <p id="message"></p>
+        <div class="auth-footer">
+            <p>Don't have an account? <a href="/signup.html">Sign up</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const msgEl = document.getElementById('message');
+
+            msgEl.style.color = '#292966';
+            msgEl.textContent = 'Signing in...';
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Login failed.');
+                }
+
+                // Check if first-time login requires password reset
+                if (data.requiresPasswordReset) {
+                    window.location.href = '/set-password.html';
+                } else {
+                    msgEl.style.color = '#2e7d32';
+                    msgEl.textContent = 'Login successful!';
+                    // Optional: redirect to a dashboard once built
+                    // window.location.href = '/dashboard.html';
+                }
+            } catch (err) {
+                msgEl.style.color = '#d32f2f';
+                msgEl.textContent = err.message;
+            }
+        });
+    </script>
+</body>
+</html>
