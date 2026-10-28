@@ -1,6 +1,13 @@
-export const requireAuth = (req, res, next) => {
+const authMiddleware = (req, res, next) => {
+  // Check if the user session exists
   if (req.session && req.session.userId) {
-    return next(); // User is authenticated, proceed to the endpoint
+    return next(); // User is logged in, proceed to the route
   }
-  return res.status(401).json({ error: 'Unauthorized access. Please log in.' });
+
+  // If not logged in, reject with 401 Unauthorized
+  return res.status(401).json({ error: 'Unauthorized. Please log in.' });
 };
+
+// Support BOTH default and named imports ({ requireAuth }) across your project
+export const requireAuth = authMiddleware;
+export default authMiddleware;

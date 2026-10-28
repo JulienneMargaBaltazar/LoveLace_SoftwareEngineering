@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - LoveLace</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #1e293b;
+            color: #ffffff;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .logout-btn {
+            background-color: #ef4444;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s ease-in-out;
+        }
+
+        .logout-btn:hover {
+            background-color: #dc2626;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .card {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation with Logout Button -->
+    <div class="navbar">
+        <h1>LoveLace Portal</h1>
+        <!-- The Logout Button -->
+        <button id="logoutBtn" class="logout-btn">Log Out</button>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="container">
+        <h2>User Dashboard</h2>
+        <p>Welcome! You are securely logged in.</p>
+
+        <div class="card">
+            <h3>Session Info</h3>
+            <p id="userInfo">Loading session details...</p>
+        </div>
+    </div>
+
+    <!-- Frontend Script to Handle Session Verification & Logout -->
+    <script>
+        // 1. Verify Active Session on Page Load
+       async function checkSession() {
+            try {
+                const response = await fetch('/api/dashboard', {
+                    credentials: 'include' // <-- CRUCIAL: Tells the browser to send the session cookie back!
+                });
+                
+                if (!response.ok) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                const data = await response.json();
+                document.getElementById('userInfo').innerText = 
+                    `User ID: ${data.userSessionData?.userId || 'N/A'} | Email: ${data.userSessionData?.email || 'N/A'}`;
+            } catch (err) {
+                console.error('Session check failed:', err);
+                window.location.href = '/login.html';
+            }
+        }
+        // 2. Attach Logout Handler to the Button
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include' // <-- Add this here too for consistency!
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Logout failed.');
+                }
+
+                // Redirect to login page on successful session destroy
+                window.location.href = '/login.html';
+            } catch (err) {
+                alert(err.message);
+            }
+        });
+        
+    </script>
+</body>
+</html>

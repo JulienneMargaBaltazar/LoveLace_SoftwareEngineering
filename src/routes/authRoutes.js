@@ -1,5 +1,6 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
+import authMiddleware from '../middleware/authMiddleware.js';
 import { supabase } from '../config/supabaseClient.js';
 
 const router = express.Router();
@@ -103,23 +104,31 @@ router.post('/login', async (req, res) => {
     req.session.email = user.email;
     req.session.roleId = user.role_id;
 
-    // Requirement 2: Check if it's the user's first login (mandatory set-password flow)
-    if (user.is_first_login) {
-      return res.status(200).json({
-        requiresPasswordReset: true,
-        message: 'First-time login detected. Please update your password.'
-      });
-    }
-
-    return res.status(200).json({
-      message: 'Login successful!',
-      user: {
-        id: user.id,
-        email: user.email,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        status: user.status
+    // FORCE the session to save before replying to the frontend
+    req.session.save((err) => {
+      if (err) {
+        console.error('Session save error:', err);
+        return res.status(500).json({ error: 'Internal server error during session creation.' });
       }
+
+      // Requirement 2: Check if it's the user's first login
+      if (user.is_first_login) {
+        return res.status(200).json({
+          requiresPasswordReset: true,
+          message: 'First-time login detected. Please update your password.'
+        });
+      }
+
+      return res.status(200).json({
+        message: 'Login successful!',
+        user: {
+          id: user.id,
+          email: user.email,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          status: user.status
+        }
+      });
     });
 
   } catch (err) {
@@ -182,4 +191,13 @@ router.post('/logout', (req, res) => {
   });
 });
 
+router.get('/dashboard', authMiddleware, (req, res) => {
+    res.json({
+        message: 'Welcome to the dashboard',
+        userSessionData: {
+            userId: req.session.userId,
+            email: req.session.email
+        }
+    });
+});
 export default router;

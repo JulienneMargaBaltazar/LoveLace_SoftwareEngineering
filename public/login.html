@@ -3,45 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoveLace - Login</title>
-    <link rel="stylesheet" href="/style.css">
+    <title>Login - LoveLace</title>
+    <style>
+        /* Add your basic form styling here */
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-card { background: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); width: 100%; max-width: 400px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { width: 100%; background-color: #2563eb; color: white; border: none; padding: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #1d4ed8; }
+    </style>
 </head>
 <body>
-    <div class="card">
-        <h2>Welcome Back to LoveLace</h2>
+
+    <div class="login-card">
+        <h2>Log in to LoveLace</h2>
+        
+        <!-- Your Login Form -->
         <form id="loginForm">
-            <div class="input-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" placeholder="jane@example.com" required>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" required>
             </div>
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" placeholder="••••••••" required>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" required>
             </div>
-            <button type="submit">Sign In</button>
+            <button type="submit">Log In</button>
         </form>
-        <p id="message"></p>
-        <div class="auth-footer">
-            <p>Don't have an account? <a href="/signup.html">Sign up</a></p>
-        </div>
     </div>
 
+    <!-- PUT THE SCRIPT RIGHT HERE -->
     <script>
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const msgEl = document.getElementById('message');
-
-            msgEl.style.color = '#292966';
-            msgEl.textContent = 'Signing in...';
 
             try {
                 const response = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include', // <-- Accepts the session cookie
+                body: JSON.stringify({ email, password })
+            });
 
                 const data = await response.json();
 
@@ -49,18 +56,17 @@
                     throw new Error(data.error || 'Login failed.');
                 }
 
-                // Check if first-time login requires password reset
+                // Check if first-time login requires a password reset
                 if (data.requiresPasswordReset) {
                     window.location.href = '/set-password.html';
-                } else {
-                    msgEl.style.color = '#2e7d32';
-                    msgEl.textContent = 'Login successful!';
-                    // Optional: redirect to a dashboard once built
-                    // window.location.href = '/dashboard.html';
+                    return;
                 }
+
+                // SUCCESS: Redirect straight to the dashboard!
+                window.location.href = '/dashboard.html';
+
             } catch (err) {
-                msgEl.style.color = '#d32f2f';
-                msgEl.textContent = err.message;
+                alert(err.message);
             }
         });
     </script>

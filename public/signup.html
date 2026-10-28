@@ -3,53 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoveLace - User Registration</title>
-    <link rel="stylesheet" href="/style.css">
+    <title>Sign Up - LoveLace</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .signup-card { background: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); width: 100%; max-width: 400px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { width: 100%; background-color: #2563eb; color: white; border: none; padding: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #1d4ed8; }
+    </style>
 </head>
 <body>
-    <div class="card">
-        <h2>Welcome to LoveLace</h2>
-        <form id="registerForm">
-            <div class="name-row">
-                <div class="input-group">
-                    <label for="firstName">First Name</label>
-                    <input type="text" id="firstName" placeholder="Jane" required>
-                </div>
-                <div class="input-group">
-                    <label for="lastName">Last Name</label>
-                    <input type="text" id="lastName" placeholder="Doe" required>
-                </div>
+
+    <div class="signup-card">
+        <h2>Create a LoveLace Account</h2>
+        
+        <!-- Signup Form -->
+        <form id="signupForm">
+            <div class="form-group">
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" required>
             </div>
-            <div class="input-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" placeholder="jane@example.com" required>
+            <div class="form-group">
+                <label for="lastName">Last Name:</label>
+                <input type="text" id="lastName" required>
             </div>
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" placeholder="••••••••" required minlength="6">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" required>
             </div>
-            <button type="submit">Register Account</button>
+            <div class="form-group">
+                <label for="password">Password (min 6 chars):</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit">Sign Up</button>
         </form>
-        <p id="message"></p>
-        <div class="auth-footer">
-            <p>Already have an account? <a href="/login.html">Sign in</a></p>
-        </div>
     </div>
 
+    <!-- PUT THE SIGNUP SCRIPT RIGHT HERE -->
     <script>
-        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+
             const first_name = document.getElementById('firstName').value;
             const last_name = document.getElementById('lastName').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const msgEl = document.getElementById('message');
-
-            msgEl.style.color = '#292966';
-            msgEl.textContent = 'Processing registration...';
 
             try {
-                // FIXED: Target '/api/auth/signup' and send separate first_name / last_name
                 const response = await fetch('/api/auth/signup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -62,12 +64,14 @@
                     throw new Error(data.error || 'Registration failed.');
                 }
 
-                msgEl.style.color = '#2e7d32';
-                msgEl.textContent = data.message;
-                document.getElementById('registerForm').reset();
+                // Show success message from backend
+                alert(data.message);
+
+                // Redirect to login page
+                window.location.href = '/login.html';
+
             } catch (err) {
-                msgEl.style.color = '#d32f2f';
-                msgEl.textContent = err.message;
+                alert(err.message);
             }
         });
     </script>
