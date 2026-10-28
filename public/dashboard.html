@@ -86,7 +86,7 @@
        async function checkSession() {
             try {
                 const response = await fetch('/api/dashboard', {
-                    credentials: 'include' // <-- CRUCIAL: Tells the browser to send the session cookie back!
+                    credentials: 'include' 
                 });
                 
                 if (!response.ok) {
@@ -107,7 +107,7 @@
                 const response = await fetch('/api/auth/logout', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include' // <-- Add this here too for consistency!
+                    credentials: 'include'
                 });
 
                 const data = await response.json();
@@ -116,7 +116,7 @@
                     throw new Error(data.error || 'Logout failed.');
                 }
 
-                // Redirect to login page on successful session destroy
+               
                 window.location.href = '/login.html';
             } catch (err) {
                 alert(err.message);
