@@ -43,7 +43,7 @@ router.post('/signup', async (req, res) => {
           password_hash,
           status: 'pending',     
           is_blocked: false,
-          role_id: 1,
+          role_id: 3, // Default role_id for new users (e.g., Regular User)
           is_first_login: true 
         }
       ])
@@ -101,7 +101,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Initialize session using express-session
-    req.session.userId = user.id;
+    req.session.userId = user.user_id;
     req.session.email = user.email;
     req.session.roleId = user.role_id;
 
@@ -120,14 +120,22 @@ router.post('/login', async (req, res) => {
         });
       }
 
+      // Determine redirect URL dynamically based on user's role_id
+      let redirectUrl = '/dashboard.html'; // Default for Admin (role_id === 2)
+      if (user.role_id === 1) {
+        redirectUrl = '/superadmin-dashboard.html'; // Dedicated Superadmin view
+      }
+
       return res.status(200).json({
         message: 'Login successful!',
+        redirectUrl: redirectUrl,
         user: {
-          id: user.id,
+          id: user.user_id,
           email: user.email,
           first_name: user.first_name,
           last_name: user.last_name,
-          status: user.status
+          status: user.status,
+          roleId: user.role_id
         }
       });
     });
@@ -317,7 +325,8 @@ router.get('/dashboard', authMiddleware, (req, res) => {
         message: 'Welcome to the dashboard',
         userSessionData: {
             userId: req.session.userId,
-            email: req.session.email
+            email: req.session.email,
+            roleId: req.session.roleId
         }
     });
 });

@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import authRoutes from './src/routes/authRoutes.js';
 import { supabase } from './src/config/supabaseClient.js';
 import { requireAuth } from './src/middleware/authMiddleware.js';
+import adminRoutes from './src/routes/adminRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,6 +36,7 @@ app.use(
 
 // 3. API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
 
 // 4. Protected Route Example
 app.get('/api/dashboard', requireAuth, (req, res) => {

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LoveLace Inc. ERP - Superadmin Dashboard</title>
+  <!-- Linked external stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar">
+    <div>
+      <div class="sidebar-header">
+        <div class="brand-icon">🗂️</div>
+        <span class="brand-title">LoveLace Inc. ERP</span>
+      </div>
+
+      <div class="sidebar-search">
+        <div class="search-input-wrapper">
+          <i class="fa-solid fa-search"></i>
+          <input type="text" placeholder="Search..." class="search-input">
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active">
+          <i class="fa-solid fa-chart-pie"></i> Dashboard
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fa-solid fa-users"></i> Customers
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fa-solid fa-box"></i> Products
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fa-solid fa-chart-line"></i> Sales
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fa-solid fa-file-lines"></i> Reports
+        </a>
+        <a href="superadmin-dashboard.html" class="nav-item">
+          <i class="fa-solid fa-user-shield"></i> User Management
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fa-solid fa-sliders"></i> System Settings
+        </a>
+      </nav>
+    </div>
+
+    <div style="padding: 1rem; border-top: 1px solid var(--color-border-light);">
+      <button onclick="handleLogout()" class="btn" style="width: 100%; justify-content: center; background-color: #fef2f2; color: #dc2626;">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT AREA -->
+  <div class="main-wrapper">
+    
+    <!-- Top Header -->
+    <header class="top-header">
+      <div>
+        <h1 class="header-title">Dashboard</h1>
+        <p class="header-subtitle">Welcome back superadmin</p>
+      </div>
+      <div>
+        <span class="badge-superadmin">Superadmin</span>
+      </div>
+    </header>
+
+    <!-- Page Body -->
+    <main class="page-content">
+      
+      <!-- Welcome Banner -->
+      <div style="background: var(--color-bg-surface); padding: 1.5rem; border-radius: var(--border-radius); border: 1px solid var(--color-border);">
+        <!-- Added id="welcome-heading" here -->
+        <h2 id="welcome-heading" style="font-size: 1.125rem; font-weight: 600; color: var(--text-main); background: var(--color-bg-main); padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--color-border-light); display: inline-block;">
+          Welcome back, Superadmin!
+        </h2>
+      </div>
+
+      <!-- Metrics KPI Blocks -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-header">
+            <span>Revenue</span>
+            <span class="metric-icon-bubble" style="background: #eff6ff; color: #2563eb;"><i class="fa-solid fa-wallet"></i></span>
+          </div>
+          <div class="metric-value-row">
+            <span class="metric-value">$48,290</span>
+            <span class="metric-pill-positive">+12.5%</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span>Active users</span>
+            <span class="metric-icon-bubble" style="background: #eef2ff; color: var(--color-primary);"><i class="fa-solid fa-users"></i></span>
+          </div>
+          <div class="metric-value-row">
+            <span id="metric-user-count" class="metric-value">2,352</span>
+            <span class="metric-pill-positive">+8.1%</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span>New orders</span>
+            <span class="metric-icon-bubble" style="background: #f3e8ff; color: #7c3aed;"><i class="fa-solid fa-cart-shopping"></i></span>
+          </div>
+          <div class="metric-value-row">
+            <span class="metric-value">1,204</span>
+            <span class="metric-pill-positive">+3.2%</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span>Refunds</span>
+            <span class="metric-icon-bubble" style="background: #fef2f2; color: #dc2626;"><i class="fa-solid fa-rotate-left"></i></span>
+          </div>
+          <div class="metric-value-row">
+            <span class="metric-value">$1,420</span>
+            <span class="metric-pill-negative">-2.4%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions Bar -->
+      <div style="background: var(--color-bg-surface); padding: 1.5rem; border-radius: var(--border-radius); border: 1px solid var(--color-border);">
+        <h3 style="font-size: 0.875rem; font-weight: 700; color: var(--text-main); margin-bottom: 1rem;">Quick Actions</h3>
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem;">
+          <button onclick="openAddUserModal()" class="btn" style="background: var(--color-bg-main); border: 1px solid var(--color-border); flex-direction: column; padding: 1rem; justify-content: center; height: 80px;">
+            <i class="fa-solid fa-user-plus" style="color: var(--color-primary); font-size: 1.125rem;"></i>
+            <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-main);">Add User</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- User Directory Table -->
+      <div class="table-card">
+        <div class="table-header">
+          <h3 style="font-weight: 700; color: var(--text-main);">System User Directory (Unrestricted View)</h3>
+          <button onclick="fetchUsers()" class="btn" style="background: var(--color-bg-main); border: 1px solid var(--color-border); font-size: 0.75rem; padding: 0.375rem 0.75rem;">
+            <i class="fa-solid fa-rotate"></i> Refresh List
+          </button>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>User ID</th>
+                <th>Email</th>
+                <th>Role ID</th>
+                <th>Status</th>
+                <th>Created At</th>
+                <th style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="user-table-body">
+              <tr>
+                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading system users...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ADD USER MODAL -->
+  <div id="addUserModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="font-weight: 700; font-size: 1.125rem;">Create New User Account</h3>
+        <button onclick="closeAddUserModal()" style="background: none; border: none; cursor: pointer; color: var(--text-subtle);"><i class="fa-solid fa-xmark" style="font-size: 1.125rem;"></i></button>
+      </div>
+      <form id="addUserForm" onsubmit="handleCreateUser(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+        <div>
+          <label style="display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.25rem;">Email Address</label>
+          <input type="email" id="newEmail" required class="search-input" style="padding-left: 0.75rem;">
+        </div>
+        <div>
+          <label style="display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.25rem;">Temporary Password</label>
+          <input type="password" id="newPassword" required minlength="6" class="search-input" style="padding-left: 0.75rem;">
+        </div>
+        <div>
+          <label style="display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.25rem;">Role Privilege</label>
+          <select id="newRoleId" class="search-input" style="padding-left: 0.75rem;">
+            <option value="1">1 - Superadmin</option>
+            <option value="2">2 - Admin</option>
+            <option value="3" selected>3 - Regular User</option>
+          </select>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 0.5rem;">
+          <button type="button" onclick="closeAddUserModal()" class="btn" style="background: var(--color-bg-main); border: 1px solid var(--color-border);">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- CLIENT SCRIPT -->
+  <script>
+    async function fetchUsers() {
+      try {
+        const response = await fetch('/api/admin/users');
+        if (!response.ok) {
+          if (response.status === 403 || response.status === 401) {
+            alert('Unauthorized access. Please login with Superadmin privileges.');
+            window.location.href = '/login.html';
+            return;
+          }
+          throw new Error('Failed to load user directory.');
+        }
+        const data = await response.json();
+        renderTable(data.users);
+      } catch (err) {
+        console.error('Error fetching users:', err);
+        document.getElementById('user-table-body').innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--status-blocked-text); padding: 2rem;">Error loading user records.</td></tr>`;
+      }
+    }
+
+    function renderTable(users) {
+      const tbody = document.getElementById('user-table-body');
+      document.getElementById('metric-user-count').textContent = users.length;
+
+      if (!users || users.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">No users found in database.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = users.map(user => {
+        let roleBadge = '<span class="badge-user">User (3)</span>';
+        if (user.role_id === 1) {
+          roleBadge = '<span class="badge-superadmin" style="font-size: 0.65rem; padding: 0.125rem 0.5rem;">Superadmin (1)</span>';
+        } else if (user.role_id === 2) {
+          roleBadge = '<span class="badge-admin">Admin (2)</span>';
+        }
+
+        const statusBadge = user.is_blocked 
+          ? '<span class="status-pill-blocked">Blocked</span>'
+          : '<span class="status-pill-active">Active</span>';
+
+        const toggleBtnText = user.is_blocked ? 'Unblock' : 'Block';
+        const toggleClass = user.is_blocked ? 'btn-unblock-action' : 'btn-block-action';
+
+        return `
+          <tr>
+            <td style="font-family: monospace; font-size: 0.75rem; color: var(--text-muted);">#${user.user_id}</td>
+            <td style="font-weight: 500;">${user.email}</td>
+            <td>${roleBadge}</td>
+            <td>${statusBadge}</td>
+            <td style="color: var(--text-muted); font-size: 0.75rem;">${new Date(user.created_at).toLocaleDateString()}</td>
+            <td style="text-align: right;">
+              <button onclick="toggleUserStatus('${user.user_id}', ${!user.is_blocked})" class="${toggleClass}">
+                ${toggleBtnText}
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function toggleUserStatus(userId, newBlockState) {
+      if (!confirm(`Are you sure you want to ${newBlockState ? 'block' : 'unblock'} this user?`)) return;
+
+      try {
+        const response = await fetch(`/api/admin/users/${userId}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ is_blocked: newBlockState })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Failed to update user status.');
+        fetchUsers();
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    }
+
+    function openAddUserModal() {
+      document.getElementById('addUserModal').style.display = 'flex';
+    }
+
+    function closeAddUserModal() {
+      document.getElementById('addUserModal').style.display = 'none';
+      document.getElementById('addUserForm').reset();
+    }
+
+    async function handleCreateUser(e) {
+      e.preventDefault();
+      const email = document.getElementById('newEmail').value;
+      const password = document.getElementById('newPassword').value;
+      const role_id = parseInt(document.getElementById('newRoleId').value);
+
+      try {
+        const response = await fetch('/api/admin/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, role_id })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Failed to create user.');
+        closeAddUserModal();
+        fetchUsers();
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    }
+
+    async function handleLogout() {
+      try {
+        await fetch('/api/auth/logout', { method: 'POST' });
+        window.location.href = '/login.html';
+      } catch (err) {
+        console.error('Logout error:', err);
+      }
+    }
+
+    // Combined DOMContentLoaded listeners that fetch users and check session role
+    window.addEventListener('DOMContentLoaded', async () => {
+      fetchUsers();
+
+      try {
+        const response = await fetch('/api/dashboard');
+        if (response.ok) {
+          const data = await response.json();
+          const session = data.userSessionData;
+          const welcomeHeading = document.getElementById('welcome-heading');
+          
+          if (welcomeHeading) {
+            if (session && session.roleId === 1) {
+              welcomeHeading.textContent = 'Welcome back, Superadmin!';
+            } else {
+              welcomeHeading.textContent = 'Welcome back, Admin!';
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load session details for welcome banner', err);
+      }
+    });
+  </script>
+</body>
+</html>

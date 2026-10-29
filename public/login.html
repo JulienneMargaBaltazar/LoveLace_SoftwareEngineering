@@ -3,35 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - LoveLace</title>
+    <title>Log in - LoveLace</title>
+    <!-- External Shared Stylesheet -->
+    <link rel="stylesheet" href="style.css">
     <style>
-        /* Add your basic form styling here */
-        body { font-family: Arial, sans-serif; background-color: #f4f6f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-card { background: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); width: 100%; max-width: 400px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-        .form-group input { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-        .forgot-container { text-align: right; margin-bottom: 15px; }
-        .forgot-container a { font-size: 13px; color: #2563eb; text-decoration: none; }
-        .forgot-container a:hover { text-decoration: underline; }
-        button { width: 100%; background-color: #2563eb; color: white; border: none; padding: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; }
-        button:hover { background-color: #1d4ed8; }
+        /* Additional helper for login-specific alignment */
+        .forgot-container {
+            text-align: right;
+            margin-bottom: 1.25rem;
+        }
+        .forgot-container a {
+            font-size: 0.875rem;
+            color: #5C5C99;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .forgot-container a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
 
-    <div class="login-card">
-        <h2>Log in to LoveLace</h2>
-        
-        <!-- Your Login Form -->
+    <div class="card">
+        <h2>Welcome back</h2>
+        <h4>Log in to continue to your workspace.</h4>
+
+        <!-- Login Form -->
         <form id="loginForm">
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" required>
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="you@company.com" required>
             </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" required>
+            
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter your password" required>
             </div>
 
             <!-- Forgot Password Link -->
@@ -41,6 +48,10 @@
 
             <button type="submit">Log In</button>
         </form>
+
+        <div class="auth-footer">
+            Don't have an account? <a href="/signup.html">Sign up</a>
+        </div>
     </div>
 
     <script>
@@ -54,7 +65,7 @@
                 const response = await fetch('/api/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include', // <-- Accepts the session cookie
+                    credentials: 'include', // Accepts the session cookie
                     body: JSON.stringify({ email, password })
                 });
 
@@ -66,12 +77,16 @@
 
                 // Check if first-time login requires a password reset
                 if (data.requiresPasswordReset) {
-                    window.location.href = '/set-password.html';
+                    window.location.href = `/set-password.html?email=${encodeURIComponent(email)}`;
                     return;
                 }
 
-                // SUCCESS: Redirect straight to the dashboard!
-                window.location.href = '/dashboard.html';
+                // SUCCESS: Redirect dynamically based on backend role response (`redirectUrl`)
+                if (data.redirectUrl) {
+                    window.location.href = data.redirectUrl;
+                } else {
+                    window.location.href = '/dashboard.html'; // Fallback
+                }
 
             } catch (err) {
                 alert(err.message);
