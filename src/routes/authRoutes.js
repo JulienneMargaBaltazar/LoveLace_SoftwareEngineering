@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import authMiddleware from '../middleware/authMiddleware.js';
@@ -179,6 +180,126 @@ router.post('/set-password', async (req, res) => {
 });
 
 // ==========================================
+// S1-DEV-04: REQUEST PASSWORD RESET
+// ==========================================
+router.post('/forgotpassword', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required.' });
+    }
+
+    const { data: user, error } = await supabase
+      .from('app_user')
+      .select('*')
+      .eq('email', email)
+      .single();
+
+    // Security: Always return generic success message to prevent user enumeration
+    if (error || !user) {
+      return res.status(200).json({ 
+        message: 'If that email address is registered, a password reset link has been dispatched.' 
+      });
+    }
+
+    // Generate cryptographically secure random token & 15-minute expiration
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const tokenExpires = new Date(Date.now() + 15 * 60 * 1000);
+
+    const { error: updateError } = await supabase
+      .from('app_user')
+      .update({
+        reset_token: resetToken,
+        reset_token_expires: tokenExpires.toISOString()
+      })
+      .eq('user_id', user.user_id);
+
+    if (updateError) {
+      console.error('Database update error during password reset request:', updateError);
+      return res.status(500).json({ error: 'Internal server error.' });
+    }
+
+    // Simulate email dispatch in the terminal
+    const resetLink = `http://localhost:3000/passwordreset.html?token=${resetToken}`;
+    console.log(`\n🔗 [SIMULATED EMAIL DISPATCH] ----------------------------------------`);
+    console.log(`To: ${email}`);
+    console.log(`Password Reset Link: ${resetLink}`);
+    console.log(`----------------------------------------------------------------------\n`);
+
+    return res.status(200).json({ 
+      message: 'If that email address is registered, a password reset link has been dispatched.' 
+    });
+
+  } catch (err) {
+    console.error('Forgot password error:', err);
+    return res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
+// ==========================================
+// S1-DEV-04: RESET PASSWORD WITH TOKEN
+// ==========================================
+router.post('/passwordreset', async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      return res.status(400).json({ error: 'Token and new password are required.' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: 'New password must be at least 6 characters long.' });
+    }
+
+    const { data: user, error } = await supabase
+      .from('app_user')
+      .select('*')
+      .eq('reset_token', token)
+      .single();
+
+    if (error || !user) {
+      return res.status(400).json({ error: 'Invalid or already used password reset token.' });
+    }
+
+    // Server-side expiration validation
+    const now = new Date();
+    const expiresAt = new Date(user.reset_token_expires);
+
+    if (now > expiresAt) {
+      return res.status(400).json({ error: 'Password reset token has expired. Please request a new one.' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Commit password change and immediately invalidate the token (Requirement 3)
+    const { error: mutationError } = await supabase
+      .from('app_user')
+      .update({
+        password_hash: hashedPassword,
+        reset_token: null,
+        reset_token_expires: null,
+        is_first_login: false
+      })
+      .eq('user_id', user.user_id);
+
+    if (mutationError) {
+      console.error('Failed to commit password mutation:', mutationError);
+      return res.status(500).json({ error: 'Failed to update password.' });
+    }
+
+    return res.status(200).json({ 
+      message: 'Password successfully updated! You can now log in with your new credentials.' 
+    });
+
+  } catch (err) {
+    console.error('Reset password error:', err);
+    return res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
+// ==========================================
 // LOGOUT ROUTE (Requirement 1)
 // ==========================================
 router.post('/logout', (req, res) => {
@@ -200,4 +321,5 @@ router.get('/dashboard', authMiddleware, (req, res) => {
         }
     });
 });
+
 export default router;
