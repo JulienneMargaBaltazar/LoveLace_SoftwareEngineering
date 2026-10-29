@@ -1,57 +1,63 @@
 import express from 'express';
+import bcrypt from 'bcryptjs';
+import authMiddleware from '../middleware/authMiddleware.js';
 import { supabase } from '../config/supabaseClient.js';
 
 const router = express.Router();
 
-router.post('/register', async (req, res) => {
+router.post('/signup', async (req, res) => {
   try {
-    const { fullName, email, password } = req.body;
+    const { first_name, last_name, email, password } = req.body;
 
-    // Guardrail: Server-side validation against empty or malformed inputs
-    if (!fullName || !email || !password) {
-      return res.status(400).json({ error: 'All fields (fullName, email, password) are required.' });
+    if (!first_name || !last_name || !email || !password) {
+      return res.status(400).json({ error: 'All fields (first_name, last_name, email, password) are required.' });
     }
 
     if (password.length < 6) {
       return res.status(400).json({ error: 'Password must be at least 6 characters long.' });
     }
 
-    // 1. Create user in Supabase Auth
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { full_name: fullName }
-      }
-    });
 
-    if (authError) {
-      return res.status(400).json({ error: authError.message });
+    const { data: existingUser, error: checkError } = await supabase
+      .from('app_user')
+      .select('email')
+      .eq('email', email)
+      .single();
+
+    if (existingUser) {
+      return res.status(400).json({ error: 'Email is already registered.' });
     }
 
-    const userId = authData.user?.id;
+    const saltRounds = 10;
+    const password_hash = await bcrypt.hash(password, saltRounds);
 
-    if (userId) {
-      // 2. Enforce system baseline rule: default status to 'pending' in the profiles table
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert([
-          {
-            id: userId,
-            full_name: fullName,
-            email: email,
-            status: 'pending' // Requirement 3 & Guardrail enforcement
-          }
-        ]);
+    // 3. Insert the new user directly into the 'app_user' table
+    const { data: insertData, error: insertError } = await supabase
+      .from('app_user')
+      .insert([
+        {
+          first_name,
+          last_name,
+          email,
+          password_hash,
+          status: 'pending',     
+          is_blocked: false,
+          role_id: 1,
+          is_first_login: true 
+        }
+      ])
+      .select();
 
-      if (profileError) {
-        console.error('Profile creation error:', profileError.message);
-      }
+    if (insertError) {
+      return res.status(400).json({ error: insertError.message });
     }
+
+    const newUser = insertData[0];
+    delete newUser.password_hash; 
 
     return res.status(201).json({
       message: 'Registration successful! Your account is currently pending administrative approval.',
-      userId: userId
+      user: newUser
     });
 
   } catch (err) {
@@ -60,4 +66,138 @@ router.post('/register', async (req, res) => {
   }
 });
 
+// ==========================================
+// LOGIN ROUTE (S1-DEV-03 - Requirement 1 & 3)
+// ==========================================
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required.' });
+    }
+
+    // Fetch user from the unified app_user table
+    const { data: user, error } = await supabase
+      .from('app_user')
+      .select('*')
+      .eq('email', email)
+      .single();
+
+    if (error || !user) {
+      return res.status(401).json({ error: 'Invalid email or password.' });
+    }
+
+    // Guardrail: Blocked users cannot sign in (Requirement 3)
+    if (user.is_blocked || user.status === 'blocked') {
+      return res.status(403).json({ error: 'Access denied. This account has been blocked.' });
+    }
+
+    // Validate password using bcryptjs
+    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Invalid email or password.' });
+    }
+
+    // Initialize session using express-session
+    req.session.userId = user.id;
+    req.session.email = user.email;
+    req.session.roleId = user.role_id;
+
+    // FORCE the session to save before replying to the frontend
+    req.session.save((err) => {
+      if (err) {
+        console.error('Session save error:', err);
+        return res.status(500).json({ error: 'Internal server error during session creation.' });
+      }
+
+      // Requirement 2: Check if it's the user's first login
+      if (user.is_first_login) {
+        return res.status(200).json({
+          requiresPasswordReset: true,
+          message: 'First-time login detected. Please update your password.'
+        });
+      }
+
+      return res.status(200).json({
+        message: 'Login successful!',
+        user: {
+          id: user.id,
+          email: user.email,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          status: user.status
+        }
+      });
+    });
+
+  } catch (err) {
+    console.error('Login error:', err.message);
+    return res.status(500).json({ error: 'Internal server error during login.' });
+  }
+});
+
+// ==========================================
+// SET-PASSWORD ON FIRST LOGIN (Requirement 2)
+// ==========================================
+router.post('/set-password', async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+
+    if (!email || !newPassword) {
+      return res.status(400).json({ error: 'Email and new password are required.' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: 'New password must be at least 6 characters long.' });
+    }
+
+    const password_hash = await bcrypt.hash(newPassword, 10);
+
+    // Update password, clear first login flag, and activate status
+    const { data, error } = await supabase
+      .from('app_user')
+      .update({
+        password_hash: password_hash,
+        is_first_login: false,
+        status: 'Active'
+      })
+      .eq('email', email)
+      .select()
+      .single();
+
+    if (error || !data) {
+      return res.status(400).json({ error: 'Failed to update password.' });
+    }
+
+    return res.status(200).json({ message: 'Password updated successfully! You may now proceed.' });
+
+  } catch (err) {
+    console.error('Set-password error:', err.message);
+    return res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
+// ==========================================
+// LOGOUT ROUTE (Requirement 1)
+// ==========================================
+router.post('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ error: 'Could not log out, please try again.' });
+    }
+    res.clearCookie('connect.sid'); // Clears the session cookie
+    return res.status(200).json({ message: 'Logged out successfully.' });
+  });
+});
+
+router.get('/dashboard', authMiddleware, (req, res) => {
+    res.json({
+        message: 'Welcome to the dashboard',
+        userSessionData: {
+            userId: req.session.userId,
+            email: req.session.email
+        }
+    });
+});
 export default router;
