@@ -8,14 +8,14 @@ const router = express.Router();
 // Apply requireAdmin middleware to all routes in this file
 router.use(requireAdmin);
 
-// 1. GET /api/admin/users - Retrieve user directory with strict Superadmin database filtering
+// 1. GET /api/admin/users - Retrieve user directory
 router.get('/users', async (req, res) => {
   try {
-    const requesterRoleId = req.session.roleId; // Make sure session matches roleId
+    const requesterRoleId = req.session.roleId;
 
     let query = supabase
       .from('app_user')
-      .select('user_id, email, role_id, is_blocked, created_at');
+      .select('user_id, first_name, last_name, email, role_id, is_blocked, status');
 
     // GUARDRAIL: If the requester is a regular Admin (role_id === 2), hide Superadmin entries (role_id === 1)
     if (requesterRoleId === 2) {
@@ -32,13 +32,12 @@ router.get('/users', async (req, res) => {
   }
 });
 
-// 2. POST /api/admin/users - Add a new user (with role restriction)
+// 2. POST /api/admin/users - Add a new user
 router.post('/users', async (req, res) => {
   try {
     const requesterRoleId = req.session.roleId;
     const { email, password, role_id } = req.body;
 
-    // Regular Admins (role_id === 2) cannot create Superadmins (role_id === 1)
     if (requesterRoleId === 2 && Number(role_id) === 1) {
       return res.status(403).json({ error: 'Unauthorized: Admins cannot create Superadmin accounts.' });
     }
@@ -47,7 +46,12 @@ router.post('/users', async (req, res) => {
 
     const { data, error } = await supabase
       .from('app_user')
-      .insert([{ email, password_hash: hashedPassword, role_id, is_blocked: false }])
+      .insert([{
+        email,
+        password_hash: hashedPassword,
+        role_id,
+        is_blocked: false
+      }])
       .select();
 
     if (error) throw error;
@@ -66,7 +70,6 @@ router.patch('/users/:userId/status', async (req, res) => {
     const { userId } = req.params;
     const { is_blocked } = req.body;
 
-    // Fetch target user to check their role_id before modifying
     const { data: targetUser, error: fetchError } = await supabase
       .from('app_user')
       .select('role_id')

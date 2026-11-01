@@ -69,7 +69,7 @@
                     body: JSON.stringify({ email, password })
                 });
 
-                const data = await response.json();
+                const data = await response.json(); // Fixed stray 'a' here
 
                 if (!response.ok) {
                     throw new Error(data.error || 'Login failed.');

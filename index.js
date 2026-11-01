@@ -45,7 +45,9 @@ app.get('/api/dashboard', requireAuth, (req, res) => {
     userSessionData: {
       userId: req.session.userId,
       email: req.session.email,
-      roleId: req.session.roleId
+      roleId: req.session.roleId,
+      firstName: req.session.firstName,
+      lastName: req.session.lastName
     }
   });
 });

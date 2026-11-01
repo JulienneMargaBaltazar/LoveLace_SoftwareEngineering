@@ -8,17 +8,41 @@ const authMiddleware = (req, res, next) => {
   return res.status(401).json({ error: 'Unauthorized. Please log in.' });
 };
 
-// Role-based middleware for Task S1-DEV-05 (Admin & Superadmin access only)
-export const requireAdmin = (req, res, next) => {
-  // First, verify they are authenticated
+// Middleware for Superadmin access only (roleId === 1)
+export const requireSuperadmin = (req, res, next) => {
   if (!req.session || !req.session.userId) {
     return res.status(401).json({ error: 'Unauthorized. Please log in.' });
   }
 
-  // Next, verify their role (adjust property name if your session uses roleId/role)
-  const userRole = req.session.role; // or req.session.roleId depending on how you store it
+  if (req.session.roleId !== 1) {
+    return res.status(403).json({ error: 'Forbidden. Superadmin privileges required.' });
+  }
+
+  next();
+};
+
+// Role-based middleware for Admin & Superadmin access (roleId 1 or 2)
+export const requireAdmin = (req, res, next) => {
+  if (!req.session || !req.session.userId) {
+    return res.status(401).json({ error: 'Unauthorized. Please log in.' });
+  }
+
+  const userRole = req.session.roleId; 
   if (userRole !== 2 && userRole !== 1) {
     return res.status(403).json({ error: 'Forbidden. Administrator privileges required.' });
+  }
+
+  next();
+};
+
+// Middleware specifically for Regular User access (roleId === 3)
+export const requireUser = (req, res, next) => {
+  if (!req.session || !req.session.userId) {
+    return res.status(401).json({ error: 'Unauthorized. Please log in.' });
+  }
+
+  if (req.session.roleId !== 3) {
+    return res.status(403).json({ error: 'Forbidden. Regular user access required.' });
   }
 
   next();
