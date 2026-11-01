@@ -56,42 +56,40 @@
 
     <script>
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+    e.preventDefault(); // Stop default form reload
 
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
 
-            try {
-                const response = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include', // Accepts the session cookie
-                    body: JSON.stringify({ email, password })
-                });
-
-                const data = await response.json(); // Fixed stray 'a' here
-
-                if (!response.ok) {
-                    throw new Error(data.error || 'Login failed.');
-                }
-
-                // Check if first-time login requires a password reset
-                if (data.requiresPasswordReset) {
-                    window.location.href = `/set-password.html?email=${encodeURIComponent(email)}`;
-                    return;
-                }
-
-                // SUCCESS: Redirect dynamically based on backend role response (`redirectUrl`)
-                if (data.redirectUrl) {
-                    window.location.href = data.redirectUrl;
-                } else {
-                    window.location.href = '/dashboard.html'; // Fallback
-                }
-
-            } catch (err) {
-                alert(err.message);
-            }
+    try {
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include', // Crucial for cookies/sessions
+            body: JSON.stringify({ email, password })
         });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            // Check if backend provided a redirect URL, or fallback based on role
+            if (data.redirectUrl) {
+                window.location.href = data.redirectUrl;
+            } else if (data.roleId === 1) {
+                window.location.href = '/superadmin-dashboard.html';
+            } else if (data.roleId === 2) {
+                window.location.href = '/admin-dashboard.html';
+            } else {
+                window.location.href = '/user-dashboard.html';
+            }
+        } else {
+            alert(data.error || 'Login failed. Please check your credentials.');
+        }
+    } catch (err) {
+        console.error('Login network error:', err);
+        alert('An unexpected error occurred. Please try again.');
+    }
+});
     </script>
 </body>
 </html>
