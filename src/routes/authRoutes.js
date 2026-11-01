@@ -6,6 +6,22 @@ import { supabase } from '../config/supabaseClient.js';
 
 const router = express.Router();
 
+// ==========================================
+// PASSWORD COMPLEXITY VALIDATOR HELPER
+// ==========================================
+const validatePasswordStrength = (password) => {
+  if (!password || password.length < 8) {
+    return 'Password must be at least 8 characters long.';
+  }
+  if (!/\d/.test(password)) {
+    return 'Password must contain at least one number.';
+  }
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    return 'Password must contain at least one special character.';
+  }
+  return null;
+};
+
 router.post('/signup', async (req, res) => {
   try {
     const { first_name, last_name, email, password } = req.body;
@@ -14,10 +30,10 @@ router.post('/signup', async (req, res) => {
       return res.status(400).json({ error: 'All fields (first_name, last_name, email, password) are required.' });
     }
 
-    if (password.length < 6) {
-      return res.status(400).json({ error: 'Password must be at least 6 characters long.' });
+    const passwordError = validatePasswordStrength(password);
+    if (passwordError) {
+      return res.status(400).json({ error: passwordError });
     }
-
 
     const { data: existingUser, error: checkError } = await supabase
       .from('app_user')
@@ -43,7 +59,7 @@ router.post('/signup', async (req, res) => {
           password_hash,
           status: 'pending',     
           is_blocked: false,
-          role_id: 1,
+          role_id: 3, // Default role_id for new users (e.g., Regular User)
           is_first_login: true 
         }
       ])
@@ -101,9 +117,11 @@ router.post('/login', async (req, res) => {
     }
 
     // Initialize session using express-session
-    req.session.userId = user.id;
+    req.session.userId = user.user_id;
     req.session.email = user.email;
     req.session.roleId = user.role_id;
+    req.session.firstName = user.first_name;
+    req.session.lastName = user.last_name;
 
     // FORCE the session to save before replying to the frontend
     req.session.save((err) => {
@@ -120,14 +138,25 @@ router.post('/login', async (req, res) => {
         });
       }
 
+      // Determine redirect URL dynamically based on user's role_id
+      let redirectUrl = '/dashboard.html'; // Default fallback
+      if (user.role_id === 1) {
+        redirectUrl = '/superadmin-dashboard.html'; // Dedicated Superadmin view
+      } else if (user.role_id === 2) {
+        redirectUrl = '/dashboard.html'; // Admin view
+      } else if (user.role_id === 3) {
+        redirectUrl = '/user-dashboard.html'; // Dedicated Regular User view
+      }
       return res.status(200).json({
         message: 'Login successful!',
+        redirectUrl: redirectUrl,
         user: {
-          id: user.id,
+          id: user.user_id,
           email: user.email,
           first_name: user.first_name,
           last_name: user.last_name,
-          status: user.status
+          status: user.status,
+          roleId: user.role_id
         }
       });
     });
@@ -149,8 +178,9 @@ router.post('/set-password', async (req, res) => {
       return res.status(400).json({ error: 'Email and new password are required.' });
     }
 
-    if (newPassword.length < 6) {
-      return res.status(400).json({ error: 'New password must be at least 6 characters long.' });
+    const passwordError = validatePasswordStrength(newPassword);
+    if (passwordError) {
+      return res.status(400).json({ error: passwordError });
     }
 
     const password_hash = await bcrypt.hash(newPassword, 10);
@@ -248,8 +278,9 @@ router.post('/passwordreset', async (req, res) => {
       return res.status(400).json({ error: 'Token and new password are required.' });
     }
 
-    if (newPassword.length < 6) {
-      return res.status(400).json({ error: 'New password must be at least 6 characters long.' });
+    const passwordError = validatePasswordStrength(newPassword);
+    if (passwordError) {
+      return res.status(400).json({ error: passwordError });
     }
 
     const { data: user, error } = await supabase
@@ -317,9 +348,11 @@ router.get('/dashboard', authMiddleware, (req, res) => {
         message: 'Welcome to the dashboard',
         userSessionData: {
             userId: req.session.userId,
-            email: req.session.email
+            email: req.session.email,
+            roleId: req.session.roleId,
+            firstName: req.session.firstName,
+            lastName: req.session.lastName    
         }
     });
 });
-
 export default router;

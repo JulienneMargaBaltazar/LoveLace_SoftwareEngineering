@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LoveLace Inc. ERP - User Management</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Inter Font -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #F4F6F9;
+    }
+  </style>
+</head>
+<body class="bg-[#F4F6F9] text-gray-800 antialiased">
+
+  <div class="flex h-screen overflow-hidden">
+    
+    <!-- LEFT SIDEBAR -->
+    <aside class="w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0">
+      <div>
+        <!-- Brand Logo -->
+        <div class="px-6 py-5 flex items-center gap-3 border-b border-gray-100">
+          <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+            <i class="fa-solid font-mono">⚡</i>
+          </div>
+          <div>
+            <h1 class="font-bold text-gray-900 text-base leading-tight">LoveLace Inc. ERP</h1>
+            <p class="text-xs text-gray-400">By LoveLace</p>
+          </div>
+        </div>
+
+        <!-- User Profile Quick View -->
+        <div class="px-6 py-4 flex items-center gap-3 border-b border-gray-100">
+          <div class="relative">
+            <img class="w-10 h-10 rounded-full object-cover border border-gray-200" src="https://placehold.co/100x100/3b82f6/ffffff?text=A" alt="Admin Avatar">
+            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white"></span>
+          </div>
+          <div class="overflow-hidden">
+            <p class="text-sm font-semibold text-gray-800 truncate" id="sidebarUserName">Admin User</p>
+            <p class="text-xs text-gray-400 truncate" id="sidebarUserEmail">admin@lovelace.com</p>
+          </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="px-5 py-4">
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400 text-sm"></i>
+            <input type="text" placeholder="Search..." class="w-full pl-9 pr-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+          </div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="px-3 space-y-1">
+          <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">
+            <i class="fa-solid fa-chart-pie text-gray-400 w-5"></i> Dashboard
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">
+            <i class="fa-solid fa-users text-gray-400 w-5"></i> Customers
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">
+            <i class="fa-solid fa-box text-gray-400 w-5"></i> Products
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">
+            <i class="fa-solid fa-cart-shopping text-gray-400 w-5"></i> Sales
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">
+            <i class="fa-solid fa-file-invoice-dollar text-gray-400 w-5"></i> Reports
+          </a>
+          <!-- Active Tab: User Management -->
+          <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg transition border-l-4 border-blue-600">
+            <i class="fa-solid fa-user-gear text-blue-600 w-5"></i> User Management
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">
+            <i class="fa-solid fa-gear text-gray-400 w-5"></i> Settings
+          </a>
+        </nav>
+      </div>
+
+      <!-- Logout Bottom Button -->
+      <div class="p-4 border-t border-gray-100">
+        <button id="logoutBtn" class="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 flex flex-col overflow-y-auto">
+      
+      <!-- TOP HEADER BAR -->
+      <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+        <div>
+          <h2 class="text-xl font-bold text-gray-900">User Management</h2>
+          <p class="text-xs text-gray-500">Welcome back, Admin</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded-md border border-gray-200" id="currentRoleBadge">Admin</span>
+        </div>
+      </header>
+
+      <div class="p-8 space-y-6 max-w-7xl mx-auto w-full">
+
+        <!-- WELCOME BANNER CARD -->
+        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-bold text-gray-900">Welcome back, Admin!</h3>
+            <p class="text-sm text-gray-500 mt-0.5">Manage directory accounts, roles, access privileges, and user status toggles.</p>
+          </div>
+          <button id="openAddUserModal" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm rounded-lg shadow-sm transition flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i> Add User
+          </button>
+        </div>
+
+        <!-- KPI METRICS ROW (Matching Reference Design) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          
+          <!-- Card 1: Revenue -->
+          <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex justify-between items-start">
+            <div>
+              <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue</p>
+              <h4 class="text-2xl font-bold text-gray-900 mt-2">$48,290</h4>
+              <span class="inline-flex items-center gap-1 mt-2 text-xs font-semibold px-2 py-0.5 rounded bg-green-50 text-green-700 border border-green-200">
+                <i class="fa-solid fa-arrow-up"></i> +12.5%
+              </span>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-dollar-sign"></i>
+            </div>
+          </div>
+
+          <!-- Card 2: Active Users -->
+          <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex justify-between items-start">
+            <div>
+              <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Active Users</p>
+              <h4 class="text-2xl font-bold text-gray-900 mt-2" id="activeUserCount">2,352</h4>
+              <span class="inline-flex items-center gap-1 mt-2 text-xs font-semibold px-2 py-0.5 rounded bg-green-50 text-green-700 border border-green-200">
+                <i class="fa-solid fa-arrow-up"></i> +8.1%
+              </span>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-user"></i>
+            </div>
+          </div>
+
+          <!-- Card 3: New Orders -->
+          <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex justify-between items-start">
+            <div>
+              <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">New Orders</p>
+              <h4 class="text-2xl font-bold text-gray-900 mt-2">1,204</h4>
+              <span class="inline-flex items-center gap-1 mt-2 text-xs font-semibold px-2 py-0.5 rounded bg-green-50 text-green-700 border border-green-200">
+                <i class="fa-solid fa-arrow-up"></i> +5.2%
+              </span>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-cyan-50 text-cyan-600 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-bag-shopping"></i>
+            </div>
+          </div>
+
+          <!-- Card 4: Refunds -->
+          <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex justify-between items-start">
+            <div>
+              <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Refunds</p>
+              <h4 class="text-2xl font-bold text-gray-900 mt-2">$1,420</h4>
+              <span class="inline-flex items-center gap-1 mt-2 text-xs font-semibold px-2 py-0.5 rounded bg-red-50 text-red-700 border border-red-200">
+                <i class="fa-solid fa-arrow-down"></i> -2.4%
+              </span>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-rotate-left"></i>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- QUICK ACTIONS BAR -->
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+          <h4 class="text-sm font-semibold text-gray-700 mb-3">Quick Actions</h4>
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+            <button class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-semibold transition text-center">Export Users (CSV)</button>
+            <button class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-semibold transition text-center">Audit Logs</button>
+            <button class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-semibold transition text-center">Role Permissions</button>
+            <button class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-semibold transition text-center">Bulk Status Toggle</button>
+            <button class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-semibold transition text-center">Security Settings</button>
+          </div>
+        </div>
+
+        <!-- USER DIRECTORY TABLE CONTAINER -->
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h3 class="font-bold text-gray-900 text-base">User Directory</h3>
+            <span class="text-xs text-gray-500" id="userCountSummary">Loading directory...</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <th class="py-3.5 px-6">User</th>
+                  <th class="py-3.5 px-6">Role</th>
+                  <th class="py-3.5 px-6">Status</th>
+                  <th class="py-3.5 px-6">Created Date</th>
+                  <th class="py-3.5 px-6 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="userTableBody" class="divide-y divide-gray-100 text-sm">
+                <!-- Dynamic Rows Inserted Here -->
+                <tr>
+                  <td colspan="5" class="py-8 text-center text-gray-400">
+                    <i class="fa-solid fa-spinner fa-spin text-lg mb-2"></i>
+                    <p>Fetching user accounts...</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ADD USER MODAL -->
+  <div id="addUserModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden transform transition-all">
+      <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+        <h3 class="font-bold text-gray-900">Add New Directory Account</h3>
+        <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600 text-lg">&times;</button>
+      </div>
+      
+      <form id="addUserForm" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Email Address</label>
+          <input type="email" id="modalEmail" required placeholder="user@lovelace.com" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Temporary Password</label>
+          <input type="password" id="modalPassword" required placeholder="••••••••" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Role Assignment</label>
+          <select id="modalRole" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
+            <option value="User">User</option>
+            <option value="Admin">Admin</option>
+          </select>
+        </div>
+
+        <div id="modalAlert" class="hidden p-3 rounded-lg text-xs font-medium"></div>
+
+        <div class="flex justify-end gap-3 pt-3">
+          <button type="button" id="cancelModalBtn" class="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition">Cancel</button>
+          <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition shadow-sm">Save User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SCRIPT LOGIC -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchUserDirectory();
+
+      // Modal Handlers
+      const modal = document.getElementById('addUserModal');
+      document.getElementById('openAddUserModal').addEventListener('click', () => modal.classList.replace('hidden', 'flex'));
+      document.getElementById('closeModalBtn').addEventListener('click', () => modal.classList.replace('flex', 'hidden'));
+      document.getElementById('cancelModalBtn').addEventListener('click', () => modal.classList.replace('flex', 'hidden'));
+
+      // Add User Form Submission
+      document.getElementById('addUserForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('modalEmail').value;
+        const password = document.getElementById('modalPassword').value;
+        const role = document.getElementById('modalRole').value;
+        const alertBox = document.getElementById('modalAlert');
+
+        try {
+          const res = await fetch('/api/admin/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password, role })
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            alertBox.className = "p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200 block";
+            alertBox.textContent = data.error || 'Failed to add user.';
+            return;
+          }
+
+          alertBox.className = "p-3 rounded-lg text-xs font-medium bg-green-50 text-green-700 border border-green-200 block";
+          alertBox.textContent = "User created successfully!";
+          setTimeout(() => {
+            modal.classList.replace('flex', 'hidden');
+            document.getElementById('addUserForm').reset();
+            alertBox.className = "hidden";
+            fetchUserDirectory();
+          }, 1000);
+
+        } catch (err) {
+          alertBox.className = "p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200 block";
+          alertBox.textContent = 'Server error. Please try again.';
+        }
+      });
+    });
+
+    // Fetch User Directory
+    async function fetchUserDirectory() {
+      const tbody = document.getElementById('userTableBody');
+      try {
+        const res = await fetch('/api/admin/users');
+        if (!res.ok) {
+          if (res.status === 401 || res.status === 403) {
+            tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-red-500 font-medium">Access denied. Admin authorization required.</td></tr>`;
+            return;
+          }
+          throw new Error('Failed to fetch');
+        }
+
+        const data = await res.json();
+        const users = data.users || [];
+
+        document.getElementById('userCountSummary').textContent = `Showing ${users.length} active directory entries`;
+        document.getElementById('activeUserCount').textContent = users.length;
+
+        if (users.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-gray-400">No users found.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = users.map(u => `
+          <tr class="hover:bg-gray-50/80 transition">
+            <td class="py-3.5 px-6 font-medium text-gray-900">${escapeHtml(u.email)}</td>
+            <td class="py-3.5 px-6">
+              <span class="px-2.5 py-1 text-xs font-semibold rounded-full ${u.role === 'Superadmin' ? 'bg-purple-100 text-purple-700' : u.role === 'Admin' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}">
+                ${escapeHtml(u.role || 'User')}
+              </span>
+            </td>
+            <td class="py-3.5 px-6">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full ${u.is_blocked ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
+                <span class="w-1.5 h-1.5 rounded-full ${u.is_blocked ? 'bg-red-500' : 'bg-green-500'}"></span>
+                ${u.is_blocked ? 'Blocked' : 'Active'}
+              </span>
+            </td>
+            <td class="py-3.5 px-6 text-xs text-gray-500">${u.created_at ? new Date(u.created_at).toLocaleDateString() : 'N/A'}</td>
+            <td class="py-3.5 px-6 text-right">
+              <button onclick="toggleUserStatus('${u.user_id}', ${!u.is_blocked})" class="px-3 py-1.5 text-xs font-semibold rounded-md border transition ${u.is_blocked ? 'border-green-300 text-green-700 hover:bg-green-50' : 'border-red-300 text-red-700 hover:bg-red-50'}">
+                ${u.is_blocked ? 'Unblock' : 'Block'}
+              </button>
+            </td>
+          </tr>
+        `).join('');
+
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-red-500">Error loading user directory.</td></tr>`;
+      }
+    }
+
+    // Toggle Block / Unblock Status
+    async function toggleUserStatus(userId, shouldBlock) {
+      try {
+        const res = await fetch(`/api/admin/users/${userId}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ is_blocked: shouldBlock })
+        });
+
+        if (!res.ok) {
+          const errData = await res.json();
+          alert(errData.error || 'Action failed');
+          return;
+        }
+
+        fetchUserDirectory();
+      } catch (err) {
+        alert('Server error updating user status');
+      }
+    }
+
+    function escapeHtml(str) {
+      return (str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard (User) - LoveLace Inc. ERP</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Shared Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Styling for sidebar profile footer */
+        .sidebar-footer {
+            padding: 1.25rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.1);
+        }
+        .user-profile-info {
+            font-size: 0.9rem;
+            color: #ffffff;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            word-break: break-all;
+        }
+        .sidebar-logout-btn {
+            width: 100%;
+            background-color: #dc2626;
+            color: white;
+            border: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+        .sidebar-logout-btn:hover {
+            background-color: #b91c1c;
+        }
+    </style>
+</head>
+<body class="bg-[#F4F6F9] text-gray-800 antialiased">
+
+    <!-- App Container -->
+    <div class="admin-layout flex h-screen overflow-hidden">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0">
+            <div>
+                <div class="sidebar-brand px-6 py-5 border-b border-gray-100 font-bold text-gray-900 flex flex-col">
+                    <span>LoveLace Inc. ERP</span>
+                    <span class="text-xs text-gray-400 font-normal">by LoveLace</span>
+                </div>
+                
+                <ul class="nav-menu px-3 space-y-1 mt-2">
+                    <li class="nav-item active"><a href="/user-dashboard.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg transition border-l-4 border-blue-600">📊 Dashboard</a></li>
+                    <li class="nav-item"><a href="/customers.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">👥 Customers</a></li>
+                    <li class="nav-item"><a href="/products.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📦 Products</a></li>
+                    <li class="nav-item"><a href="/system-settings.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">⚙️ Settings</a></li>
+                </ul>
+            </div>
+
+            <!-- Bottom Left User Info & Logout -->
+            <div class="sidebar-footer p-4 border-t border-gray-100 bg-gray-900">
+                <div id="userProfileInfo" class="user-profile-info text-white text-sm font-semibold mb-3">
+                    Loading user...
+                </div>
+                <button id="logoutBtn" class="sidebar-logout-btn flex items-center justify-center gap-2">Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content flex-1 flex flex-col overflow-y-auto">
+            
+            <!-- Top Bar Header -->
+            <header class="top-header bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900">Dashboard</h1>
+                    <p id="welcomeText" class="text-xs text-gray-500">Welcome back, User!</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-semibold rounded-md border border-indigo-200">User</span>
+                </div>
+            </header>
+
+            <div class="dashboard-container p-8 space-y-6 max-w-7xl mx-auto w-full">
+                
+                <!-- Metrics Cards Grid -->
+                <section class="stats-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <div class="stat-card bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex justify-between items-start">
+                        <div>
+                            <div class="stat-header text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue</div>
+                            <div class="stat-value text-2xl font-bold text-gray-900 mt-2">
+                                $48,290
+                                <span class="badge-pill success inline-flex items-center gap-1 mt-2 text-xs font-semibold px-2 py-0.5 rounded bg-green-50 text-green-700 border border-green-200">+12.5%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex justify-between items-start">
+                        <div>
+                            <div class="stat-header text-xs font-medium text-gray-500 uppercase tracking-wider">Active users</div>
+                            <div class="stat-value text-2xl font-bold text-gray-900 mt-2">
+                                2,352
+                                <span class="badge-pill success inline-flex items-center gap-1 mt-2 text-xs font-semibold px-2 py-0.5 rounded bg-green-50 text-green-700 border border-green-200">+8.1%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex justify-between items-start">
+                        <div>
+                            <div class="stat-header text-xs font-medium text-gray-500 uppercase tracking-wider">New orders</div>
+                            <div class="stat-value text-2xl font-bold text-gray-900 mt-2">
+                                1,204
+                                <span class="badge-pill success inline-flex items-center gap-1 mt-2 text-xs font-semibold px-2 py-0.5 rounded bg-green-50 text-green-700 border border-green-200">+3.2%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex justify-between items-start">
+                        <div>
+                            <div class="stat-header text-xs font-medium text-gray-500 uppercase tracking-wider">Refunds</div>
+                            <div class="stat-value text-2xl font-bold text-gray-900 mt-2">
+                                $1,420
+                                <span class="badge-pill success inline-flex items-center gap-1 mt-2 text-xs font-semibold px-2 py-0.5 rounded bg-red-50 text-red-700 border border-red-200">-2.4%</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Actions Section -->
+                <section class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                    <h3 class="font-bold text-gray-900 text-base mb-4">Quick Actions</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="p-4 border border-gray-200 rounded-lg text-center text-gray-700 bg-gray-50 hover:bg-gray-100 transition cursor-pointer font-medium text-sm">View Profile</div>
+                        <div class="p-4 border border-gray-200 rounded-lg text-center text-gray-700 bg-gray-50 hover:bg-gray-100 transition cursor-pointer font-medium text-sm">Update Password</div>
+                        <div class="p-4 border border-gray-200 rounded-lg text-center text-gray-700 bg-gray-50 hover:bg-gray-100 transition cursor-pointer font-medium text-sm">Support Tickets</div>
+                        <div class="p-4 border border-gray-200 rounded-lg text-center text-gray-700 bg-gray-50 hover:bg-gray-100 transition cursor-pointer font-medium text-sm">Activity Log</div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Fetch session details on load to verify access and personalize welcome text with full name
+        async function loadUserData() {
+            try {
+                const response = await fetch('/api/auth/dashboard', {
+                    method: 'GET',
+                    credentials: 'include', // Sends session cookie
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.userSessionData) {
+                    const sessionData = data.userSessionData;
+                    const firstName = sessionData.firstName || sessionData.first_name || '';
+                    const lastName = sessionData.lastName || sessionData.last_name || '';
+                    const fullName = (firstName || lastName) 
+                        ? `${firstName} ${lastName}`.trim() 
+                        : (sessionData.email ? sessionData.email.split('@')[0] : 'User');
+
+                    document.getElementById('welcomeText').innerText = `Welcome back, ${fullName}!`;
+                    document.getElementById('userProfileInfo').innerText = fullName;
+                } else {
+                    window.location.href = '/login.html';
+                }
+            } catch (err) {
+                console.error('Session verification failed:', err);
+                window.location.href = '/login.html';
+            }
+        }
+
+        // Logout action handler
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/auth/logout', { 
+                    method: 'POST',
+                    credentials: 'include' // Crucial: tells the browser to send and clear the session cookie
+                });
+
+                if (response.ok) {
+                    // Successfully logged out, redirect user to login
+                    window.location.href = '/login.html';
+                } else {
+                    alert('Logout failed. Please try again.');
+                }
+            } catch (err) {
+                console.error('Logout error:', err);
+                window.location.href = '/login.html'; // Fallback redirect on error
+            }
+        });
+
+        loadUserData();
+    </script>
+</body>
+</html>
