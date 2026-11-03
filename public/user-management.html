@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - LoveLace Inc. ERP</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Shared Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .sidebar-footer {
+            padding: 1.25rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.1);
+        }
+        .user-profile-info {
+            font-size: 0.9rem;
+            color: #ffffff;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            word-break: break-all;
+        }
+        .sidebar-logout-btn {
+            width: 100%;
+            background-color: #dc2626;
+            color: white;
+            border: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+        .sidebar-logout-btn:hover {
+            background-color: #b91c1c;
+        }
+    </style>
+</head>
+<body class="bg-[#F4F6F9] text-gray-800 antialiased min-h-screen">
+
+    <!-- Explicit full screen flex layout -->
+    <div class="flex h-screen w-full overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0 h-full">
+            <div>
+                <div class="sidebar-brand px-6 py-5 border-b border-gray-100 font-bold text-gray-900 flex flex-col">
+                    <span>LoveLace Inc. ERP</span>
+                    <span class="text-xs text-gray-400 font-normal">by LoveLace</span>
+                </div>
+                
+                <ul class="nav-menu px-3 space-y-1 mt-2">
+                    <li class="nav-item"><a href="/superadmin-dashboard.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📊 Dashboard</a></li>
+                    <li class="nav-item"><a href="/customers.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">👥 Customers</a></li>
+                    <li class="nav-item"><a href="/products.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📦 Products</a></li>
+                    <li class="nav-item"><a href="/sales.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">💳 Sales</a></li>
+                    <li class="nav-item"><a href="/reports.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📈 Reports</a></li>
+                    
+                    <!-- Separator Line -->
+                    <li class="border-t border-gray-200 my-2"></li>
+
+                    <li class="nav-item active"><a href="/user-management.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg transition border-l-4 border-blue-600">⚙️ User Management</a></li>
+                    <li class="nav-item"><a href="/system-settings.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">🔧 System Settings</a></li>
+                </ul>
+            </div>
+
+            <!-- Bottom Left User Info & Logout -->
+            <div class="sidebar-footer p-4 border-t border-gray-100 bg-gray-900">
+                <div id="userProfileInfo" class="user-profile-info text-white text-sm font-semibold mb-3">
+                    Loading user...
+                </div>
+                <button id="logoutBtn" class="sidebar-logout-btn flex items-center justify-center gap-2">Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace Area -->
+        <main class="flex-1 w-full flex flex-col overflow-y-auto">
+            
+            <!-- Header Bar -->
+            <header class="top-header bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900">User Management</h1>
+                    <p class="text-xs text-gray-500">Approve pending registrations and manage user accounts.</p>
+                </div>
+            </header>
+
+            <div class="dashboard-container p-8 space-y-6 max-w-6xl mx-auto w-full">
+                
+                <!-- 1. PENDING REGISTRATIONS SECTION -->
+                <div id="pendingSection" class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                        <div>
+                            <h3 class="font-bold text-gray-900 text-base">Pending Registrations</h3>
+                            <p class="text-xs text-gray-500">Review and approve new user account requests.</p>
+                        </div>
+                        <span class="text-xs font-medium bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full border border-amber-200" id="pendingCountSummary">Loading...</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    <th class="py-3 px-6">Email</th>
+                                    <th class="py-3 px-6 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pendingTableBody" class="divide-y divide-gray-100 text-sm">
+                                <tr>
+                                    <td colspan="2" class="py-6 text-center text-gray-400">Loading pending accounts...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 2. MAIN USER DIRECTORY SECTION -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between w-full gap-4">
+                        <div>
+                            <h3 class="font-bold text-gray-900 text-base">User Directory</h3>
+                            <p class="text-xs text-gray-500">View active accounts and modify user permissions.</p>
+                        </div>
+                        <button id="refreshBtn" class="shrink-0 whitespace-nowrap px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-md border border-gray-300 transition flex items-center gap-1.5 w-auto">
+                            <i id="refreshIcon" class="fa-solid fa-rotate"></i> Refresh List
+                        </button>
+                    </div>
+                    <div id="errorContainer" class="px-6 pt-3 text-xs font-medium text-red-600"></div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    <th class="py-3.5 px-6">User</th>
+                                    <th class="py-3.5 px-6">Role</th>
+                                    <th class="py-3.5 px-6">Status</th>
+                                    <th class="py-3.5 px-6 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTableBody" class="divide-y divide-gray-100 text-sm">
+                                <tr>
+                                    <td colspan="4" class="py-6 text-center text-gray-400">Loading directory...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        let currentUserId = null; // Stores logged-in user's ID
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkSession();
+            fetchPendingUsers();
+            fetchUserDirectory();
+            
+            // Refresh Button with Spin Animation
+            document.getElementById('refreshBtn').addEventListener('click', async () => {
+                const icon = document.getElementById('refreshIcon');
+                icon.classList.add('fa-spin');
+                
+                await Promise.all([
+                    fetchPendingUsers(),
+                    fetchUserDirectory()
+                ]);
+
+                setTimeout(() => {
+                    icon.classList.remove('fa-spin');
+                }, 400);
+            });
+        });
+
+        // Verify Active Session & Capture Logged-In User ID
+        async function checkSession() {
+            try {
+                const response = await fetch('/api/dashboard', { credentials: 'include' });
+                if (!response.ok) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                const data = await response.json();
+                const sessionData = data.userSessionData;
+
+                currentUserId = sessionData?.userId || sessionData?.user_id || sessionData?.id;
+
+                const firstName = sessionData?.firstName || sessionData?.first_name || '';
+                const lastName = sessionData?.lastName || sessionData?.last_name || '';
+                const fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'Superadmin';
+                document.getElementById('userProfileInfo').innerText = fullName;
+            } catch (err) {
+                console.error('Session check failed:', err);
+                window.location.href = '/login.html';
+            }
+        }
+
+        // Fetch Pending Registrations
+        async function fetchPendingUsers() {
+            const section = document.getElementById('pendingSection');
+            const tbody = document.getElementById('pendingTableBody');
+            try {
+                const res = await fetch('/api/admin/pending-users', { credentials: 'include' });
+                if (!res.ok) {
+                    section.style.display = 'none'; // Hide if restricted/not superadmin
+                    return;
+                }
+                const data = await res.json();
+                const pendingUsers = data.users || [];
+                document.getElementById('pendingCountSummary').textContent = `${pendingUsers.length} pending`;
+
+                if (pendingUsers.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="2" class="py-6 text-center text-gray-400">No pending registrations found.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = pendingUsers.map(u => `
+                    <tr class="hover:bg-gray-50/80 transition">
+                        <td class="py-4 px-6 font-medium text-gray-900 align-middle">${escapeHtml(u.email)}</td>
+                        <td class="py-4 px-6 text-right align-middle">
+                            <button onclick="approveUser('${u.user_id}')" class="px-3 py-1.5 text-xs font-semibold bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+                                Approve
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error('Error loading pending users:', err);
+                section.style.display = 'none';
+            }
+        }
+
+        // Approve Pending Account
+        async function approveUser(userId) {
+            try {
+                const res = await fetch(`/api/admin/users/${userId}/approve`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ role_id: 3 })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    alert(data.error || 'Approval failed.');
+                    return;
+                }
+                fetchPendingUsers();
+                fetchUserDirectory();
+            } catch (err) {
+                alert('Server error during approval.');
+            }
+        }
+
+        // Fetch Main User Directory
+        async function fetchUserDirectory() {
+            const errorContainer = document.getElementById('errorContainer');
+            const tbody = document.getElementById('userTableBody');
+            errorContainer.innerText = '';
+
+            function getRoleLabel(roleId) {
+                switch (Number(roleId)) {
+                    case 1: return 'Superadmin';
+                    case 2: return 'Admin';
+                    case 3: return 'User';
+                    default: return 'Unknown';
+                }
+            }
+
+            try {
+                const response = await fetch('/api/admin/users', { credentials: 'include' });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Failed to load user records.');
+
+                const users = data.users || data;
+                if (!Array.isArray(users) || users.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-gray-400">No user records found.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = users.map(user => {
+                    const roleId = Number(user.role_id ?? user.role);
+                    const roleLabel = getRoleLabel(roleId);
+                    const isSuper = roleId === 1;
+                    const isAdmin = roleId === 2;
+                    const userId = user.user_id || user.id;
+
+                    const isSelf = (currentUserId && userId === currentUserId);
+
+                    const blockActionHtml = isSelf
+                        ? `<span class="text-xs text-gray-400 italic px-2">Current User</span>`
+                        : `<button onclick="toggleUserStatus('${userId}', ${!user.is_blocked})" class="px-2.5 py-1 text-xs font-semibold rounded-md border transition ${user.is_blocked ? 'border-green-300 text-green-700 hover:bg-green-50' : 'border-red-300 text-red-700 hover:bg-red-50'}">
+                                ${user.is_blocked ? 'Unblock' : 'Block'}
+                           </button>`;
+
+                    return `
+                        <tr class="hover:bg-gray-50/80 transition">
+                            <td class="py-4 px-6 font-medium text-gray-900 align-middle">${escapeHtml(user.email || '')} ${isSelf ? '<span class="text-xs font-normal text-blue-600 bg-blue-50 px-2 py-0.5 rounded ml-1">You</span>' : ''}</td>
+                            <td class="py-4 px-6 align-middle">
+                                <span class="px-2.5 py-1 text-xs font-semibold rounded-full ${isSuper ? 'bg-purple-100 text-purple-700' : isAdmin ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}">
+                                    ${roleLabel}
+                                </span>
+                            </td>
+                            <td class="py-4 px-6 align-middle">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full ${user.is_blocked ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
+                                    ${user.is_blocked ? 'Blocked' : 'Active'}
+                                </span>
+                            </td>
+                            <td class="py-4 px-6 text-right align-middle">
+                                <div class="inline-flex items-center gap-1.5 justify-end">
+                                    <button onclick="editUser('${userId}')" class="px-2.5 py-1 text-xs font-semibold rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 transition">
+                                        Edit
+                                    </button>
+                                    ${blockActionHtml}
+                                    <button onclick="manageRights('${userId}')" class="px-2.5 py-1 text-xs font-semibold rounded-md border border-purple-300 text-purple-700 hover:bg-purple-50 transition">
+                                        Rights
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error('Error loading users:', err);
+                errorContainer.innerText = 'Error loading user records: ' + err.message;
+            }
+        }
+
+        function manageRights(userId) {
+            alert('Manage rights/permissions feature for user ID: ' + userId);
+        }
+
+        async function toggleUserStatus(userId, shouldBlock) {
+            try {
+                const res = await fetch(`/api/admin/users/${userId}/status`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ is_blocked: shouldBlock })
+                });
+                if (!res.ok) {
+                    const errData = await res.json();
+                    alert(errData.error || 'Action failed');
+                    return;
+                }
+                fetchUserDirectory();
+            } catch (err) {
+                alert('Server error updating status.');
+            }
+        }
+
+        function escapeHtml(str) {
+            return (str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+                window.location.href = '/login.html';
+            } catch (err) {
+                window.location.href = '/login.html';
+            }
+        });
+
+        // Open Edit / Role Change Modal or Prompt for a User
+        async function editUser(userId) {
+            if (currentUserId && userId === currentUserId) {
+                alert("Security restriction: You cannot modify your own role from the user directory.");
+                return;
+            }
+
+            const newRoleInput = prompt(
+                "Enter new role assignment for this user:\n\n" +
+                "1 - Superadmin\n" +
+                "2 - Admin\n" +
+                "3 - User"
+            );
+
+            if (newRoleInput === null) return;
+
+            const target_role_id = Number(newRoleInput.trim());
+            if (![1, 2, 3].includes(target_role_id)) {
+                alert("Invalid role ID entered. Please enter 1, 2, or 3.");
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/admin/users/${userId}/role`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ target_role_id })
+                });
+
+                const data = await res.json();
+                if (!res.ok) {
+                    alert(data.error || 'Failed to update user role.');
+                    return;
+                }
+
+                alert('User role updated successfully!');
+                fetchUserDirectory();
+            } catch (err) {
+                console.error('Error updating user role:', err);
+                alert('Server error during role modification.');
+            }
+        }
+    </script>
+</body>
+</html>

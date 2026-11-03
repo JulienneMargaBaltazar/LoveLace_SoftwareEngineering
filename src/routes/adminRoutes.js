@@ -16,7 +16,7 @@ router.get('/users', requireAdmin, async (req, res) => {
 
     let query = supabase
       .from('app_user')
-      .select('user_id, first_name, last_name, email, role_id, is_blocked, status, created_at');
+      .select('user_id, first_name, last_name, email, role_id, is_blocked, status, stamp'); // Updated to stamp
 
     // GUARDRAIL: If the requester is a regular Admin (role_id === 2), hide Superadmin entries (role_id === 1)
     if (requesterRoleId === 2) {
@@ -34,7 +34,6 @@ router.get('/users', requireAdmin, async (req, res) => {
 });
 
 // 2. POST /api/admin/users - Add a new user
-// Inside your admin router (e.g., routes/admin.js)
 router.post('/users', requireAdmin, async (req, res) => {
   try {
     const { email, password } = req.body; 
@@ -59,7 +58,7 @@ router.post('/users', requireAdmin, async (req, res) => {
     console.error('Error creating user:', err.message);
     res.status(500).json({ error: 'Internal server error while creating user.' });
   }
-});;
+});
 
 // 3. PATCH /api/admin/users/:userId/status - Toggle block/unblock status
 router.patch('/users/:userId/status', requireAdmin, async (req, res) => {
@@ -123,7 +122,7 @@ router.get('/pending-users', requireSuperadmin, async (req, res) => {
   try {
     const { data: users, error } = await supabase
       .from('app_user')
-      .select('user_id, first_name, last_name, email, role_id, status, created_at')
+      .select('user_id, first_name, last_name, email, role_id, status, stamp') // Updated to stamp
       .eq('status', 'pending');
 
     if (error) throw error;
@@ -157,13 +156,19 @@ router.patch('/users/:userId/approve', requireSuperadmin, async (req, res) => {
   }
 });
 
-// 6. PATCH /api/admin/users/:userId/role - Elevate or modify roles (Requirement 2 & 3)
+// 6. PATCH /api/admin/users/:userId/role - Elevate or modify roles
 router.patch('/users/:userId/role', requireSuperadmin, async (req, res) => {
   try {
     const { userId } = req.params;
-    const { target_role_id } = req.body; // 1 = Superadmin, 2 = Admin, 3 = User
+    const { target_role_id } = req.body; 
+    const currentSessionUserId = req.session.userId;
 
-    // Fetch target user's current role
+    if (currentSessionUserId && userId === currentSessionUserId) {
+      return res.status(403).json({ 
+        error: 'Action blocked: You cannot modify your own account role from the user directory.' 
+      });
+    }
+
     const { data: targetUser, error: fetchError } = await supabase
       .from('app_user')
       .select('role_id, is_blocked')
@@ -174,8 +179,7 @@ router.patch('/users/:userId/role', requireSuperadmin, async (req, res) => {
       return res.status(404).json({ error: 'Target user not found.' });
     }
 
-    // GUARDRAIL: If demoting or changing a Superadmin away from role_id 1, verify they aren't the last one
-    if (targetUser.role_id === 1 && target_role_id !== 1) {
+    if (targetUser.role_id === 1 && Number(target_role_id) !== 1) {
       const { count, error: countError } = await supabase
         .from('app_user')
         .select('user_id', { count: 'exact', head: true })
@@ -191,11 +195,12 @@ router.patch('/users/:userId/role', requireSuperadmin, async (req, res) => {
       }
     }
 
+    // Explicitly select role_id in the update response
     const { data, error: updateError } = await supabase
       .from('app_user')
-      .update({ role_id: target_role_id })
+      .update({ role_id: Number(target_role_id) })
       .eq('user_id', userId)
-      .select();
+      .select('user_id, email, role_id, is_blocked');
 
     if (updateError) throw updateError;
 
@@ -205,5 +210,4 @@ router.patch('/users/:userId/role', requireSuperadmin, async (req, res) => {
     res.status(500).json({ error: 'Internal server error while updating user role.' });
   }
 });
-
 export default router;
