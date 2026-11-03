@@ -82,14 +82,17 @@
             <header class="top-header bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
                 <div>
                     <h1 class="text-xl font-bold text-gray-900">User Management</h1>
-                    <p class="text-xs text-gray-500">Approve pending registrations and manage user accounts.</p>
+                    <p class="text-xs text-gray-500">Manage user accounts and directory permissions.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span id="roleBadge" class="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded-md border border-gray-200">Loading Role...</span>
                 </div>
             </header>
 
             <div class="dashboard-container p-8 space-y-6 max-w-6xl mx-auto w-full">
                 
-                <!-- 1. PENDING REGISTRATIONS SECTION -->
-                <div id="pendingSection" class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                <!-- 1. PENDING REGISTRATIONS SECTION (Superadmin Only) -->
+                <div id="pendingSection" class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hidden">
                     <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
                         <div>
                             <h3 class="font-bold text-gray-900 text-base">Pending Registrations</h3>
@@ -153,11 +156,18 @@
 
     <!-- Script Logic -->
     <script>
-        let currentUserId = null; // Stores logged-in user's ID
+        let currentUserId = null;       // Stores logged-in user's ID
+        let currentUserRoleId = null;   // Stores logged-in user's role ID (1: Superadmin, 2: Admin)
 
         document.addEventListener('DOMContentLoaded', async () => {
             await checkSession();
-            fetchPendingUsers();
+            
+            // Only fetch pending registrations if user is a Superadmin (role_id === 1)
+            if (currentUserRoleId === 1) {
+                document.getElementById('pendingSection').classList.remove('hidden');
+                fetchPendingUsers();
+            }
+
             fetchUserDirectory();
             
             // Refresh Button with Spin Animation
@@ -165,10 +175,12 @@
                 const icon = document.getElementById('refreshIcon');
                 icon.classList.add('fa-spin');
                 
-                await Promise.all([
-                    fetchPendingUsers(),
-                    fetchUserDirectory()
-                ]);
+                const promises = [fetchUserDirectory()];
+                if (currentUserRoleId === 1) {
+                    promises.push(fetchPendingUsers());
+                }
+
+                await Promise.all(promises);
 
                 setTimeout(() => {
                     icon.classList.remove('fa-spin');
@@ -176,7 +188,7 @@
             });
         });
 
-        // Verify Active Session & Capture Logged-In User ID
+        // Verify Active Session & Capture User ID & Role ID
         async function checkSession() {
             try {
                 const response = await fetch('/api/dashboard', { credentials: 'include' });
@@ -188,25 +200,37 @@
                 const sessionData = data.userSessionData;
 
                 currentUserId = sessionData?.userId || sessionData?.user_id || sessionData?.id;
+                currentUserRoleId = Number(sessionData?.roleId || sessionData?.role_id || 3);
 
                 const firstName = sessionData?.firstName || sessionData?.first_name || '';
                 const lastName = sessionData?.lastName || sessionData?.last_name || '';
-                const fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'Superadmin';
+                const fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'User';
+                
                 document.getElementById('userProfileInfo').innerText = fullName;
+
+                // Render role badge in header
+                const roleBadge = document.getElementById('roleBadge');
+                if (currentUserRoleId === 1) {
+                    roleBadge.textContent = 'Superadmin';
+                    roleBadge.className = 'px-3 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-md border border-purple-200';
+                } else {
+                    roleBadge.textContent = 'Admin';
+                    roleBadge.className = 'px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-md border border-blue-200';
+                }
             } catch (err) {
                 console.error('Session check failed:', err);
                 window.location.href = '/login.html';
             }
         }
 
-        // Fetch Pending Registrations
+        // Fetch Pending Registrations (Superadmin only)
         async function fetchPendingUsers() {
             const section = document.getElementById('pendingSection');
             const tbody = document.getElementById('pendingTableBody');
             try {
                 const res = await fetch('/api/admin/pending-users', { credentials: 'include' });
                 if (!res.ok) {
-                    section.style.display = 'none'; // Hide if restricted/not superadmin
+                    section.classList.add('hidden');
                     return;
                 }
                 const data = await res.json();
@@ -230,7 +254,7 @@
                 `).join('');
             } catch (err) {
                 console.error('Error loading pending users:', err);
-                section.style.display = 'none';
+                section.classList.add('hidden');
             }
         }
 
@@ -289,12 +313,19 @@
                     const userId = user.user_id || user.id;
 
                     const isSelf = (currentUserId && userId === currentUserId);
+                    const isSuperadminViewer = (currentUserRoleId === 1);
 
+                    // Block button logic: prevent regular admins from blocking other admins/superadmins if restricted
                     const blockActionHtml = isSelf
                         ? `<span class="text-xs text-gray-400 italic px-2">Current User</span>`
                         : `<button onclick="toggleUserStatus('${userId}', ${!user.is_blocked})" class="px-2.5 py-1 text-xs font-semibold rounded-md border transition ${user.is_blocked ? 'border-green-300 text-green-700 hover:bg-green-50' : 'border-red-300 text-red-700 hover:bg-red-50'}">
                                 ${user.is_blocked ? 'Unblock' : 'Block'}
                            </button>`;
+
+                    // Edit role button is strictly reserved for Superadmins
+                    const editButtonHtml = isSuperadminViewer
+                        ? `<button onclick="editUser('${userId}')" class="px-2.5 py-1 text-xs font-semibold rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 transition">Edit</button>`
+                        : '';
 
                     return `
                         <tr class="hover:bg-gray-50/80 transition">
@@ -311,13 +342,8 @@
                             </td>
                             <td class="py-4 px-6 text-right align-middle">
                                 <div class="inline-flex items-center gap-1.5 justify-end">
-                                    <button onclick="editUser('${userId}')" class="px-2.5 py-1 text-xs font-semibold rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 transition">
-                                        Edit
-                                    </button>
+                                    ${editButtonHtml}
                                     ${blockActionHtml}
-                                    <button onclick="manageRights('${userId}')" class="px-2.5 py-1 text-xs font-semibold rounded-md border border-purple-300 text-purple-700 hover:bg-purple-50 transition">
-                                        Rights
-                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -327,10 +353,6 @@
                 console.error('Error loading users:', err);
                 errorContainer.innerText = 'Error loading user records: ' + err.message;
             }
-        }
-
-        function manageRights(userId) {
-            alert('Manage rights/permissions feature for user ID: ' + userId);
         }
 
         async function toggleUserStatus(userId, shouldBlock) {
@@ -365,7 +387,7 @@
             }
         });
 
-        // Open Edit / Role Change Modal or Prompt for a User
+        // Open Edit Role Prompt for a User (Superadmin Only)
         async function editUser(userId) {
             if (currentUserId && userId === currentUserId) {
                 alert("Security restriction: You cannot modify your own role from the user directory.");
