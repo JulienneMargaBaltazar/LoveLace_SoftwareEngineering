@@ -13,23 +13,29 @@ const rightsModules = {
     reports: ['top-customers', 'top-products', 'all-employees', 'active-employees', 'employee-job-history', 'top-sales', 'product-master-list']
 };
 
-const requireModuleRight = (module, action) => async (req, res, next) => {
+export const requireModuleRight = (module, action) => async (req, res, next) => {
     if (req.session.roleId === 1 || req.session.roleId === 2) return next();
 
     try {
+        const normalizedModule = module.toLowerCase();
         const { data, error } = await supabase
-            .from('module_rights')
-            .select('user_id')
+            .from('user_rights')
+            .select('action_key')
             .eq('user_id', String(req.session.userId))
-            .eq('module', module)
-            .eq('action', action)
+            .eq('module_name', normalizedModule)
+            .eq('action_key', action)
+            .eq('is_allowed', true)
+            .eq('is_deleted', false)
             .maybeSingle();
+
         if (error) throw error;
-        if (!data) return res.status(403).json({ error: `You do not have permission to ${action}.` });
+        if (!data) {
+            return res.status(403).json({ error: `You do not have permission to perform '${action}'.` });
+        }
         next();
     } catch (err) {
         console.error(`Error checking ${module} right:`, err.message);
-        res.status(500).json({ error: 'Unable to verify permission.' });
+        return res.status(500).json({ error: 'Unable to verify permission.' });
     }
 };
 
@@ -553,11 +559,13 @@ async function requireReportRight(req, res, next) {
 
     try {
         const { data, error } = await supabase
-            .from('module_rights')
-            .select('action')
+            .from('user_rights')
+            .select('action_key')
             .eq('user_id', String(req.session.userId))
-            .eq('module', 'reports')
-            .eq('action', reportActionByKey[reportKey])
+            .eq('module_name', 'reports')
+            .eq('action_key', reportActionByKey[reportKey])
+            .eq('is_allowed', true)
+            .eq('is_deleted', false)
             .maybeSingle();
         if (error) throw error;
         if (!data) return res.status(403).json({ error: 'You do not have permission to open this report.' });
@@ -766,27 +774,31 @@ router.delete('/reports/rights/:userId/:reportKey', requireAdmin, async (req, re
 // GRANULAR RIGHTS MANAGEMENT ROUTES (Task S1-DEV-07)
 // ---------------------------------------------------------
 
+// GET User Rights
 router.get('/users/:userId/rights', requireAdmin, async (req, res) => {
     const { userId } = req.params;
+
     try {
         const { data, error } = await supabase
-            .from('module_rights')
-            .select('module, action')
-            .eq('user_id', String(userId));
+            .from('user_rights')
+            .select('module_name, action_key, is_allowed')
+            .eq('user_id', String(userId))
+            .eq('is_deleted', false);
 
         if (error) throw error;
-        
-        res.status(200).json({ 
-            success: true, 
-            modules: rightsModules, 
-            rights: data || [] 
+
+        return res.status(200).json({
+            success: true,
+            modules: rightsModules,
+            rights: data || []
         });
     } catch (err) {
         console.error('Error fetching user rights:', err.message);
-        res.status(500).json({ error: 'Failed to load user rights.' });
+        return res.status(500).json({ error: 'Failed to load user rights.' });
     }
 });
 
+// PUT Update User Right
 router.put('/users/:userId/rights', requireAdmin, async (req, res) => {
     const { userId } = req.params;
     const { module, action, granted } = req.body;
@@ -796,31 +808,20 @@ router.put('/users/:userId/rights', requireAdmin, async (req, res) => {
     }
 
     try {
-        if (granted) {
-            const { error } = await supabase
-                .from('module_rights')
-                .upsert({
-                    user_id: String(userId),
-                    module,
-                    action
-                }, { onConflict: 'user_id,module,action' });
+        const { error } = await supabase.rpc('set_module_right', {
+            p_actor_user_id: String(req.session.userId),
+            p_target_user_id: userId,
+            p_module: module.toLowerCase(),
+            p_action: action,
+            p_granted: granted
+        });
 
-            if (error) throw error;
-        } else {
-            const { error } = await supabase
-                .from('module_rights')
-                .delete()
-                .eq('user_id', String(userId))
-                .eq('module', module)
-                .eq('action', action);
+        if (error) throw error;
 
-            if (error) throw error;
-        }
-
-        res.status(200).json({ success: true, message: 'Right updated successfully.' });
+        return res.status(200).json({ success: true, message: 'Right updated successfully.' });
     } catch (err) {
         console.error('Error updating user right:', err.message);
-        res.status(500).json({ error: 'Failed to update user right.' });
+        return res.status(500).json({ error: 'Failed to update user right.' });
     }
 });
 

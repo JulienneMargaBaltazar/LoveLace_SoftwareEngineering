@@ -24,17 +24,6 @@ BEGIN
 END;
 $$;
 
-CREATE TABLE IF NOT EXISTS module_rights (
-  user_id UUID NOT NULL,
-  module TEXT NOT NULL CHECK (module IN ('customer', 'product', 'human-resources', 'sales', 'reports')),
-  action TEXT NOT NULL,
-  granted_by UUID NOT NULL,
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  PRIMARY KEY (user_id, module, action)
-);
-
-ALTER TABLE module_rights DROP CONSTRAINT IF EXISTS module_rights_action_check;
-
 CREATE OR REPLACE FUNCTION set_module_right(
   p_actor_user_id UUID,
   p_target_user_id UUID,
@@ -71,10 +60,12 @@ BEGIN
 
   SELECT EXISTS (
     SELECT 1
-    FROM module_rights
-    WHERE user_id = p_target_user_id
-      AND module = p_module
-      AND action = p_action
+    FROM user_rights
+    WHERE user_id = p_target_user_id::TEXT
+      AND module_name = p_module
+      AND action_key = p_action
+      AND is_allowed = TRUE
+      AND is_deleted = FALSE
   ) INTO right_exists;
 
   IF right_exists = p_granted THEN
@@ -82,21 +73,28 @@ BEGIN
   END IF;
 
   IF p_granted THEN
-    INSERT INTO module_rights (user_id, module, action, granted_by)
-    VALUES (p_target_user_id, p_module, p_action, p_actor_user_id)
-    ON CONFLICT (user_id, module, action)
-    DO UPDATE SET granted_by = EXCLUDED.granted_by, updated_at = NOW();
+    UPDATE user_rights
+    SET is_allowed = TRUE, is_deleted = FALSE, stamp = NOW()::TEXT
+    WHERE user_id = p_target_user_id::TEXT
+      AND module_name = p_module
+      AND action_key = p_action;
+
+    IF NOT FOUND THEN
+      INSERT INTO user_rights (user_id, module_name, action_key, is_allowed, is_deleted, stamp)
+      VALUES (p_target_user_id::TEXT, p_module, p_action, TRUE, FALSE, NOW()::TEXT);
+    END IF;
   ELSE
-    DELETE FROM module_rights
-    WHERE user_id = p_target_user_id
-      AND module = p_module
-      AND action = p_action;
+    UPDATE user_rights
+    SET is_allowed = FALSE, is_deleted = TRUE, stamp = NOW()::TEXT
+    WHERE user_id = p_target_user_id::TEXT
+      AND module_name = p_module
+      AND action_key = p_action;
   END IF;
 
   PERFORM audit_user(
     p_actor_user_id,
     CASE WHEN p_granted THEN 'GRANT_RIGHT' ELSE 'REVOKE_RIGHT' END,
-    'module_rights',
+    'user_rights',
     p_target_user_id::TEXT,
     jsonb_build_object('module', p_module, 'action', p_action, 'granted', p_granted)
   );

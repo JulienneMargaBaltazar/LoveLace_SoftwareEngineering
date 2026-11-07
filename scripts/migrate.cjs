@@ -1,16 +1,42 @@
 const fs = require('fs');
 const path = require('path');
+const dns = require('dns').promises;
 const { Client } = require('pg');
-require('dotenv').config({ path: path.resolve(__dirname, '../.env.local') }) || require('dotenv').config();
+const dotenv = require('dotenv');
+
+dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
+dotenv.config();
 
 async function runMigrations() {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
-    console.error('❌ Error: DATABASE_URL is missing in .env.local');
+    console.error('❌ Error: DATABASE_URL is missing in .env.local or .env');
     process.exit(1);
   }
 
-  const client = new Client({ connectionString });
+  const databaseUrl = new URL(connectionString);
+  const clientConfig = { connectionString };
+
+  try {
+    await dns.lookup(databaseUrl.hostname);
+  } catch (error) {
+    if (error.code !== 'ENOTFOUND') throw error;
+
+    const [ipv6Address] = await dns.resolve6(databaseUrl.hostname);
+    clientConfig.host = ipv6Address;
+    clientConfig.port = databaseUrl.port ? Number(databaseUrl.port) : 5432;
+    clientConfig.database = databaseUrl.pathname.slice(1);
+    clientConfig.user = decodeURIComponent(databaseUrl.username);
+    clientConfig.password = decodeURIComponent(databaseUrl.password);
+    delete clientConfig.connectionString;
+    clientConfig.ssl = {
+      rejectUnauthorized: false,
+      servername: databaseUrl.hostname
+    };
+    console.log(`ℹ️ Using IPv6 address for ${databaseUrl.hostname}.`);
+  }
+
+  const client = new Client(clientConfig);
 
   try {
     await client.connect();

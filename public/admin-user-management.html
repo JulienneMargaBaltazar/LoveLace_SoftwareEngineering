@@ -293,7 +293,7 @@
         }
 
         function renderRightsDialog(userId, modules, rights) {
-            const granted = new Set(rights.map(right => `${right.module}:${right.action}`));
+            const granted = new Set(rights.map(right => `${right.module_name}:${right.action_key}`));
             document.getElementById('rightsModules').innerHTML = Object.entries(modules).map(([module, actions]) => `
                 <section class="border border-yellow-200 rounded-lg p-4 bg-[#fffef0]" data-module="${module}">
                     <div class="flex items-center justify-between border-b border-gray-100 pb-3 mb-3">

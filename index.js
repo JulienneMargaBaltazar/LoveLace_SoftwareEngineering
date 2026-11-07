@@ -54,7 +54,7 @@ app.get('/api/dashboard', requireAuth, (req, res) => {
 
 // 5. Root Redirect (Ensure this matches your actual filename: signup.html vs signUp.html)
 app.get('/', (req, res) => {
-  res.redirect('/signup.html');
+  res.redirect('/landingpage.html');
 });
 
 // 6. Database Connection Test & Server Startup
