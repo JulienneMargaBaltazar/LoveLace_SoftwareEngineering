@@ -33,12 +33,18 @@
 
             <div class="input-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" placeholder="••••••••" minlength="8" required>
+                <div class="password-wrapper">
+                    <input type="password" id="password" placeholder="••••••••" minlength="8" required>
+                    <button type="button" class="password-toggle" data-target="password">View</button>
+                </div>
             </div>
 
             <div class="input-group">
                 <label for="confirmPassword">Confirm password</label>
-                <input type="password" id="confirmPassword" placeholder="••••••••" minlength="8" required>
+                <div class="password-wrapper">
+                    <input type="password" id="confirmPassword" placeholder="••••••••" minlength="8" required>
+                    <button type="button" class="password-toggle" data-target="confirmPassword">View</button>
+                </div>
             </div>
 
             <div class="terms-group">
@@ -57,6 +63,23 @@
     </div>
 
     <script>
+        // --- 1. Text-Based Password Visibility Toggle Logic ---
+        document.querySelectorAll('.password-toggle').forEach(button => {
+            button.addEventListener('click', () => {
+                const targetId = button.getAttribute('data-target');
+                const passwordInput = document.getElementById(targetId);
+                
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    button.textContent = 'Hide';
+                } else {
+                    passwordInput.type = 'password';
+                    button.textContent = 'View';
+                }
+            });
+        });
+
+        // --- 2. Signup Form Submission Flow ---
         document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
