@@ -5,49 +5,73 @@ import { supabase } from '../config/supabaseClient.js';
 const router = express.Router();
 
 router.post('/signup', async (req, res) => {
-  const firstName = typeof req.body.first_name === 'string' ? req.body.first_name.trim() : '';
-  const lastName = typeof req.body.last_name === 'string' ? req.body.last_name.trim() : '';
-  const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
-  const password = typeof req.body.password === 'string' ? req.body.password : '';
-
-  if (!firstName || !lastName || !email || password.length < 8) {
-    return res.status(400).json({
-      error: 'First name, last name, a valid email, and a password of at least 8 characters are required.'
-    });
-  }
-
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return res.status(400).json({ error: 'Please provide a valid email address.' });
-  }
-
   try {
-    const passwordHash = await bcrypt.hash(password, 10);
-    const { error } = await supabase
-      .from('app_user')
-      .insert({
-        first_name: firstName,
-        last_name: lastName,
-        email,
-        password_hash: passwordHash,
-        role_id: 3,
-        status: 'pending',
-        is_blocked: false,
-        is_first_login: true
-      });
+    const { first_name, last_name, email, password } = req.body;
 
-    if (error) {
-      if (error.code === '23505') {
-        return res.status(409).json({ error: 'An account with this email already exists.' });
-      }
-      throw error;
+    if (!first_name || !last_name || !email || !password) {
+      return res.status(400).json({ error: 'All fields (first_name, last_name, email, password) are required.' });
     }
 
+    // TC-02: Boundary Violation Length Check
+    if (password.length < 8) {
+      return res.status(400).json({ 
+        error: "Password does not meet the structural minimum length requirements." 
+      });
+    }
+
+    // TC-03: Password Complexity Constraints Check (Requires special tokens/integers)
+    const complexityRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>_]).+$/;
+    if (!complexityRegex.test(password)) {
+      return res.status(400).json({ 
+        error: "password complexity constraints (missing special tokens/integers) were not satisfied." 
+      });
+    }
+
+    const { data: existingUser, error: checkError } = await supabase
+      .from('app_user')
+      .select('email')
+      .eq('email', email)
+      .single();
+
+    if (existingUser) {
+      return res.status(400).json({ error: 'Email is already registered.' });
+    }
+
+    const saltRounds = 10;
+    const password_hash = await bcrypt.hash(password, saltRounds);
+
+    // 3. Insert the new user directly into the 'app_user' table
+    const { data: insertData, error: insertError } = await supabase
+      .from('app_user')
+      .insert([
+        {
+          first_name,
+          last_name,
+          email,
+          password_hash,
+          status: 'pending',     
+          is_blocked: false,
+          role_id: 1,
+          is_first_login: true 
+        }
+      ])
+      .select();
+
+    if (insertError) {
+      return res.status(400).json({ error: insertError.message });
+    }
+
+    const newUser = insertData[0];
+    delete newUser.password_hash; 
+
     return res.status(201).json({
-      message: 'Account created successfully. Please wait for administrator approval.'
+      message: 'Registration successful! Your account is currently pending administrative approval.',
+      user: newUser
     });
+
   } catch (err) {
-    console.error('Signup error:', err.message);
-    return res.status(500).json({ error: 'Internal server error during signup.' });
+    console.error('Unexpected server error during registration:', err.message);
+    return res.status(500).json({ error: 'Internal server error. Please try again later.' });
   }
 });
 
