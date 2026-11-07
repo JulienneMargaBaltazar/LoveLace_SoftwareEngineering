@@ -26,25 +26,19 @@
                 </div>
             </div>
 
-            <div class="input-group" style="width: 100%;">
+            <div class="input-group">
                 <label for="email">Email</label>
-                <input type="email" id="email" placeholder="john.doe@example.com" required style="width: 100%; box-sizing: border-box;">
+                <input type="email" id="email" placeholder="john.doe@example.com" required>
             </div>
 
-            <div class="input-group" style="width: 100%;">
+            <div class="input-group">
                 <label for="password">Password</label>
-                <div class="password-wrapper" style="position: relative; width: 100%; display: block;">
-                    <input type="password" id="password" placeholder="••••••••" minlength="8" required style="width: 100%; padding-right: 65px; box-sizing: border-box;">
-                    <button type="button" class="password-toggle" data-target="password" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0; font-size: 12px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; z-index: 10;">View</button>
-                </div>
+                <input type="password" id="password" placeholder="••••••••" minlength="8" required>
             </div>
 
-            <div class="input-group" style="width: 100%;">
+            <div class="input-group">
                 <label for="confirmPassword">Confirm password</label>
-                <div class="password-wrapper" style="position: relative; width: 100%; display: block;">
-                    <input type="password" id="confirmPassword" placeholder="••••••••" minlength="8" required style="width: 100%; padding-right: 65px; box-sizing: border-box;">
-                    <button type="button" class="password-toggle" data-target="confirmPassword" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0; font-size: 12px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; z-index: 10;">View</button>
-                </div>
+                <input type="password" id="confirmPassword" placeholder="••••••••" minlength="8" required>
             </div>
 
             <div class="terms-group">
@@ -63,23 +57,6 @@
     </div>
 
     <script>
-        // --- 1. Text-Based Password Visibility Toggle Logic ---
-        document.querySelectorAll('.password-toggle').forEach(button => {
-            button.addEventListener('click', () => {
-                const targetId = button.getAttribute('data-target');
-                const passwordInput = document.getElementById(targetId);
-                
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    button.textContent = 'Hide';
-                } else {
-                    passwordInput.type = 'password';
-                    button.textContent = 'View';
-                }
-            });
-        });
-
-        // --- 2. Signup Form Submission Flow ---
         document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
