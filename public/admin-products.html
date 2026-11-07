@@ -324,7 +324,7 @@
                 unitprice: document.getElementById('unitprice').value
             };
 
-            const url = originalProdCode ? `/api/admin/product/${originalProdCode}` : '/api/admin/product';
+            const url = originalProdCode ? `/api/admin/product/${encodeURIComponent(originalProdCode)}` : '/api/admin/product';
             const method = originalProdCode ? 'PUT' : 'POST';
 
             try {
@@ -351,7 +351,7 @@
             }
 
             try {
-                const res = await fetch(`/api/admin/product/${prodcode}`, {
+                const res = await fetch(`/api/admin/product/${encodeURIComponent(prodcode)}`, {
                     method: 'DELETE',
                     credentials: 'include'
                 });

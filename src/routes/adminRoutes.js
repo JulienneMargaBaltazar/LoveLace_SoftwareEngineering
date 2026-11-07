@@ -353,6 +353,113 @@ router.patch('/customers/:custno/status', requireAuth, requireModuleRight('custo
     }
 });
 
+// PRODUCT MANAGEMENT ROUTES
+router.get('/product', requireAuth, async (req, res) => {
+    try {
+        const [productsRes, pricesRes] = await Promise.all([
+            supabase.from('product').select('prodcode, description, unit').eq('is_deleted', false).order('prodcode'),
+            supabase.from('pricehist_active').select('prodcode, unitprice')
+        ]);
+        if (productsRes.error) throw productsRes.error;
+        if (pricesRes.error) throw pricesRes.error;
+
+        const prices = Object.fromEntries((pricesRes.data || []).map(price => [price.prodcode, price.unitprice]));
+        res.status(200).json({
+            products: (productsRes.data || []).map(product => ({
+                ...product,
+                unitprice: prices[product.prodcode] ?? null
+            }))
+        });
+    } catch (err) {
+        console.error('Error fetching products:', err.message);
+        res.status(500).json({ error: 'Failed to load product records: ' + err.message });
+    }
+});
+
+router.post('/product', requireAuth, requireModuleRight('product', 'add-product'), async (req, res) => {
+    const { prodcode, description, unit, unitprice } = req.body;
+    const price = Number(unitprice);
+    if (!prodcode?.trim() || !description?.trim() || !unit?.trim() || !Number.isFinite(price) || price < 0) {
+        return res.status(400).json({ error: 'Product code, description, unit, and a valid non-negative price are required.' });
+    }
+
+    try {
+        const { error: productError } = await supabase.from('product').insert({
+            prodcode: prodcode.trim(),
+            description: description.trim(),
+            unit: unit.trim(),
+            is_deleted: false
+        });
+        if (productError) throw productError;
+
+        const { error: priceError } = await supabase.from('pricehist').insert({
+            prodcode: prodcode.trim(),
+            unitprice: price,
+            effdate: new Date().toISOString().slice(0, 10),
+            is_deleted: false
+        });
+        if (priceError) throw priceError;
+
+        res.status(201).json({ success: true, message: 'Product created successfully.' });
+    } catch (err) {
+        console.error('Error creating product:', err.message);
+        res.status(500).json({ error: 'Failed to create product: ' + err.message });
+    }
+});
+
+router.put('/product/:prodcode', requireAuth, requireModuleRight('product', 'edit-product'), async (req, res) => {
+    const { prodcode } = req.params;
+    const { description, unit, unitprice } = req.body;
+    const price = Number(unitprice);
+    if (!description?.trim() || !unit?.trim() || !Number.isFinite(price) || price < 0) {
+        return res.status(400).json({ error: 'Description, unit, and a valid non-negative price are required.' });
+    }
+
+    try {
+        const { data: product, error: productError } = await supabase
+            .from('product')
+            .update({ description: description.trim(), unit: unit.trim() })
+            .eq('prodcode', prodcode)
+            .eq('is_deleted', false)
+            .select('prodcode')
+            .maybeSingle();
+        if (productError) throw productError;
+        if (!product) return res.status(404).json({ error: 'Product not found.' });
+
+        const { error: priceError } = await supabase.from('pricehist').insert({
+            prodcode,
+            unitprice: price,
+            effdate: new Date().toISOString().slice(0, 10),
+            is_deleted: false
+        });
+        if (priceError) throw priceError;
+
+        res.status(200).json({ success: true, message: 'Product updated successfully.' });
+    } catch (err) {
+        console.error('Error updating product:', err.message);
+        res.status(500).json({ error: 'Failed to update product: ' + err.message });
+    }
+});
+
+router.delete('/product/:prodcode', requireAuth, requireModuleRight('product', 'delete-product'), async (req, res) => {
+    try {
+        const { data: product, error } = await supabase
+            .from('product')
+            .update({ is_deleted: true })
+            .eq('prodcode', req.params.prodcode)
+            .eq('is_deleted', false)
+            .select('prodcode')
+            .maybeSingle();
+        if (error) throw error;
+        if (!product) return res.status(404).json({ error: 'Product not found.' });
+
+        res.status(200).json({ success: true, message: 'Product deleted successfully.' });
+    } catch (err) {
+        console.error('Error deleting product:', err.message);
+        res.status(500).json({ error: 'Failed to delete product: ' + err.message });
+    }
+});
+
 // SALES MANAGEMENT ROUTES
 router.get('/sales/options', requireAuth, async (req, res) => {
     try {
@@ -799,29 +906,36 @@ router.get('/users/:userId/rights', requireAdmin, async (req, res) => {
 });
 
 // PUT Update User Right
-router.put('/users/:userId/rights', requireAdmin, async (req, res) => {
-    const { userId } = req.params;
-    const { module, action, granted } = req.body;
-
-    if (!module || !action || typeof granted !== 'boolean') {
-        return res.status(400).json({ error: 'Module, action, and granted boolean status are required.' });
-    }
-
+router.put('/api/admin/users/:id/rights', async (req, res) => {
     try {
-        const { error } = await supabase.rpc('set_module_right', {
-            p_actor_user_id: String(req.session.userId),
-            p_target_user_id: userId,
-            p_module: module.toLowerCase(),
-            p_action: action,
-            p_granted: granted
-        });
+        // Ensure the logged-in user has admin privileges (e.g., roleId 1 or 2, or Superadmin)
+        const userRoleId = Number(req.session.roleId);
 
-        if (error) throw error;
+        if (userRoleId !== 1 && userRoleId !== 2) { // Adjust numbers based on your role schema
+            return res.status(403).json({ error: 'Forbidden. Administrator privileges required.' });
+        }
 
-        return res.status(200).json({ success: true, message: 'Right updated successfully.' });
+        const targetUserId = req.params.id;
+        const { rights } = req.body; // Array or object of module rights
+
+        // Loop and update user_rights table:
+        // user_id, module_name, action_key, is_allowed, stamp
+        for (const right of rights) {
+            await supabase
+                .from('user_rights')
+                .upsert({
+                    user_id: targetUserId,
+                    module_name: right.module_name,
+                    action_key: right.action_key,
+                    is_allowed: right.is_allowed,
+                    stamp: new Date()
+                }, { onConflict: 'user_id,module_name,action_key' });
+        }
+
+        return res.status(200).json({ success: true, message: 'Rights updated successfully.' });
     } catch (err) {
-        console.error('Error updating user right:', err.message);
-        return res.status(500).json({ error: 'Failed to update user right.' });
+        console.error('Error updating rights:', err);
+        return res.status(500).json({ error: err.message });
     }
 });
 
