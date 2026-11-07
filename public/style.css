@@ -116,10 +116,12 @@ body {
     cursor: pointer !important;
     padding: 0 !important;
     font-family: inherit !important;
-    /* Re-inheriting standard button properties to match form layout definitions */
-    width: auto !important; 
+    width: auto !important;
+    
+    /* ADD THESE TWO LINES TO FIX THE COLOR AND TEXT STYLE: */
+    color: #5C5C99 !important; /* Matches your main purple button theme */
+    text-transform: uppercase !important; /* Keeps it looking clean and uniform */
 }
-
 /* ========================================================================== */
 
 .terms-group {
