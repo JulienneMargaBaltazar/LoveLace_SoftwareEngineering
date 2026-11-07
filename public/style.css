@@ -378,3 +378,18 @@ button:hover {
 .auth-footer a:hover {
     text-decoration: underline;
 }
+
+/* Zoom and scale modules nicely on desktop mouse hover */
+.module-card:hover {
+    transform: scale(1.06);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    background-color: #fcfbfe !important;
+}
+
+/* Accent active lock highlight when clicked */
+.module-card.is-active {
+    transform: scale(1.04);
+    border-color: #292966 !important; /* Adjusted to match your primary dark brand color */
+    background-color: #f4f4ff !important;
+    box-shadow: 0 0 0 4px rgba(92, 92, 153, 0.2);
+}
