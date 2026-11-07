@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Management - LoveLace Inc. ERP</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://tailwindcss.com"></script>
+    <!-- Core Application Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[#CCCCFF]/20 text-[#292966] font-sans antialiased min-h-screen">
+
+    <div class="admin-layout flex min-h-screen">
+        
+        <!-- ==========================================
+             SIDEBAR NAVIGATION COMPONENT
+             ========================================== -->
+        <aside class="sidebar w-60 bg-white border-r border-[#A3A3CC]/40 p-6 flex flex-col justify-between shrink-0">
+            <div class="space-y-8">
+                <div class="sidebar-brand text-lg font-bold tracking-tight text-[#292966] flex items-center gap-2">
+                    <div class="w-8 h-8 bg-[#292966] rounded flex items-center justify-center text-white font-bold text-base">L</div>
+                    <span>LoveLace Inc. <span class="text-[#5C5C99] font-normal">ERP</span></span>
+                </div>
+                <nav class="nav-menu">
+                    <ul class="space-y-1">
+                        <li class="nav-item"><a href="/dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[#5C5C99] hover:bg-[#CCCCFF]/30 hover:text-[#292966] transition">📊 Dashboard</a></li>
+                        <li class="nav-item"><a href="/superadmin-customers.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[#5C5C99] hover:bg-[#CCCCFF]/30 hover:text-[#292966] transition">👥 Customers</a></li>
+                        <li class="nav-item"><a href="/products.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[#5C5C99] hover:bg-[#CCCCFF]/30 hover:text-[#292966] transition">📦 Products</a></li>
+                        <li class="nav-item"><a href="/hr.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[#5C5C99] hover:bg-[#CCCCFF]/30 hover:text-[#292966] transition">🪪 Human Resources</a></li>
+                        <li class="nav-item active bg-[#CCCCFF] rounded-lg font-semibold"><a href="/sales.html" class="flex items-center gap-3 px-3 py-2.5 text-sm text-[#292966]">📈 Sales Management</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="pt-4 border-t border-slate-100 flex flex-col gap-2">
+                <div class="text-xs">
+                    <p class="font-bold text-[#292966]">Ada Lovelace</p>
+                    <p class="text-[#5C5C99] font-mono">Admin View</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ==========================================
+             MAIN CONTENT WORKSPACE AREA
+             ========================================== -->
+        <main class="main-content flex-1 flex flex-col min-w-0">
+            
+            <!-- Page Header -->
+            <header class="top-header bg-white px-8 py-5 border-b border-[#A3A3CC]/40 flex justify-between items-center shadow-sm">
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-[#292966]">Sales Management</h1>
+                    <p class="text-xs text-[#5C5C99]">Manage client accounts, payment terms, and status directory.</p>
+                </div>
+                <button onclick="openNewSaleModal()" class="w-auto px-4 py-2 bg-[#292966] hover:bg-[#5C5C99] text-white rounded-lg text-xs font-semibold shadow-sm transition">+ Add Sale</button>
+            </header>
+
+            <div class="dashboard-container p-8 space-y-6">
+                
+                <!-- Status Filter Tabs & Search Bar -->
+                <div class="flex items-center justify-between border-b border-[#A3A3CC]/30 pb-2">
+                    <div class="flex space-x-2 text-xs font-semibold">
+                        <button class="px-3 py-1.5 bg-white border border-[#A3A3CC]/60 rounded-md text-[#292966] shadow-xs">Active <span class="bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded-full ml-1 text-[10px]">1</span></button>
+                        <button class="px-3 py-1.5 text-[#5C5C99] hover:bg-white/50 rounded-md transition">Inactive <span class="bg-slate-100 text-slate-500 px-1.5 py-0.2 rounded-full ml-1 text-[10px]">1</span></button>
+                        <button class="px-3 py-1.5 text-[#5C5C99] hover:bg-white/50 rounded-md transition">All <span class="bg-slate-100 text-slate-500 px-1.5 py-0.2 rounded-full ml-1 text-[10px]">2</span></button>
+                    </div>
+                    
+                    <div class="relative w-64">
+                        <input type="text" id="salesSearchInput" placeholder="Search filters as you type..." class="w-full pl-3 pr-8 py-1.5 border border-[#A3A3CC]/60 rounded-md text-xs bg-white text-[#292966] placeholder-[#A3A3CC] focus:outline-none focus:border-[#5C5C99] transition">
+                    </div>
+                </div>
+
+                <!-- Primary Sales Ledger Table Workspace -->
+                <div class="bg-white border border-[#A3A3CC]/40 rounded-xl shadow-xs overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-slate-50 text-[#292966] font-bold border-b border-[#A3A3CC]/30 uppercase tracking-wider text-[10px]">
+                                    <th class="p-4">Txn No</th>
+                                    <th class="p-4">Customer ID</th>
+                                    <th class="p-4">Employee ID</th>
+                                    <th class="p-4">Total Value</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4">Stamp</th>
+                                    <th class="p-4 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salesTableBody" class="text-[#5C5C99] divide-y divide-[#A3A3CC]/20 font-medium">
+                                
+                                <!-- Active Transaction Row (T-601) -->
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="p-4 font-mono font-bold text-blue-600 cursor-pointer hover:underline" onclick="toggleDetailsRow('details-T-601')">T-601</td>
+                                    <td class="p-4 text-[#292966]">Globus Medical, Inc</td>
+                                    <td class="p-4">Charles Babbage</td>
+                                    <td class="p-4 font-mono text-[#292966]">$12,450.00</td>
+                                    <td class="p-4"><span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md font-bold text-[10px] border border-emerald-200">Active</span></td>
+                                    <td class="p-4 font-mono text-[10px] text-slate-400">ADD system 2026-11-08 11:15 AM</td>
+                                    <td class="p-4 text-right space-x-3 text-[11px] font-semibold">
+                                        <button class="text-blue-600 hover:underline w-auto p-0 bg-transparent">Edit</button>
+                                        <button class="text-amber-600 hover:underline w-auto p-0 bg-transparent">Delete</button>
+                                        <button class="text-slate-400 hover:underline w-auto p-0 bg-transparent" disabled>Restore</button>
+                                    </td>
+                                </tr>
+
+                                <!-- Expanded Line Items Container Sub-Table -->
+                                <tr id="details-T-601" class="bg-[#CCCCFF]/10">
+                                    <td colspan="7" class="p-4">
+                                        <div class="border border-[#A3A3CC]/40 rounded-lg bg-white overflow-hidden p-4 space-y-3 shadow-inner">
+                                            <h4 class="text-xs font-bold text-[#292966] tracking-wide border-b border-[#A3A3CC]/20 pb-1.5">Sale Details of T-601 — Asset line items count: 2</h4>
+                                            
+                                            <table class="w-full text-left border-collapse text-[11px]">
+                                                <thead>
+                                                    <tr class="bg-slate-50 text-[#5C5C99] font-bold border-b border-[#A3A3CC]/20 uppercase">
+                                                        <th class="p-2">Line No</th>
+                                                        <th class="p-2">Product Descriptor</th>
+                                                        <th class="p-2 text-center">Quantity</th>
+                                                        <th class="p-2 text-right">Unit Price</th>
+                                                        <th class="p-2 text-right">Extended Net</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="divide-y divide-slate-100 text-slate-600">
+                                                    <tr>
+                                                        <td class="p-2 font-mono">1</td>
+                                                        <td class="p-2 text-[#292966] font-medium">Enterprise Database Licensing Block</td>
+                                                        <td class="p-2 text-center">2</td>
+                                                        <td class="p-2 text-right font-mono">$5,000.00</td>
+$10,000.00
+2
+Cloud Infrastructure Implementation Cluster
+1
+$2,450.00
+$2,450.00
+Total Order Ledger Value:
+$12,450.00
+T-600
+RF Industries, Inc
+Ada Lovelace
+$3,120.00
+Inactive
+DEL admin 2026-11-07 04:20 PM
+New Sale
+×
+Transaction No
+Customer
+-- Select a customer --
+Globus Medical, Inc
+RF Industries, Inc
+
+Employee
+-- Select an employee --
+Charles Babbage
+Ada Lovelace
+
+Order Value ($)
+● System Status: Active initialization preset
+● Automated Stamp: Real-time generation upon submit
+Cancel
+Save Sale
+
+
+
+const saleModal = document.getElementById('newSaleModal');
+const saleForm = document.getElementById('newSaleForm');
+function openNewSaleModal() {
+saleModal.classList.remove('hidden');
+}
+function closeNewSaleModal() {
+saleModal.classList.add('hidden');
+saleForm.reset();
+}
+function toggleDetailsRow(rowId) {
+const detailRow = document.getElementById(rowId);
+if (detailRow.classList.contains('hidden')) {
+detailRow.classList.remove('hidden');
+} else {
+detailRow.classList.add('hidden');
+}
+}
+// Form Submit Handler
+saleForm.addEventListener('submit', async (e) => {
+e.preventDefault();
+const txn_no = document.getElementById('salesTxnNo').value;
+const customer = document.getElementById('salesCustomerSelect').value;
+const employee = document.getElementById('salesEmployeeSelect').value;
+const total_value = document.getElementById('salesTotalValue').value;
+try {
+console.log("Packaging sales transaction payload:", { txn_no, customer, employee, total_value });
+alert(Transaction ${txn_no} registered successfully on the server-side ledger!);
+closeNewSaleModal();
+} catch (err) {
+alert(err.message);
+}
+});
+// Initialize sub-table view as hidden on page boot
+document.getElementById('details-T-601').classList.add('hidden');

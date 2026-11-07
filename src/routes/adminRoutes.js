@@ -940,3 +940,46 @@ router.put('/api/admin/users/:id/rights', async (req, res) => {
 });
 
 export default router;
+
+// ==========================================================================
+// SALES MODULE CRUD OPERATIONS (Figure 24 - Linked to public.sales_order)
+// ==========================================================================
+router.post('/sales/create', async (req, res) => {
+  try {
+    const { txn_no, customer, employee, total_value } = req.body;
+
+    // 1. Boundary Parameter Validation
+    if (!txn_no || !customer || !employee || !total_value) {
+      return res.status(400).json({ error: 'All fields (txn_no, customer, employee, total_value) are required.' });
+    }
+
+    // 2. Insert payload array row directly into your live public.sales_order Supabase schema
+    const { data: insertData, error: insertError } = await supabase
+      .from('sales_order')
+      .insert([
+        {
+          txn_no: txn_no,
+          customer_name: customer,
+          employee_name: employee,
+          total_value: parseFloat(total_value),
+          status: 'Active' // Defaults system operational validation flags automatically
+        }
+      ])
+      .select();
+
+    if (insertError) {
+      console.error('Supabase DB transaction insertion error:', insertError.message);
+      return res.status(400).json({ error: insertError.message });
+    }
+
+    // 3. Confirm operation feedback tracking
+    return res.status(201).json({
+      message: 'Sales Order record registered successfully on the server-side ledger!',
+      sale: insertData[0]
+    });
+
+  } catch (err) {
+    console.error('Unexpected runtime server exception during sales processing:', err.message);
+    return res.status(500).json({ error: 'Internal server error. Please try again later.' });
+  }
+});
