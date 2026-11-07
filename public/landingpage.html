@@ -59,8 +59,8 @@
                 </div>
             </div>
 
-            <!-- UI Preview Graphic Mockup -->
-            <div class="bg-white border border-[#A3A3CC]/50 rounded-2xl p-6 shadow-xl shadow-[#5C5C99]/10">
+            <!-- UI Preview Graphic Mockup Box (Interactive Container) -->
+            <div class="bg-white border border-[#A3A3CC]/50 rounded-2xl p-6 shadow-xl shadow-[#5C5C99]/10 flex flex-col gap-3">
                 <div class="bg-[#292966] text-white px-4 py-2.5 rounded-t-xl flex items-center space-x-2 text-xs font-medium">
                     <div class="flex space-x-1.5">
                         <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
@@ -69,27 +69,46 @@
                     </div>
                     <span class="pl-2 text-[#CCCCFF]">LoveLace, Inc. ERP Dashboard</span>
                 </div>
-                <div class="bg-[#CCCCFF]/20 p-4 rounded-b-xl border border-t-0 border-[#A3A3CC]/30 grid grid-cols-2 gap-3">
-                    <div class="bg-white p-3.5 rounded-xl border border-[#A3A3CC]/40 shadow-xs">
-                        <div class="text-lg mb-1">👥</div>
+                
+                <!-- Grid Modules Matrix -->
+                <div class="bg-[#CCCCFF]/20 p-4 border border-t-0 border-[#A3A3CC]/30 grid grid-cols-2 gap-3">
+                    <div class="module-card bg-white p-3.5 rounded-xl border border-[#A3A3CC]/40 shadow-xs cursor-pointer transition-all duration-300 transform hover:scale-105 active:scale-95 group" 
+                         data-title="Customer Management" 
+                         data-desc="Log comprehensive user files, tracking client communication history, sales pipelines, account interactions, and custom user profiles securely inside your server table.">
+                        <div class="text-lg mb-1 transition-transform group-hover:scale-110 duration-200">👥</div>
                         <h4 class="font-bold text-xs text-[#292966]">Customers</h4>
                         <p class="text-[10px] text-[#5C5C99]">Manage contacts & accounts</p>
                     </div>
-                    <div class="bg-white p-3.5 rounded-xl border border-[#A3A3CC]/40 shadow-xs">
-                        <div class="text-lg mb-1">📦</div>
+                    
+                    <div class="module-card bg-white p-3.5 rounded-xl border border-[#A3A3CC]/40 shadow-xs cursor-pointer transition-all duration-300 transform hover:scale-105 active:scale-95 group"
+                         data-title="Products & Inventory" 
+                         data-desc="Track product stock values in real-time, generate system price records, handle warehouse allocation shifts, and configure administrative catalogs smoothly.">
+                        <div class="text-lg mb-1 transition-transform group-hover:scale-110 duration-200">📦</div>
                         <h4 class="font-bold text-xs text-[#292966]">Products</h4>
                         <p class="text-[10px] text-[#5C5C99]">Catalog & inventory</p>
                     </div>
-                    <div class="bg-white p-3.5 rounded-xl border border-[#A3A3CC]/40 shadow-xs">
-                        <div class="text-lg mb-1">👔</div>
+                    
+                    <div class="module-card bg-white p-3.5 rounded-xl border border-[#A3A3CC]/40 shadow-xs cursor-pointer transition-all duration-300 transform hover:scale-105 active:scale-95 group"
+                         data-title="Human Resources & Onboarding" 
+                         data-desc="Onboard employee accounts, track profile role parameters, review pending validation listings, and coordinate staff payroll frameworks dynamically.">
+                        <div class="text-lg mb-1 transition-transform group-hover:scale-110 duration-200">👔</div>
                         <h4 class="font-bold text-xs text-[#292966]">Human Resources</h4>
                         <p class="text-[10px] text-slate-500">Employees & payroll</p>
                     </div>
-                    <div class="bg-white p-3.5 rounded-xl border border-[#A3A3CC]/40 shadow-xs">
-                        <div class="text-lg mb-1">📈</div>
+                    
+                    <div class="module-card bg-white p-3.5 rounded-xl border border-[#A3A3CC]/40 shadow-xs cursor-pointer transition-all duration-300 transform hover:scale-105 active:scale-95 group"
+                         data-title="Sales Analysis Ledger" 
+                         data-desc="Evaluate historical transaction volumes, chart active revenue channels, process billing statements, and export custom sales analytics spreadsheets.">
+                        <div class="text-lg mb-1 transition-transform group-hover:scale-110 duration-200">📈</div>
                         <h4 class="font-bold text-xs text-[#292966]">Sales</h4>
                         <p class="text-[10px] text-[#5C5C99]">Orders & revenue</p>
                     </div>
+                </div>
+
+                <!-- Shared Module Context Sub-panel Dashboard -->
+                <div id="displayDescriptionPanel" class="bg-[#292966]/5 border-l-4 border-[#5C5C99] p-4 rounded-r-xl transition-all duration-300 ease-in-out min-h-[90px]">
+                    <h5 id="displayTitle" class="font-bold text-xs text-[#292966] uppercase tracking-wider mb-1">Select a module</h5>
+                    <p id="displayBody" class="text-xs text-[#5C5C99] leading-relaxed">Hover or click on any of the core application modules above to preview detailed system insight explanations.</p>
                 </div>
             </div>
         </section>
@@ -106,5 +125,52 @@
         <p>&copy; 2026 LoveLace, Inc. ERP. All rights reserved. Secure Supabase Backed Workspace.</p>
     </footer>
 
-</body>
-</html>
+    <!-- Interactivity Controller Logic JavaScript Handler -->
+    <script>
+        const cards = document.querySelectorAll('.module-card');
+        const displayTitle = document.getElementById('displayTitle');
+        const displayBody = document.getElementById('displayBody');
+        const displayPanel = document.getElementById('displayDescriptionPanel');
+
+        // Initial default placeholder state configurations
+        const defaultTitle = "Select a module";
+        const defaultBody = "Hover or click on any of the core application modules above to preview detailed system insight explanations.";
+
+        cards.forEach(card => {
+            // 1. Mouse Enter Actions (Hover Effect)
+            card.addEventListener('mouseenter', () => {
+                displayTitle.textContent = card.getAttribute('data-title');
+                displayBody.textContent = card.getAttribute('data-desc');
+                card.classList.add('border-[#5C5C99]', 'shadow-md');
+            });
+
+            // 2. Mouse Leave Actions (Restore State if none locked)
+            card.addEventListener('mouseleave', () => {
+                const currentSelected = document.querySelector('.module-card.is-active');
+                if (currentSelected) {
+                    displayTitle.textContent = currentSelected.getAttribute('data-title');
+displayBody.textContent = currentSelected.getAttribute('data-desc');
+} else {
+displayTitle.textContent = defaultTitle;
+displayBody.textContent = defaultBody;
+}
+if (!card.classList.contains('is-active')) {
+card.classList.remove('border-[#5C5C99]', 'shadow-md');
+}
+});
+// 3. Click Actions (Persistent Selection Lock)
+// 3. Click Actions (Persistent Selection Lock)
+card.addEventListener('click', () => {
+// Clear active layouts on competing objects
+cards.forEach(c => {
+c.classList.remove('is-active', 'border-[#292966]', 'bg-[#CCCCFF]/10', 'shadow-md');
+c.classList.add('bg-white', 'border-[#A3A3CC]/40');
+});
+// Lock settings into selected component target
+card.classList.add('is-active', 'border-[#292966]', 'bg-[#CCCCFF]/10');
+card.classList.remove('bg-white', 'border-[#A3A3CC]/40');
+displayTitle.textContent = card.getAttribute('data-title');
+displayBody.textContent = card.getAttribute('data-desc');
+});
+});
+
