@@ -162,4 +162,82 @@ router.post('/logout', (req, res) => {
   });
 });
 
+router.post('/logout', async (req, res) => {
+  try {
+    // 1. Invalidate token on Supabase's authentication servers
+    await supabase.auth.signOut();
+
+    // 2. Clear local memory session storage
+    if (req.session) {
+      req.session.destroy((err) => {
+        if (err) {
+          return res.status(500).json({ error: 'Could not log out of session.' });
+        }
+        res.clearCookie('connect.sid'); // Clear your session cookie
+        return res.status(200).json({ message: 'Logged out successfully.' });
+      });
+    } else {
+      return res.status(200).json({ message: 'Logged out successfully.' });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: 'Server logout error.' });
+  }
+});
+
+router.post('/update-password', async (req, res) => {
+  const { newPassword, access_token } = req.body;
+
+  if (!access_token) {
+    return res.status(400).json({ error: 'Token missing.' });
+  }
+
+  // 1. Anchor the token to this server instance request context
+  const { error: sessionError } = await supabase.auth.setSession({
+    access_token: access_token,
+    refresh_token: req.body.refresh_token || ''
+  });
+
+  // CRITICAL FIX FOR TC-06 & TC-07: Catch age thresholds and already-consumed tokens
+  if (sessionError) {
+    return res.status(400).json({ 
+      error: "Token expired. Please request a new verification path." 
+    });
+  }
+
+  // 2. Commit the password modification payload
+  const { error: updateError } = await supabase.auth.updateUser({
+    password: newPassword
+  });
+
+  if (updateError) {
+    return res.status(400).json({ error: updateError.message });
+  }
+
+  // CRITICAL FIX FOR TC-07: Globally revoke token instantly so it can never be processed a second time
+  await supabase.auth.signOut();
+
+  return res.status(200).json({ message: "Password updated successfully." });
+});
+
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error || !data.session) {
+    return res.status(401).json({ error: 'Invalid credentials.' });
+  }
+
+  // CRITICAL FIX FOR TC-03 & TC-04: Secure mapping initialization
+  req.session.userId = data.user.id;
+  req.session.accessToken = data.session.access_token; // Save this for the middleware to read!
+  req.session.roleId = data.user.user_metadata?.roleId || 3; // (or query your DB for role mapping)
+
+  return res.status(200).json({ 
+    message: 'Login successful.',
+    user: data.user
+  });
+});
+
+
 export default router;
