@@ -78,7 +78,7 @@ router.post('/users', requireAdmin, async (req, res) => {
       .insert([{
         email,
         password_hash: hashedPassword,
-        role_id: 3, 
+        role_id: 3, // FORCE new users to be regular users by default
         status: 'active',
         is_blocked: false
       }])
@@ -125,7 +125,7 @@ router.patch('/users/:userId/status', requireAdmin, async (req, res) => {
 
       if (count <= 1) {
         return res.status(400).json({ 
-          error: 'Action blocked: Cannot disable or block the last remaining Superadmin.' 
+          error: 'Action blocked: Cannot disable or block the last remaining Superadmin.' //Blocks the last superadmin from being blocked or disabled
         });
       }
     }
@@ -353,7 +353,10 @@ router.patch('/customers/:custno/status', requireAuth, requireModuleRight('custo
     }
 });
 
-// PRODUCT MANAGEMENT ROUTES
+// ---------------------------------------------------------
+// PRODUCT MANAGEMENT ROUTES (Protected by requireAdmin)
+// ---------------------------------------------------------
+
 router.get('/product', requireAuth, async (req, res) => {
     try {
         const [productsRes, pricesRes] = await Promise.all([
@@ -460,7 +463,10 @@ router.delete('/product/:prodcode', requireAuth, requireModuleRight('product', '
     }
 });
 
-// SALES MANAGEMENT ROUTES
+// ---------------------------------------------------------
+// SALES MANAGEMENT ROUTES (Protected by requireAdmin)
+// ---------------------------------------------------------
+
 router.get('/sales/options', requireAuth, async (req, res) => {
     try {
         const [customerRes, employeeRes, productRes] = await Promise.all([
@@ -878,7 +884,7 @@ router.delete('/reports/rights/:userId/:reportKey', requireAdmin, async (req, re
 
 
 // ---------------------------------------------------------
-// GRANULAR RIGHTS MANAGEMENT ROUTES (Task S1-DEV-07)
+// GRANULAR RIGHTS MANAGEMENT ROUTES (Protected by requireAdmin)
 // ---------------------------------------------------------
 
 // GET User Rights
@@ -905,23 +911,41 @@ router.get('/users/:userId/rights', requireAdmin, async (req, res) => {
     }
 });
 
-// PUT Update User Right
-router.put('/api/admin/users/:id/rights', async (req, res) => {
+// ==========================================
+// PUT Update User Right (Supports Single Toggles & Arrays)
+// ==========================================
+router.put('/users/:id/rights', async (req, res) => {
     try {
-        // Ensure the logged-in user has admin privileges (e.g., roleId 1 or 2, or Superadmin)
+        // Ensure the logged-in user has admin privileges
         const userRoleId = Number(req.session.roleId);
-
-        if (userRoleId !== 1 && userRoleId !== 2) { // Adjust numbers based on your role schema
+        if (userRoleId !== 1 && userRoleId !== 2) { 
             return res.status(403).json({ error: 'Forbidden. Administrator privileges required.' });
         }
 
         const targetUserId = req.params.id;
-        const { rights } = req.body; // Array or object of module rights
+        const body = req.body;
 
-        // Loop and update user_rights table:
-        // user_id, module_name, action_key, is_allowed, stamp
-        for (const right of rights) {
-            await supabase
+        // Determine if it's a single toggle change or a batch array of rights
+        let rightsToProcess = [];
+
+        if (Array.isArray(body.rights)) {
+            rightsToProcess = body.rights;
+        } else if (body.module && body.action !== undefined) {
+            // Handles the frontend toggle format: { module: 'reports', action: 'top-customers', granted: true }
+            rightsToProcess = [{
+                module_name: body.module,
+                action_key: body.action,
+                is_allowed: body.granted !== undefined ? body.granted : (body.is_allowed !== undefined ? body.is_allowed : true)
+            }];
+        }
+
+        if (rightsToProcess.length === 0) {
+            return res.status(400).json({ error: 'Invalid payload: no valid rights data provided.' });
+        }
+
+        // Loop and upsert into Supabase user_rights table
+        for (const right of rightsToProcess) {
+            const { error: upsertError } = await supabase
                 .from('user_rights')
                 .upsert({
                     user_id: targetUserId,
@@ -930,12 +954,162 @@ router.put('/api/admin/users/:id/rights', async (req, res) => {
                     is_allowed: right.is_allowed,
                     stamp: new Date()
                 }, { onConflict: 'user_id,module_name,action_key' });
+
+            if (upsertError) {
+                console.error('Supabase upsert error:', upsertError);
+                throw upsertError;
+            }
         }
 
         return res.status(200).json({ success: true, message: 'Rights updated successfully.' });
     } catch (err) {
         console.error('Error updating rights:', err);
         return res.status(500).json({ error: err.message });
+    }
+});
+
+// ==========================================
+// REPORTS & ANALYTICS API ENDPOINTS
+// ==========================================
+
+// 1. Top Customers by Sales
+router.get('/reports/top-customers', requireAuth, async (req, res) => {
+    try {
+        const { fromDate, toDate, topN = 10 } = req.query;
+        // Adjust table/column names to fit your exact schema if needed
+        const { data, error } = await supabase
+            .from('sales_summary_view') // or your custom join query
+            .select('custno, custname, totalSales')
+            .order('totalSales', { ascending: false })
+            .limit(Number(topN));
+
+        if (error) throw error;
+        return res.status(200).json({ records: data || [] });
+    } catch (err) {
+        console.error('Error fetching top customers:', err);
+        return res.status(500).json({ error: 'Failed to generate top customers report.' });
+    }
+});
+
+// 2. Product Master List
+router.get('/reports/product-master', requireAuth, async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('app_product') // Adjust to your product table name
+            .select('prodcode, description, unit, unitprice')
+            .order('prodcode', { ascending: true });
+
+        if (error) throw error;
+        return res.status(200).json({ records: data || [] });
+    } catch (err) {
+        console.error('Error fetching product master:', err);
+        return res.status(500).json({ error: 'Failed to generate product master list.' });
+    }
+});
+
+// 3. Top Products by Sales
+router.get('/reports/top-products', requireAuth, async (req, res) => {
+    try {
+        const { topN = 10 } = req.query;
+        const { data, error } = await supabase
+            .from('product_sales_summary')
+            .select('prodcode, description, totalQuantity, totalRevenue')
+            .order('totalRevenue', { ascending: false })
+            .limit(Number(topN));
+
+        if (error) throw error;
+        return res.status(200).json({ records: data || [] });
+    } catch (err) {
+        console.error('Error fetching top products:', err);
+        return res.status(500).json({ error: 'Failed to generate top products report.' });
+    }
+});
+
+// 4. Active Employees Directory
+router.get('/reports/active-employees', requireAuth, async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('app_employee')
+            .select('empno, firstname, lastname, gender, hiredate, sepdate')
+            .is('sepdate', null)
+            .order('empno', { ascending: true });
+
+        if (error) throw error;
+        return res.status(200).json({ records: data || [] });
+    } catch (err) {
+        console.error('Error fetching active employees:', err);
+        return res.status(500).json({ error: 'Failed to fetch active employees.' });
+    }
+});
+
+// 5. Complete Employee Roster
+router.get('/reports/all-employees', requireAuth, async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('app_employee')
+            .select('empno, firstname, lastname, gender, hiredate, sepdate')
+            .order('empno', { ascending: true });
+
+        if (error) throw error;
+        return res.status(200).json({ records: data || [] });
+    } catch (err) {
+        console.error('Error fetching all employees:', err);
+        return res.status(500).json({ error: 'Failed to fetch employee roster.' });
+    }
+});
+
+// 6. Employee Options Dropdown (Used for Employee History filter)
+router.get('/reports/options', requireAuth, async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('app_employee')
+            .select('empno, firstname, lastname');
+
+        if (error) throw error;
+        const employees = (data || []).map(e => ({
+            empno: e.empno,
+            empname: `${e.firstname} ${e.lastname}`
+        }));
+
+        return res.status(200).json({ employees });
+    } catch (err) {
+        console.error('Error fetching employee options:', err);
+        return res.status(500).json({ error: 'Failed to load options.' });
+    }
+});
+
+// 7. Employee Job & Salary History
+router.get('/reports/employee-history', requireAuth, async (req, res) => {
+    try {
+        const { empNo } = req.query;
+        let query = supabase.from('employee_history_view').select('*');
+        if (empNo) {
+            query = query.eq('empno', empNo);
+        }
+        const { data, error } = await query;
+        if (error) throw error;
+        return res.status(200).json({ records: data || [] });
+    } catch (err) {
+        console.error('Error fetching employee history:', err);
+        return res.status(500).json({ error: 'Failed to load employee history.' });
+    }
+});
+
+// 8. Top Sales Transactions
+router.get('/reports/top-sales', requireAuth, async (req, res) => {
+    try {
+        const { topN = 10 } = req.query;
+        const { data, error } = await supabase
+            .from('sales_transactions_view')
+            .select('transno, salesdate, customerName, employeeName, totalSales')
+            .order('totalSales', { ascending: false })
+            .limit(Number(topN));
+
+        if (error) throw error;
+        return res.status(200).json({ records: data || [] });
+    } catch (err) {
+        console.error('Error fetching top sales:', err);
+        return res.status(500).json({ error: 'Failed to load top sales.' });
     }
 });
 
