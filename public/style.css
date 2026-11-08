@@ -715,32 +715,44 @@ button:hover {
     color: #5C5C99;
     font-size: 0.75rem;
 }
+/* --- DASHBOARD ALIGNMENT FIXES --- */
 
-/* The container wrapping your 4 metric cards (Revenue, Active Users, etc.) */
-.stats-row {
+/* 1. Sets up the sidebar next to the main content layout */
+body.admin-layout {
   display: flex;
-  flex-direction: row; /* Forces them to stand side-by-side horizontally */
-  justify-content: space-between; /* Spreads them evenly from edge to edge */
-  gap: 24px; /* Creates the perfect uniform gap between each card */
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
   width: 100%;
 }
 
-/* Make sure each card scales proportionally to fill the row perfectly */
-.metric-card {
-  flex: 1; /* Gives every card an identical, equal width */
-  min-width: 0; /* Prevents text overflow from stretching individual cards */
-}
-
-/* The container wrapping your 6 quick actions buttons */
-.quick-actions-row {
+/* 2. Fixes the top metrics row alignment so all 4 cards sit perfectly side-by-side */
+.stats-grid {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  gap: 16px;
+  gap: 20px; /* Equal spacing between all 4 cards */
+  width: 100%;
+  margin-bottom: 32px;
+}
+
+/* Forces each card to share the row space identically with zero crowding */
+.stats-grid .stat-card {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 3. Fixes the Quick Actions alignment row to span properly */
+.actions-grid {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 16px; /* Equal spacing between all action buttons */
   width: 100%;
 }
 
-.action-card {
+/* Forces each action card to stay on one row and scale uniformly */
+.actions-grid .action-btn-card {
   flex: 1;
+  min-width: 0;
 }
-
