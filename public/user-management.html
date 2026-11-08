@@ -527,41 +527,55 @@
                 return;
             }
 
-            const newRoleInput = prompt(
-                "Enter new role assignment for this user:\n\n" +
-                "1 - Superadmin\n" +
-                "2 - Admin\n" +
-                "3 - User"
-            );
+                        // 1. Get references and open the modern dialog pop-up
+            const roleModal = document.getElementById('roleModal');
+            const roleInput = document.getElementById('roleInput');
+            const confirmRoleBtn = document.getElementById('confirmRoleBtn');
+            const cancelRoleBtn = document.getElementById('cancelRoleBtn');
 
-            if (newRoleInput === null) return;
+            roleInput.value = '';
+            roleModal.showModal();
 
-            const target_role_id = Number(newRoleInput.trim());
-            if (![1, 2, 3].includes(target_role_id)) {
-                alert("Invalid role ID entered. Please enter 1, 2, or 3.");
-                return;
-            }
+            // 2. Handle Cancel button click
+            cancelRoleBtn.onclick = function() {
+                roleModal.close();
+            };
 
-            try {
-                const res = await fetch(`/api/admin/users/${encodeURIComponent(userId)}/role`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ target_role_id })
-                });
+            // 3. Handle Confirm button click (attaches your existing fetch call)
+            confirmRoleBtn.onclick = async function() {
+                const choice = roleInput.value.trim();
+                if (choice === "") return;
 
-                const data = await readJsonResponse(res);
-                if (!res.ok) {
-                    alert(data.error || 'Failed to update user role.');
+                const target_role_id = Number(choice);
+                if (![1, 2, 3].includes(target_role_id)) {
+                    alert("Invalid role ID entered. Please enter 1, 2, or 3.");
                     return;
                 }
 
-                alert('User role updated successfully!');
-                fetchUserDirectory();
-            } catch (err) {
-                console.error('Error updating user role:', err);
-                alert('Server error during role modification.');
-            }
+                // Close the modal upon a valid entry layout setup
+                roleModal.close();
+
+                try {
+                    const res = await fetch(`/api/admin/users/${encodeURIComponent(userId)}/role`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ target_role_id })
+                    });
+
+                    const data = await readJsonResponse(res);
+                    if (!res.ok) {
+                        alert(data.error || 'Failed to update user role.');
+                        return;
+                    }
+
+                    alert('User role updated successfully!');
+                    fetchUserDirectory();
+                } catch (err) {
+                    console.error('Error updating user role:', err);
+                    alert('Server error during role modification.');
+                }
+            };
         }
     </script>
 </body>
