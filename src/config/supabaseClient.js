@@ -12,4 +12,4 @@ if (!supabaseUrl || !supabaseKey) {
   process.exit(1);
 }
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export const supabase = createClient(supabaseUrl, supabaseKey);/*  */
