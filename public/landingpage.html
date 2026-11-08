@@ -110,126 +110,123 @@
                     <h5 id="displayTitle" class="font-bold text-xs text-[#292966] uppercase tracking-wider mb-1">Select a module</h5>
                     <p id="displayBody" class="text-xs text-[#5C5C99] leading-relaxed">Hover or click on any of the core application modules above to preview detailed system insight explanations.</p>
                     
-                    <!-- Dynamic Mock Table Container (Initially Hidden) -->
+                    <!--Dynamic Mock Table Container (Initially Hidden) -->
                     <div id="mockTableContainer" class="hidden border border-[#A3A3CC]/30 rounded-lg bg-white overflow-hidden mt-4 transition-all duration-300 shadow-sm max-w-full">
-                        <div class="bg-[#292966] text-white px-3 py-2 text-[10px] font-semibold flex justify-between items-center">
-                            <span>Customer Directory Preview</span>
-                            <span class="text-[#CCCCFF] opacity-80">Active Records</span>
+                        
+                        <!-- 1. CUSTOMERS TABLE -->
+                        <div id="table-customers" class="hidden">
+                            <div class="bg-[#292966] text-white px-3 py-2 text-[10px] font-semibold flex justify-between items-center">
+                                <span>Customer Directory Preview</span>
+                                <span class="text-[#CCCCFF] opacity-80">Active Records</span>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse text-[10px]">
+                                    <thead>
+                                        <tr class="bg-slate-100/80 text-[#292966] border-b border-[#A3A3CC]/30 font-bold">
+                                            <th class="p-2">CUST NO</th>
+                                            <th class="p-2">CUSTOMER NAME</th>
+                                            <th class="p-2">PAY TERM</th>
+                                            <th class="p-2">STATUS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-[#5C5C99] divide-y divide-[#A3A3CC]/10">
+                                        <tr class="hover:bg-[#CCCCFF]/10 transition-colors">
+                                            <td class="p-2 font-mono text-[#292966] font-semibold">C0001</td>
+                                            <td class="p-2 text-[#292966] font-medium">Globus Medical, Inc</td>
+                                            <td class="p-2">30D</td>
+                                            <td class="p-2"><span class="text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded font-semibold text-[9px]">Active</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-[#CCCCFF]/10 transition-colors">
+                                            <td class="p-2 font-mono text-[#292966] font-semibold">C0002</td>
+                                            <td class="p-2 text-[#292966] font-medium">RF Industries, Inc</td>
+                                            <td class="p-2">45D</td>
+                                            <td class="p-2"><span class="text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded font-semibold text-[9px]">Active</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-[#CCCCFF]/10 transition-colors">
+                                            <td class="p-2 font-mono text-[#292966] font-semibold">C0003</td>
+                                            <td class="p-2 text-[#292966] font-medium">Trisha Macdowell</td>
+                                            <td class="p-2">COD</td>
+                                            <td class="p-2"><span class="text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded font-semibold text-[9px]">Active</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse text-[10px]">
-                                <thead>
-                                    <tr class="bg-slate-100/80 text-[#292966] border-b border-[#A3A3CC]/30 font-bold">
-                                        <th class="p-2">CUST NO</th>
-                                        <th class="p-2">CUSTOMER NAME</th>
-                                        <th class="p-2">PAY TERM</th>
-                                        <th class="p-2">STATUS</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="text-[#5C5C99] divide-y divide-[#A3A3CC]/10">
-                                    <tr class="hover:bg-[#CCCCFF]/10 transition-colors">
-                                        <td class="p-2 font-mono text-[#292966] font-semibold">C0001</td>
-                                        <td class="p-2 text-[#292966] font-medium">Globus Medical, Inc</td>
-                                        <td class="p-2">30D</td>
-                                        <td class="p-2"><span class="text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded font-semibold text-[9px]">Active</span></td>
-                                    </tr>
-                                    <tr class="hover:bg-[#CCCCFF]/10 transition-colors">
-                                        <td class="p-2 font-mono text-[#292966] font-semibold">C0002</td>
-                                        <td class="p-2 text-[#292966] font-medium">RF Industries, Inc</td>
-                                        <td class="p-2">45D</td>
-                                        <td class="p-2"><span class="text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded font-semibold text-[9px]">Active</span></td>
-                                    </tr>
-                                    <tr class="hover:bg-[#CCCCFF]/10 transition-colors">
-                                        <td class="p-2 font-mono text-[#292966] font-semibold">C0003</td>
-                                        <td class="p-2 text-[#292966] font-medium">Trisha Macdowell</td>
-                                        <td class="p-2">COD</td>
-                                        <td class="p-2"><span class="text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded font-semibold text-[9px]">Active</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
+
+                        <!-- 2. PRODUCTS TABLE -->
+                        <div id="table-products" class="hidden">
+                            <div class="bg-[#292966] text-white px-3 py-2 text-[10px] font-semibold flex justify-between items-center">
+                                <span>Product Directory Preview</span>
+                                <span class="text-[#CCCCFF] opacity-80">Active Records</span>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse text-[10px]">
+                                    <thead>
+                                        <tr class="bg-slate-100/80 text-[#292966] border-b border-[#A3A3CC]/30 font-bold">
+                                            <th class="p-2">ITEM NO</th>
+                                            <th class="p-2">PRODUCT NAME</th>
+                                            <th class="p-2">CATEGORY</th>
+                                            <th class="p-2">STOCK</th>
+                                            <th class="p-2">STATUS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-[#5C5C99] divide-y divide-[#A3A3CC]/10">
+                                        <tr class="hover:bg-[#CCCCFF]/10 transition-colors">
+                                            <td class="p-2 font-mono text-[#292966] font-semibold">P0001</td>
+                                            <td class="p-2 text-[#292966] font-medium">Apex Router X1</td>
+                                            <td class="p-2">Hardware</td>
+                                            <td class="p-2 font-mono text-[#292966]">142</td>
+                                            <td class="p-2"><span class="text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded font-semibold text-[9px]">Active</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-[#CCCCFF]/10 transition-colors">
+                                            <td class="p-2 font-mono text-[#292966] font-semibold">P0002</td>
+                                            <td class="p-2 text-[#292966] font-medium">Quantum Suite License</td>
+                                            <td class="p-2">Software</td>
+                                            <td class="p-2 font-mono text-[#292966]">2,500</td>
+                                            <td class="p-2"><span class="text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded font-semibold text-[9px]">Active</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-[#CCCCFF]/10 transition-colors">
+                                            <td class="p-2 font-mono text-[#292966] font-semibold">P0003</td>
+                                            <td class="p-2 text-[#292966] font-medium">Fiber Optic Cable 50m</td>
+                                            <td class="p-2">Network</td>
+                                            <td class="p-2 font-mono text-[#292966]">89</td>
+                                            <td class="p-2"><span class="text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded font-semibold text-[9px]">Active</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </section>
 
-        <!-- Subheader strip -->
-        <section class="border-t border-[#A3A3CC]/30 py-12 text-center bg-white/60">
-            <h3 class="text-sm font-bold uppercase tracking-widest text-[#5C5C99] mb-2">Everything you need to grow</h3>
-            <p class="text-[#292966] text-sm font-medium">Four core modules. Three user roles. One unified system.</p>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-white border-t border-[#A3A3CC]/30 py-8 text-center text-xs text-[#5C5C99]">
-        <p>&copy; 2026 LoveLace, Inc. ERP. All rights reserved. Secure Supabase Backed Workspace.</p>
-    </footer>
-
-    <!-- Interactivity Controller Logic JavaScript Handler -->
-    <script>
-        const cards = document.querySelectorAll('.module-card');
-        const displayTitle = document.getElementById('displayTitle');
-        const displayBody = document.getElementById('displayBody');
-        const displayPanel = document.getElementById('displayDescriptionPanel');
-        const mockTableContainer = document.getElementById('mockTableContainer');
-
-        // Initial default placeholder state configurations
-        const defaultTitle = "Select a module";
-        const defaultBody = "Hover or click on any of the core application modules above to preview detailed system insight explanations.";
-
-        function updateTableVisibility(title) {
-            if (title === "Customer Management") {
-                mockTableContainer.classList.remove('hidden');
-            } else {
-                mockTableContainer.classList.add('hidden');
-            }
-        }
-
-        cards.forEach(card => {
-            // 1. Mouse Enter Actions (Hover Effect)
-            card.addEventListener('mouseenter', () => {
-                const title = card.getAttribute('data-title');
-                displayTitle.textContent = title;
-                displayBody.textContent = card.getAttribute('data-desc');
-                card.classList.add('border-[#5C5C99]', 'shadow-md');
-                updateTableVisibility(title);
-            });
-
-            // 2. Mouse Leave Actions (Restore State if none locked)
-            card.addEventListener('mouseleave', () => {
-                const currentSelected = document.querySelector('.module-card.is-active');
-                if (currentSelected) {
-                    const activeTitle = currentSelected.getAttribute('data-title');
-                    displayTitle.textContent = activeTitle;
-                    displayBody.textContent = currentSelected.getAttribute('data-desc');
-                    updateTableVisibility(activeTitle);
-                } else {
-                    displayTitle.textContent = defaultTitle;
-                    displayBody.textContent = defaultBody;
-                    updateTableVisibility(null);
-                }
-                
-                if (!card.classList.contains('is-active')) {
-                    card.classList.remove('border-[#5C5C99]', 'shadow-md');
-                }
-            });
-
-            // 3. Click Actions (Persistent Selection Lock)
-            card.addEventListener('click', () => {
-                // Clear active layouts on competing objects
-                cards.forEach(c => {
-                    c.classList.remove('is-active', 'border-[#292966]', 'bg-[#CCCCFF]/10', 'shadow-md');
-                    c.classList.add('bg-white', 'border-[#A3A3CC]/40');
-                });
-
-                // Lock settings into selected component target
-                card.classList.add('is-active', 'border-[#292966]', 'bg-[#CCCCFF]/10');
-                card.classList.remove('bg-white', 'border-[#A3A3CC]/40');
-                
-                const lockedTitle = card.getAttribute('data-title');
-                displayTitle.textContent = lockedTitle;
-                displayBody.textContent = card.getAttribute('data-desc');
-                updateTableVisibility(lockedTitle);
-            });
-        });
-    </script>
+                        <!-- 3. HUMAN RESOURCES TABLE -->
+                        <div id="table-hr" class="hidden">
+                            <div class="bg-[#292966] text-white px-3 py-2 text-[10px] font-semibold flex justify-between items-center">
+                                <span>Employee Registry Ledger</span>
+                                <span class="text-[#CCCCFF] opacity-80">Roster Overview</span>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse text-[10px]">
+                                    <thead>
+                                        <tr class="bg-slate-100/80 text-[#292966] border-b border-[#A3A3CC]/30 font-bold">
+                                            <th class="p-2">EMP ID</th>
+                                            <th class="p-2">FULL NAME</th>
+                                            <th class="p-2">DEPARTMENT</th>
+                                            <th class="p-2">ROLE/LEVEL</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-[#5C5C99] divide-y divide-[#A3A3CC]/10">
+                                        <tr class="hover:bg-[#CCCCFF]/10 transition-colors">
+                                            <td class="p-2 font-mono text-[#292966] font-semibold">E1084</td>
+                                            <td class="p-2 text-[#292966] font-medium">Sarah Jenkins</td>
+                                            <td class="p-2">Engineering</td>
+                                            <td class="p-2"><span class="text-[#292966] bg-[#CCCCFF]/30 px-1.5 py-0.5 rounded font-medium text-[9px]">Senior Staff Dev</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-[#CCCCFF]/10 transition-colors">
+                                            <td class="p-2 font-mono text-[#292966] font-semibold">E1102</td>
+                                            <td class="p-2 text-[#292966] font-medium">Michael Chang</td>
+                                            <td class="p-2">Operations</td>
+                                            <td class="p-2"><span class="text-[#292966] bg-[#CCCCFF]/30 px-1.5 py-0.5 rounded font-medium text-[9px]">Global Logistics Mgr</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-[#CCCCFF]/10 transition-colors">
+                                            <td class="p-2 font-mono text-[#292966] font-semibold">E1259</td>
+                                            <td class="p-2 text-[#292966] font-medium">Elena Rostova</td>
+                                            <td class="p-2">Finance</td>
