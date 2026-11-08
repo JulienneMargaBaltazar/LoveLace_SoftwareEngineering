@@ -74,7 +74,7 @@
             });
         });
 
-        // --- 2. Corrected Login Form Submission Flow ---
+        // --- 2. Login Form Submission Flow ---
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault(); // Stop default form reload
 
@@ -82,27 +82,27 @@
             const password = document.getElementById('password').value;
 
             try {
-                // Corrected endpoint matching router.post('/login') in authRoutes.js
-                const response = await fetch('/login', {
+                const response = await fetch('/api/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include', // Crucial for dev tunnel cookie/session tracking
+                    credentials: 'include', // Crucial for cookies/sessions
                     body: JSON.stringify({ email, password })
                 });
 
                 const data = await response.json();
 
                 if (response.ok) {
-                    // Pull role data from Supabase user_metadata mapping (Line 437 backend rule)
-                    const userRole = data.user?.user_metadata?.role || '';
-                    
-                    if (userRole === 'Superadmin' || email.includes('superadmin') || email === 'lovelace@hope.com') {
+                    // Check if backend provided a redirect URL, or fallback based on role
+                    if (data.redirectUrl) {
+                        window.location.href = data.redirectUrl;
+                    } else if (data.roleId === 1) {
                         window.location.href = '/superadmin-dashboard.html';
+                    } else if (data.roleId === 2) {
+                        window.location.href = '/dashboard.html';
                     } else {
                         window.location.href = '/user-dashboard.html';
                     }
                 } else {
-                    // Alerts 'Invalid credentials.' thrown by line 431 on your backend
                     alert(data.error || 'Login failed. Please check your credentials.');
                 }
             } catch (err) {
