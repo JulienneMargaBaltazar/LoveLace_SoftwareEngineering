@@ -146,7 +146,7 @@
         // Fetch session details on load to verify access and personalize welcome text
         async function loadUserData() {
             try {
-                const response = await fetch('/api/auth/dashboard', {
+                const response = await fetch('/api/dashboard', {
                     method: 'GET',
                     credentials: 'include', // Sends session cookie
                     headers: { 'Content-Type': 'application/json' }
@@ -167,12 +167,9 @@
 
                     // --- DYNAMICALLY INJECT REPORTS LINK IF AUTHORIZED ---
                     const roleId = Number(sessionData.roleId || sessionData.role_id || 3);
-                    const isSuperAdmin = (roleId === 1 || sessionData.isSuperAdmin);
-                    const userRights = data.rights || sessionData.rights || [];
-
-                    const hasReportsAccess = isSuperAdmin || roleId === 2 || userRights.some(r => 
-                        (r.module_name === 'Reports' || r.module_name === 'reports') && 
-                        r.action_key === 'view' && 
+                    const userRights = data.rights || [];
+                    const hasReportsAccess = roleId === 1 || roleId === 2 || userRights.some(r =>
+                        String(r.module_name || '').toLowerCase() === 'reports' &&
                         r.is_allowed === true
                     );
 

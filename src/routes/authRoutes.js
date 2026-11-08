@@ -119,7 +119,7 @@ router.post('/login', async (req, res) => {
     // Save user details to server-side session
     req.session.userId = user.user_id;
     req.session.email = user.email;
-    req.session.roleId = user.role_id;
+    req.session.roleId = Number(user.role_id);
     req.session.firstName = user.first_name;
     req.session.lastName = user.last_name;
 
@@ -127,7 +127,7 @@ router.post('/login', async (req, res) => {
     req.session.save((err) => {
       if (err) {
         console.error('Session save error:', err);
-        return res.status(500).json({ error: 'Internal server error during session creation.' });
+        return res.status(500).json({ error: 'Internal server error during login.' });
       }
 
       // Check if it's the user's first login requiring a password reset/update
@@ -140,9 +140,10 @@ router.post('/login', async (req, res) => {
 
       // Determine target dashboard based on role_id
       let redirectUrl = '/user-dashboard.html';
-      if (user.role_id === 1) {
+      const roleId = Number(user.role_id);
+      if (roleId === 1) {
         redirectUrl = '/superadmin-dashboard.html';
-      } else if (user.role_id === 2) {
+      } else if (roleId === 2) {
         redirectUrl = '/dashboard.html';
       }
 
