@@ -23,7 +23,7 @@ router.post('/signup', async (req, res) => {
     const complexityRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>_]).+$/;
     if (!complexityRegex.test(password)) {
       return res.status(400).json({ 
-        error: "Password must contain at least 1 number and 1 special character (e.g., !@#$)." 
+        error: "Password must contain at least 1 number and 1 special character (e.g., !@#$%)." 
       });
     }
 
