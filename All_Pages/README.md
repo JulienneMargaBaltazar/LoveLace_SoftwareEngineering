@@ -1,41 +1,36 @@
-# LoveLace Inc. ERP - Sprint 1: Design QA & Usability Audit
----
+# S1-UIX-05: Usability Evaluation & Fix List
 
-## 🚨 Actionable Fix List (Prioritized by Severity)
+**Task ID:** S1-UIX-05  
+**Status:** ✅ Completed  
+**Assignee:** UI/UX Designer  
+**Sprint:** Sprint 1 Sign-off  
 
-### 🔴 High Severity (Blocking / Data Integrity)
-- **DUPLICATE DATA:** All tables (Products, Customers, Sales, Employees, Job History) display identical dummy data in every row (e.g., `E-001 Maria Santos`, `$1,240.00`, `T-001`). This masks pagination, sorting, and layout rendering issues.
-- **MISSING UI ELEMENT:** On the **Top Customers** report, the "Save as PDF" button is completely missing next to the "Print" button (which exists on all other report tabs).
-- **BROKEN BUTTON:** On the **HR > Departments** tab (Admin view), the "Restore" button for the inactive row is rendering as a solid dark blue rectangle with no visible text.
-- **STYLING BUG:** The user role selector button in the top right corner constantly changes styling (User, Superadmin, Admin) and sometimes overflows its container (e.g., "Superadmin" box is misaligned).
-- **TRUNCATION:** In the **All Employees** report and the HR inactive list, the inactive employee ID is truncated to `E-00`. It should match the active list ID format (`E-001`).
+## 📋 Context & Goal
+Conduct a thorough usability evaluation of the developed application screens against design specifications and compile an actionable fix list to address bugs, friction points, or visual regressions before Sprint 1 sign-off.
 
-### 🟡 Medium Severity (UX Friction & Inconsistencies)
-- **MISSING PAGINATION:** Several long lists (*All Employees* Report, *Employee Job History* Report, *Top Customers* Report) are missing the pagination controls visible on the main management pages.
-- **INCONSISTENT FILTERS:** The "Top Customers" and "Top Products" reports have date filters and "Top N" filters, but other reports (like "Product Master List" or "Top Sales") lack these filtering capabilities.
-- **MODAL FOOTERS:** In the "Sale Details" modal, the "Add Line" button is at the top, but there is no "Save" or "Close" button at the bottom footer, unlike the "Rights" modal which has "Cancel" and "Save Rights".
-- **NON-FUNCTIONAL SEARCH:** The "Search..." bar in the left navigation sidebar is present across all screens but appears non-functional (does not trigger an action or highlight).
-- **STAMP FORMATTING:** The Stamp column in Superadmin/Admin views uses "CREATED system 2026-10-01 9:00AM". The format is inconsistent (mixed case, missing space before AM).
-
-### 🟢 Low Severity (Visual Polish & Alignment)
-- **TAB COLORS:** In the HR module, the "Active" tab is black/underline, but in other tabs (like Sales Management), the underline color is blue.
-- **MISSING ACTIONS:** The Superadmin Product Management view lacks the "Details" button found in other admin views, preventing drill-down to price history without clicking the specific "Prices" button.
-- **BUTTON ALIGNMENT:** The "Print" and "Save as PDF" buttons are not consistently aligned vertically with the filter rows across different report screens.
-- **SUBTITLE ALIGNMENT:** The subtitle text (e.g., "Hope, Inc. ERP - Employee job history...") is inconsistently spaced relative to the header title.
-- **EMPTY STATES:** No design has been provided for empty tables (what does the list look like if there are 0 customers?).
+## 🎯 Acceptance Criteria
+- [x] **Req 1:** Audit all newly built screens for design-to-code alignment and UX friction points.
+- [x] **Req 2:** Produce an actionable fix list detailing specific visual or behavioral regressions.
+- [x] **Req 3:** Prioritize issues by severity to guide developer remediation before the sprint ends.
 
 ---
 
-## 🐛 Ticket Template for Developers
-When creating issues in GitHub based on this audit, please use the following template:
+## 🚨 Actionable Fix List
 
-```text
-**Title:** [Severity] - [Module/Page] - [Brief Description]
-**Screenshots:** [Attach relevant image]
-**Reproduction Steps:**
-1. Navigate to [Page]
-2. Click/View [Element]
-3. Observe [Issue]
+| ID | Severity | Screen / Area | Issue Description | Reproduction Steps | Expected Behavior |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **01** | 🔴 **Critical** | All Management Tables | Data integrity error: Pagination footer says "Showing 1–8 of 1,248" and "Page 1 of 10", but the table rows repeat the exact same data (e.g., `C-001`, `P-001`) instead of unique records. | 1. Navigate to **Customers**.<br>2. Scroll to bottom of table. | Unique data per row; pagination accurately reflects total count. |
+| **02** | 🔴 **Critical** | Sales > Sale Details Modal | Missing UI elements. The `+ Add Line` button is missing from the top-left, and the `Active / Inactive / All` toggle tabs are missing from the footer. | 1. Navigate to **Sales**.<br>2. Click **Details** on any row. | Modal must include the `+ Add Line` button and status filter pills. |
+| **03** | 🟠 **High** | Reports > Top Sales/Products/Customers | Inconsistent input field styling. The `From` and `To` date pickers have different border thickness, background colors, and spacing compared to the adjacent `Top N` input field. | 1. Navigate to **Reports** > **Top Sales**. | All input fields should align to the same height, border-radius, and background color. |
+| **04** | 🟠 **High** | HR > Job History Modal | The `+ Add History` button is missing below the employee name, preventing users from adding new job records. | 1. Navigate to **HR** > **Employees**.<br>2. Click **History** on E-001. | `+ Add History` button should be present and functional. |
+| **05** | 🟠 **High** | HR > Departments / Jobs | Sub-navigation tabs (Employees, Jobs, Departments) have insufficient contrast when inactive against the background, especially in Admin view. | 1. Navigate to **HR** > **Departments**. | Ensure active/inactive tab states have sufficient contrast per WCAG AA. |
+| **06** | 🟡 **Medium** | User Management (Superadmin) | The "Rights" button is missing next to the "Block" and "Edits" buttons in the Actions column for Alex Rivera. | 1. Log in as Superadmin.<br>2. Go to **User Management**. | Actions column should consistently show `Block | Rights | Edits` across all rows. |
+| **07** | 🟡 **Medium** | Customer & Product Tables | Truncated text lacks affordance. The "Address" column truncates with `...` without a hover tooltip. The "Stamp" column text wraps awkwardly. | 1. Navigate to **Customer Management**. | Add a `title` attribute/tooltip on truncated text. Prevent wrapping in Stamp column. |
+| **08** | 🟡 **Medium** | Customer Management | Placeholder text left in UI. The "PAY TERMS" column displays the literal string "Cell text" for customers C-002 through C-008. | 1. Navigate to **Customer Management**. | Replace "Cell text" with valid billing terms (e.g., "Net 30"). |
+| **09** | 🔵 **Low** | Dashboard (Admin/Superadmin) | Inconsistent iconography. The "Manage Products" quick action uses a document icon, while the "Products" side-nav uses a shopping bag icon. | 1. Navigate to **Dashboard**. | Align icons with the standard icon library (use shopping bag for both). |
+| **10** | 🔵 **Low** | HR vs. Sales Management | Tab styling inconsistency. HR tabs use a pill-shaped background, while Sales Management tabs use a text underline. | 1. Compare tabs in **Sales** vs. **HR**. | Standardize the tab component styling across the entire application. |
 
-**Expected Behavior:** [Describe what should happen]
-**Actual Behavior:** [Describe what is currently happening]
+---
+
+## 📝 Developer Notes
+> Please prioritize the **Critical** and **High** severity items before Sprint 1 sign-off. The data-integrity issues (repeated rows) are the most significant blockers for QA testing. Visual evidence (screenshots) for all issues are attached in the issue tracker.
