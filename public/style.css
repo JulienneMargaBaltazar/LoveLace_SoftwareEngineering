@@ -174,11 +174,6 @@ body {
 .checkbox-label a:hover {
     text-decoration: underline;
 }
-.admin-layout {
-    display: flex;
-    min-height: 100vh;
-    background-color: #f4f6f9;
-}
 
 
 /* Sidebar */
@@ -232,13 +227,6 @@ body {
 
 
 /* Main Workspace */
-.main-content {
-    flex: 1 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    overflow-x: hidden;
-    background-color: #F8FAFC !important; /* Kept your background color */
-}
 
 
 
@@ -249,9 +237,10 @@ body {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    width: 200% !important;
+    width: 100% !important;
     box-sizing: border-box !important;
 }
+
 
 
 
@@ -262,12 +251,49 @@ body {
 }
 
 
+/* --- COMPLETE DESKTOP CONTAINER ALIGNMENT --- */
+
+/* 1. Forces sidebar and content workspace to sit edge-to-edge on screen */
+.admin-layout {
+    background-color: #F8FAFC !important;
+    display: flex !important;
+    flex-direction: row !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+}
+
+/* 2. Forces main area to fill 100% of remaining horizontal window width */
+.main-content {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: calc(100% - 240px) !important; /* Subtracts fixed sidebar width */
+    overflow-x: hidden;
+}
+
+/* 3. Ensures the white header stretches completely across your main workspace view */
+.top-header {
+    background: #ffffff !important;
+    padding: 1rem 2rem !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* 4. Restricts ONLY the inner dashboard contents to a natural centered web frame */
 .dashboard-container {
     padding: 2rem !important;
     width: 100% !important;
-    max-width: 1200px !important; /* Prevents the dashboard from stretching infinitely when zooming out */
-    margin: 0 auto !important;    /* Centers the entire dashboard content frame on the page */
+    max-width: 1200px !important; /* Locks max width so elements don't overstretch */
+    margin: 0 auto !important;    /* Centers the frame beautifully when you zoom out */
     box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2rem !important;          /* Keeps clean spatial separation between blocks */
 }
 
 
@@ -450,15 +476,17 @@ button:hover {
     display: flex !important;
     flex-direction: row !important;
     width: 100% !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
 }
 
 .main-content {
     flex: 1 !important;
     display: flex !important;
     flex-direction: column !important;
+    width: calc(100% - 240px) !important; /* Subtracts fixed sidebar width */
     overflow-x: hidden;
 }
-
 .sidebar {
     width: 240px !important;
     min-width: 240px !important;
