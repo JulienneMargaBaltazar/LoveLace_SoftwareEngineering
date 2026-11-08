@@ -45,7 +45,7 @@
 
 | Test ID | Scenario Description | Execution Evidence Screenshot |
 | :--- | :--- | :--- |
-| **TC-01** | User Administrative Modification Panel Flow | <img width="900" alt="ERP Dashboard Flow" src="https://github.com" /> Test results match expected output. |
+| **TC-01** | User Administrative Modification Panel Flow | User account has been approved of and is not pending. <img width="894" height="43" alt="image" src="https://github.com/user-attachments/assets/5ddeac1c-96c4-4e51-a198-6e4cf687d5a0" /> Successfully changed role from user to admin. <img width="412" height="53" alt="image" src="https://github.com/user-attachments/assets/d757a455-25b8-412b-9a4b-d47a973d015d" /> <img width="683" height="720" alt="image" src="https://github.com/user-attachments/assets/6011373d-2598-4ca1-aafc-6c4d216cb5f6" /> User successfully blocked. <img width="520" height="43" alt="image" src="https://github.com/user-attachments/assets/52dd5593-f7de-4e6e-8e9d-1fef4523f22a" /> Unblock function works successfully. Test results match expected output. |
 
 </details>
 
