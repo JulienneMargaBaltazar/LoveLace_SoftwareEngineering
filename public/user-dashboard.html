@@ -5,44 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard (User) - LoveLace Inc. ERP</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Font Awesome for Figma-accurate icons -->
-    <link rel="stylesheet" href="https://cloudflare.com">
 </head>
 <body class="admin-layout">
 
-    <!-- SIDEBAR (Markup preserved exactly to avoid breaking paths) -->
+    <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-brand">
             <span>LoveLace Inc. ERP</span>
             <small style="display:block; font-size:10px; color:#5C5C99; font-weight:normal;">by LoveLace</small>
         </div>
         <ul class="nav-menu">
-            <li class="nav-item active"><a href="user-dashboard.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
-            <li class="nav-item"><a href="user-customers.html"><i class="fa-solid fa-users"></i> Customers</a></li>
-            <li class="nav-item"><a href="user-products.html"><i class="fa-solid fa-box"></i> Products</a></li>
-            <li class="nav-item"><a href="user-reports.html"><i class="fa-solid fa-chart-line"></i> Reports</a></li>
-            <li class="nav-item"><a href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a></li>
+            <li class="nav-item active"><a href="user-dashboard.html">📊 Dashboard</a></li>
+            <li class="nav-item"><a href="user-customers.html">👥 Customers</a></li>
+            <li class="nav-item"><a href="user-products.html">📦 Products</a></li>
+            <li class="nav-item"><a href="user-reports.html">📈 Reports</a></li>
+            <li class="nav-item"><a href="settings.html">⚙️ Settings</a></li>
         </ul>
         
-        <!-- Interactive profile element pinned to the bottom -->
         <div class="sidebar-profile">
             <div class="profile-info">
-                <div class="avatar"><i class="fa-solid fa-user"></i></div>
+                <div class="avatar">👤</div>
                 <div class="profile-text">
                     <span class="username">Test Person</span>
                     <span class="role">User</span>
                 </div>
             </div>
-            <a href="login.html" class="logout-link" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></a>
+            <a href="login.html" class="logout-link" title="Logout">🚪</a>
         </div>
     </aside>
 
     <!-- MAIN WORKSPACE -->
     <main class="main-content">
-        <!-- Figma Top Navigation Header Bar -->
         <header class="top-header">
             <div class="search-bar-mock">
-                <i class="fa-solid fa-magnifying-glass"></i>
+                <span>🔍</span>
                 <input type="text" placeholder="Search..." disabled>
             </div>
             <div class="user-badge-top">User</div>
@@ -61,7 +57,7 @@
             <section class="stats-grid">
                 <!-- Card 1: Total Customers -->
                 <div class="stat-card">
-                    <div class="stat-icon-wrapper blue"><i class="fa-solid fa-users"></i></div>
+                    <div class="stat-icon-wrapper blue">👥</div>
                     <div class="stat-meta">
                         <span class="stat-header">Total Customers</span>
                         <div class="stat-value">
@@ -72,7 +68,7 @@
 
                 <!-- Card 2: Products -->
                 <div class="stat-card">
-                    <div class="stat-icon-wrapper orange"><i class="fa-solid fa-box"></i></div>
+                    <div class="stat-icon-wrapper orange">📦</div>
                     <div class="stat-meta">
                         <span class="stat-header">Products</span>
                         <div class="stat-value">
@@ -83,7 +79,7 @@
 
                 <!-- Card 3: Open Orders -->
                 <div class="stat-card">
-                    <div class="stat-icon-wrapper teal"><i class="fa-solid fa-cart-shopping"></i></div>
+                    <div class="stat-icon-wrapper teal">🛒</div>
                     <div class="stat-meta">
                         <span class="stat-header">Open Orders</span>
                         <div class="stat-value">
@@ -94,7 +90,7 @@
 
                 <!-- Card 4: Revenue -->
                 <div class="stat-card">
-                    <div class="stat-icon-wrapper purple"><i class="fa-solid fa-dollar-sign"></i></div>
+                    <div class="stat-icon-wrapper purple">💰</div>
                     <div class="stat-meta">
                         <span class="stat-header">Revenue</span>
                         <div class="stat-value">
@@ -108,12 +104,12 @@
             <section class="quick-actions-section">
                 <div class="section-title-row">
                     <h3>Quick Actions</h3>
-                    <a href="#" class="view-all-link">View all <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="#" class="view-all-link">View all →</a>
                 </div>
                 
                 <div class="actions-grid">
                     <button onclick="location.href='profile.html'" class="action-btn-card">
-                        <div class="action-icon"><i class="fa-solid fa-user-gear"></i></div>
+                        <div class="action-icon">👤</div>
                         <div class="action-label">
                             <strong>View Profile</strong>
                             <span>View all customers</span>
@@ -121,7 +117,7 @@
                     </button>
                     
                     <button onclick="location.href='passwordreset.html'" class="action-btn-card">
-                        <div class="action-icon"><i class="fa-solid fa-lock"></i></div>
+                        <div class="action-icon">🔒</div>
                         <div class="action-label">
                             <strong>Manage Products</strong>
                             <span>See products</span>
@@ -129,7 +125,7 @@
                     </button>
                     
                     <button onclick="location.href='sales.html'" class="action-btn-card">
-                        <div class="action-icon"><i class="fa-solid fa-chart-simple"></i></div>
+                        <div class="action-icon">📊</div>
                         <div class="action-label">
                             <strong>Sales pipeline</strong>
                             <span>View sales pipeline</span>
@@ -137,7 +133,7 @@
                     </button>
                     
                     <button onclick="location.href='settings.html'" class="action-btn-card">
-                        <div class="action-icon"><i class="fa-solid fa-sliders"></i></div>
+                        <div class="action-icon">⚙️</div>
                         <div class="action-label">
                             <strong>My Settings</strong>
                             <span>Profile & preferences</span>
