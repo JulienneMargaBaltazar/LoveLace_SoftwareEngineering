@@ -144,19 +144,19 @@
 
                         <!-- Dynamic Inputs & Actions Form -->
                         <form id="reportFilterForm" onsubmit="handleFilterSubmit(event)" class="flex flex-wrap items-center gap-3">
-                            <div id="fromDateContainer" class="flex flex-col">
-                                <label class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1">From Date</label>
-                                <input type="date" id="fromDate" class="px-3 py-1.5 text-xs bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
+    <div id="fromDateContainer" class="flex flex-col">
+        <label class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1">From Date</label>
+        <input type="date" id="fromDate" min="2010-01-01" max="2011-12-31" value="2010-01-01" class="px-3 py-1.5 text-xs bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+    </div>
 
-                            <div id="toDateContainer" class="flex flex-col">
-                                <label class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1">To Date</label>
-                                <input type="date" id="toDate" class="px-3 py-1.5 text-xs bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
+    <div id="toDateContainer" class="flex flex-col">
+        <label class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1">To Date</label>
+        <input type="date" id="toDate" min="2010-01-01" max="2011-12-31" value="2011-12-31" class="px-3 py-1.5 text-xs bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+    </div>
 
                             <div id="employeeSelectContainer" class="flex flex-col hidden">
                                 <label class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Employee</label>
-                                <select id="empNoFilter" class="px-3 py-1.5 text-xs bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <select id="empNoFilter" onchange="executeReportQuery()" class="px-3 py-1.5 text-xs bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     <option value="">Select Employee...</option>
                                 </select>
                             </div>
@@ -374,6 +374,15 @@
             const errorContainer = document.getElementById('errorContainer');
             const tbody = document.getElementById('reportTableBody');
             errorContainer.innerText = '';
+
+            if (meta.inputs.includes('employeeSelect')) {
+                const employeeNumber = document.getElementById('empNoFilter').value;
+                if (!employeeNumber) {
+                    document.getElementById('reportTableHeader').innerHTML = '';
+                    tbody.innerHTML = '<tr><td colspan="10" class="py-6 text-center text-gray-400">Select an employee to view job history.</td></tr>';
+                    return;
+                }
+            }
 
             const params = new URLSearchParams();
             if (meta.inputs.includes('fromDate') && document.getElementById('fromDate').value) {

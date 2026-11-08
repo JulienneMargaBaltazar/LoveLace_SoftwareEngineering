@@ -752,6 +752,9 @@ const parseReportDate = (value, field) => {
     if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
         throw new Error(`${field} must use YYYY-MM-DD format.`);
     }
+    if (value < '2010-01-01' || value > '2011-12-31') {
+        throw new Error(`${field} must be between 2010-01-01 and 2011-12-31.`);
+    }
     return value;
 };
 
