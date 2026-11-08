@@ -3,238 +3,295 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard (Superadmin) - LoveLace Inc. ERP</title>
+    <title>Admin Dashboard - LoveLace Inc. ERP</title>
     <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Shared Stylesheet -->
-    <link rel="stylesheet" href="style.css">
-    <style>
-        /* Styling for sidebar profile footer */
-        .sidebar-footer {
-            padding: 1.25rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(0, 0, 0, 0.1);
+    <script src="https://tailwindcss.com"></script>
+    <!-- FontAwesome Free Icons Icons CDN -->
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            light: '#CCCCFF',
+                            muted: '#A3A3CC',
+                            primary: '#5C5C99',
+                            dark: '#292966',
+                        }
+                    }
+                }
+            }
         }
-        .user-profile-info {
-            font-size: 0.9rem;
-            color: #ffffff;
-            margin-bottom: 0.75rem;
-            font-weight: 600;
-            word-break: break-all;
-        }
-        .sidebar-logout-btn {
-            width: 100%;
-            background-color: #dc2626;
-            color: white;
-            border: none;
-            padding: 0.5rem 0.75rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 0.875rem;
-        }
-        .sidebar-logout-btn:hover {
-            background-color: #b91c1c;
-        }
-    </style>
+    </script>
 </head>
-<body class="bg-[#F4F6F9] text-gray-800 antialiased">
+<body class="bg-brand-light/10 text-brand-dark min-h-screen flex selection:bg-brand-light/40 antialiased">
 
-    <div class="admin-layout flex h-screen overflow-hidden">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0">
-            <div>
-                <div class="sidebar-brand px-6 py-5 border-b border-gray-100 font-bold text-gray-900 flex flex-col">
-                    <span>LoveLace Inc. ERP</span>
-                    <span class="text-xs text-gray-400 font-normal">by LoveLace</span>
+    <!-- 1. SIDEBAR NAVIGATION WRAPPER -->
+    <aside class="w-64 bg-brand-dark text-white flex flex-col justify-between fixed h-full z-30 shadow-xl border-r border-brand-dark/20">
+        <div>
+            <!-- Workspace Logo Branding -->
+            <div class="h-20 flex items-center px-6 border-b border-white/10">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 bg-white text-brand-dark rounded-lg flex items-center justify-center font-bold text-lg shadow-sm">L</div>
+                    <div class="flex flex-col">
+                        <span class="text-sm font-bold tracking-tight leading-none text-white">LoveLace Inc. ERP</span>
+                        <span class="text-[10px] text-brand-light/70 font-normal mt-1">by LoveLace</span>
+                    </div>
                 </div>
-                
-                <ul class="nav-menu px-3 space-y-1 mt-2">
-                    <li class="nav-item active"><a href="/dashboard.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg transition border-l-4 border-blue-600">📊 Dashboard</a></li>
-                    <li class="nav-item"><a href="/admin-customers.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">👥 Customers</a></li>
-                    <li class="nav-item"><a href="/admin-products.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📦 Products</a></li>
-                    <li class="nav-item"><a href="/admin-sales.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">💳 Sales</a></li>
-                    <li class="nav-item"><a href="/admin-reports.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📈 Reports</a></li>
-                    
-                    <!-- Separator Line -->
-                    <li class="border-t border-gray-200 my-2"></li>
-
-                    <!-- Separated User Management Menu Item -->
-                    <li class="nav-item"><a href="/admin-user-management.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">⚙️ User Management</a></li>
-                    <li class="nav-item"><a href="/admin-system-settings.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">🔧 System Settings</a></li>
-                </ul>
             </div>
 
-            <!-- Bottom Left User Info & Logout -->
-            <div class="sidebar-footer p-4 border-t border-gray-100 bg-gray-900">
-                <div id="userProfileInfo" class="user-profile-info text-white text-sm font-semibold mb-3">
-                    Loading user...
-                </div>
-                <button id="logoutBtn" class="sidebar-logout-btn flex items-center justify-center gap-2">Logout</button>
-            </div>
-        </aside>
+            <!-- Workspace Action Core Menu Items -->
+            <nav class="p-4 space-y-1">
+                <a href="/admin-dashboard.html" class="flex items-center space-x-3 bg-white/10 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition">
+                    <span class="w-5 text-center"><i class="fa-solid fa-chart-pie text-brand-light"></i></span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/admin-customers.html" class="flex items-center space-x-3 text-brand-light/90 hover:bg-white/5 hover:text-white px-4 py-2.5 rounded-lg text-sm font-medium transition group">
+                    <span class="w-5 text-center text-brand-muted/70 group-hover:text-brand-light"><i class="fa-solid fa-users"></i></span>
+                    <span>Customers</span>
+                </a>
+                <a href="/admin-products.html" class="flex items-center space-x-3 text-brand-light/90 hover:bg-white/5 hover:text-white px-4 py-2.5 rounded-lg text-sm font-medium transition group">
+                    <span class="w-5 text-center text-brand-muted/70 group-hover:text-brand-light"><i class="fa-solid fa-box"></i></span>
+                    <span>Products</span>
+                </a>
+                <a href="/admin-sales.html" class="flex items-center space-x-3 text-brand-light/90 hover:bg-white/5 hover:text-white px-4 py-2.5 rounded-lg text-sm font-medium transition group">
+                    <span class="w-5 text-center text-brand-muted/70 group-hover:text-brand-light"><i class="fa-solid fa-credit-card"></i></span>
+                    <span>Sales</span>
+                </a>
+                <a href="/admin-reports.html" class="flex items-center space-x-3 text-brand-light/90 hover:bg-white/5 hover:text-white px-4 py-2.5 rounded-lg text-sm font-medium transition group">
+                    <span class="w-5 text-center text-brand-muted/70 group-hover:text-brand-light"><i class="fa-solid fa-chart-line"></i></span>
+                    <span>Reports</span>
+                </a>
 
-        <!-- Main Workspace Area -->
-        <main class="main-content flex-1 flex flex-col overflow-y-auto">
+                <!-- Structural Group Divider -->
+                <div class="pt-4 mt-4 border-t border-white/10">
+                    <span class="px-4 text-[10px] uppercase font-bold tracking-wider text-brand-muted/60 block mb-2">Administration</span>
+                    <a href="/admin-user-management.html" class="flex items-center space-x-3 text-brand-light/90 hover:bg-white/5 hover:text-white px-4 py-2.5 rounded-lg text-sm font-medium transition group">
+                        <span class="w-5 text-center text-brand-muted/70 group-hover:text-brand-light"><i class="fa-solid fa-user-gear"></i></span>
+                        <span>User Management</span>
+                    </a>
+                    <a href="/admin-system-settings.html" class="flex items-center space-x-3 text-brand-light/90 hover:bg-white/5 hover:text-white px-4 py-2.5 rounded-lg text-sm font-medium transition group">
+                        <span class="w-5 text-center text-brand-muted/70 group-hover:text-brand-light"><i class="fa-solid fa-sliders"></i></span>
+                        <span>System Settings</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Sidebar User Profile Footer Container Box -->
+        <div class="p-4 border-t border-white/10 bg-black/10 flex items-center justify-between text-xs">
+            <div class="flex items-center space-x-2.5">
+                <div class="w-8 h-8 rounded-full bg-brand-primary flex items-center justify-center font-bold text-white text-[11px] shadow-sm">AD</div>
+                <div class="flex flex-col">
+                    <p class="font-semibold text-white leading-tight" id="sidebarUserEmail">admin@lovelace.inc</p>
+                    <p class="text-[10px] text-brand-muted mt-0.5">Workspace Administrator</p>
+                </div>
+            </div>
+            <button id="sidebarLogoutBtn" class="text-brand-muted hover:text-red-400 transition p-1 text-sm ml-2" title="Sign Out">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- 2. MAIN APP STRUCTURAL WORKSPACE CONTAINER -->
+    <div class="flex-grow pl-64 flex flex-col min-h-screen">
+        
+        <!-- Application Top Global Header Toolbar -->
+        <header class="h-20 bg-white border-b border-brand-muted/30 sticky top-0 z-20 flex items-center justify-between px-8">
+            <div class="flex flex-col">
+                <h1 class="text-xl font-bold text-brand-dark tracking-tight">Dashboard Overview</h1>
+                <p class="text-xs text-brand-primary mt-0.5">System status and workspace analytics pipeline records.</p>
+            </div>
             
-            <!-- Header Bar -->
-            <header class="top-header bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
-                <div>
-                    <h1 class="text-xl font-bold text-gray-900">Dashboard</h1>
-                    <p class="text-xs text-gray-500" id="welcomeSubheading">Welcome back!</p>
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center bg-brand-light/10 border border-brand-muted/30 rounded-lg px-3 py-1.5 w-64 shadow-inner">
+                    <span class="text-brand-primary/60 mr-2 text-xs"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" placeholder="Search across data indexes..." class="bg-transparent border-none text-xs outline-none w-full text-brand-dark" disabled>
                 </div>
-                <div class="flex items-center gap-3">
-                    <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-md border border-blue-200">Admin</span>
-                </div>
-            </header>
+                <span class="text-xs font-semibold bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full border border-emerald-200/50 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Security Active
+                </span>
+            </div>
+        </header>
 
-            <div class="dashboard-container p-8 space-y-6 max-w-7xl mx-auto w-full">
+        <!-- Main Dashboard Viewport Content Area -->
+        <main class="p-8 flex-grow space-y-6 max-w-7xl mx-auto w-full">
+            
+            <!-- Standard Enterprise Context Header Banner -->
+            <div class="bg-white border border-brand-muted/30 p-6 rounded-xl shadow-sm flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-brand-light/20 text-brand-dark rounded-xl flex items-center justify-center text-xl shadow-inner">🛡️</div>
+                    <div class="flex flex-col">
+                        <h2 class="text-sm font-bold uppercase tracking-wider text-brand-dark">System Administration</h2>
+                        <p class="text-xs text-brand-primary mt-0.5">Configure access rules, view audit log charts, and monitor pipeline metrics securely.</p>
+                    </div>
+                </div>
+                <div class="text-[11px] font-mono text-brand-primary bg-brand-light/10 border border-brand-muted/30 px-3 py-1.5 rounded-lg shadow-sm">
+                    Node Context: <span class="font-bold text-brand-dark">cluster-us-east-01</span>
+                </div>
+            </div>
+
+                        <!-- Financial Statistics Metrics Grid Rows -->
+            <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1: Revenue -->
+                <div class="bg-white p-5 rounded-xl border border-brand-muted/30 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow duration-200">
+                    <div class="flex justify-between items-start">
+                        <div class="flex flex-col">
+                            <span class="text-xs font-bold text-brand-primary uppercase tracking-wide">Revenue</span>
+                            <h3 class="text-2xl font-extrabold text-brand-dark mt-1.5">$48,290</h3>
+                        </div>
+                        <div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-sm shadow-inner"><i class="fa-solid fa-wallet"></i></div>
+                    </div>
+                    <div class="text-[10px] text-emerald-600 font-semibold flex items-center mt-3 pt-2 border-t border-brand-muted/10">
+                        <span class="bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200/50 mr-1.5">↑ +12.5%</span>
+                        <span class="text-brand-muted font-normal">vs historical trailing records</span>
+                    </div>
+                </div>
+                <!-- Card 2: Active Users -->
+                <div class="bg-white p-5 rounded-xl border border-brand-muted/30 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow duration-200">
+                    <div class="flex justify-between items-start">
+                        <div class="flex flex-col">
+                            <span class="text-xs font-bold text-brand-primary uppercase tracking-wide">Active Users</span>
+                            <h3 class="text-2xl font-extrabold text-brand-dark mt-1.5">2,352</h3>
+                        </div>
+                        <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-sm shadow-inner"><i class="fa-solid fa-users"></i></div>
+                    </div>
+                    <div class="text-[10px] text-emerald-600 font-semibold flex items-center mt-3 pt-2 border-t border-brand-muted/10">
+                        <span class="bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200/50 mr-1.5">↑ +8.1%</span>
+                        <span class="text-brand-muted font-normal">active verification sessions</span>
+                    </div>
+                </div>
+                <!-- Card 3: New Orders -->
+                <div class="bg-white p-5 rounded-xl border border-brand-muted/30 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow duration-200">
+                    <div class="flex justify-between items-start">
+                        <div class="flex flex-col">
+                            <span class="text-xs font-bold text-brand-primary uppercase tracking-wide">New Orders</span>
+                            <h3 class="text-2xl font-extrabold text-brand-dark mt-1.5">1,204</h3>
+                        </div>
+                        <div class="w-8 h-8 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center text-sm shadow-inner"><i class="fa-solid fa-cart-shopping"></i></div>
+                    </div>
+                    <div class="text-[10px] text-emerald-600 font-semibold flex items-center mt-3 pt-2 border-t border-brand-muted/10">
+                        <span class="bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200/50 mr-1.5">↑ +3.2%</span>
+                        <span class="text-brand-muted font-normal">processed items today</span>
+                    </div>
+                </div>
+                <!-- Card 4: Refunds -->
+                <div class="bg-white p-5 rounded-xl border border-brand-muted/30 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow duration-200">
+                    <div class="flex justify-between items-start">
+                        <div class="flex flex-col">
+                            <span class="text-xs font-bold text-brand-primary uppercase tracking-wide">Refunds</span>
+                            <h3 class="text-2xl font-extrabold text-brand-dark mt-1.5">$1,420</h3>
+                        </div>
+                        <div class="w-8 h-8 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center text-sm shadow-inner"><i class="fa-solid fa-arrows-rotate"></i></div>
+                    </div>
+                    <div class="text-[10px] text-rose-600 font-semibold flex items-center mt-3 pt-2 border-t border-brand-muted/10">
+                        <span class="bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200/50 mr-1.5">↓ -2.4%</span>
+                        <span class="text-brand-muted font-normal">fewer incident disruptions</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Lower Segment Core Control Grid Area Framework Split -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
-                <!-- Welcome Banner (Minus Add User Button) -->
-                <section class="welcome-banner bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
-                    <div>
-                        <h2 id="welcomeHeading" class="text-lg font-bold text-gray-900">System Management</h2>
-                        <p style="margin: 0; color: #5C5C99; font-size: 0.875rem;" class="mt-0.5">Manage system-wide accounts and security clearances.</p>
-                    </div>
-                </section>
-
-                <!-- Key Metrics / Stats Row -->
-                <section class="stats-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                    <div class="stat-card bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex justify-between items-start">
-                        <div>
-                            <div class="stat-header text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue</div>
-                            <div class="stat-value text-2xl font-bold text-gray-900 mt-2">
-                                $48,290
-                                <span class="badge-pill success inline-flex items-center gap-1 mt-2 text-xs font-semibold px-2 py-0.5 rounded bg-green-50 text-green-700 border border-green-200">+12.5%</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="stat-card bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex justify-between items-start">
-                        <div>
-                            <div class="stat-header text-xs font-medium text-gray-500 uppercase tracking-wider">Active users</div>
-                            <div class="stat-value text-2xl font-bold text-gray-900 mt-2">
-                                2,352
-                                <span class="badge-pill success inline-flex items-center gap-1 mt-2 text-xs font-semibold px-2 py-0.5 rounded bg-green-50 text-green-700 border border-green-200">+8.1%</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="stat-card bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex justify-between items-start">
-                        <div>
-                            <div class="stat-header text-xs font-medium text-gray-500 uppercase tracking-wider">New orders</div>
-                            <div class="stat-value text-2xl font-bold text-gray-900 mt-2">
-                                1,204
-                                <span class="badge-pill success inline-flex items-center gap-1 mt-2 text-xs font-semibold px-2 py-0.5 rounded bg-green-50 text-green-700 border border-green-200">+3.2%</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="stat-card bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex justify-between items-start">
-                        <div>
-                            <div class="stat-header text-xs font-medium text-gray-500 uppercase tracking-wider">Refunds</div>
-                            <div class="stat-value text-2xl font-bold text-gray-900 mt-2">
-                                $1,420
-                                <span class="badge-pill success inline-flex items-center gap-1 mt-2 text-xs font-semibold px-2 py-0.5 rounded bg-red-50 text-red-700 border border-red-200">-2.4%</span>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Quick Actions Panel -->
-                <section class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-                    <h3 class="font-bold text-gray-900 text-base mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-bolt text-amber-500"></i> Quick Actions
+                <!-- Quick Operations Cards Control Grid Link Matrix Panel Grid Box -->
+                <div class="lg:col-span-1 bg-white border border-brand-muted/30 rounded-xl p-6 shadow-sm space-y-4">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-brand-dark border-b border-brand-muted/20 pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-star text-brand-primary/80"></i> Quick Actions
                     </h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <a href="/admin-user-management.html" class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50/50 transition group">
-                            <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg group-hover:bg-blue-600 group-hover:text-white transition">
-                                <i class="fa-solid fa-users-gear"></i>
+                    
+                    <div class="space-y-2">
+                        <a href="/admin-user-management.html" class="w-full text-left p-3 border border-brand-muted/20 hover:border-brand-primary rounded-lg hover:bg-brand-light/10 group transition flex justify-between items-center">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-md bg-purple-50 text-purple-600 flex items-center justify-center text-xs group-hover:scale-105 transition-transform"><i class="fa-solid fa-user-gear"></i></div>
+                                <div class="flex flex-col">
+                                    <p class="text-xs font-bold text-brand-dark group-hover:text-brand-primary">Manage Users</p>
+                                    <p class="text-[10px] text-brand-muted">Roles & system access permissions</p>
+                                </div>
                             </div>
-                            <div>
-                                <div class="text-sm font-semibold text-gray-900">Manage Users</div>
-                                <div class="text-xs text-gray-500">Roles & permissions</div>
-                            </div>
+                            <span class="text-brand-muted/60 group-hover:text-brand-primary transition text-xs"><i class="fa-solid fa-arrow-right"></i></span>
                         </a>
-
-                        <a href="/admin-customers.html" class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-purple-500 hover:bg-purple-50/50 transition group">
-                            <div class="w-10 h-10 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-lg group-hover:bg-purple-600 group-hover:text-white transition">
-                                <i class="fa-solid fa-users"></i>
+                        
+                        <a href="/admin-customers.html" class="w-full text-left p-3 border border-brand-muted/20 hover:border-brand-primary rounded-lg hover:bg-brand-light/10 group transition flex justify-between items-center">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs group-hover:scale-105 transition-transform"><i class="fa-solid fa-users"></i></div>
+                                <div class="flex flex-col">
+                                    <p class="text-xs font-bold text-brand-dark group-hover:text-brand-primary">Customers</p>
+                                    <p class="text-[10px] text-brand-muted">View CRM account client logs</p>
+                                </div>
                             </div>
-                            <div>
-                                <div class="text-sm font-semibold text-gray-900">Customers</div>
-                                <div class="text-xs text-gray-500">View customer list</div>
-                            </div>
+                            <span class="text-brand-muted/60 group-hover:text-brand-primary transition text-xs"><i class="fa-solid fa-arrow-right"></i></span>
                         </a>
-
-                        <a href="/admin-reports.html" class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-green-500 hover:bg-green-50/50 transition group">
-                            <div class="w-10 h-10 rounded-lg bg-green-100 text-green-600 flex items-center justify-center font-bold text-lg group-hover:bg-green-600 group-hover:text-white transition">
-                                <i class="fa-solid fa-chart-line"></i>
+                        
+                        <a href="/admin-reports.html" class="w-full text-left p-3 border border-brand-muted/20 hover:border-brand-primary rounded-lg hover:bg-brand-light/10 group transition flex justify-between items-center">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-md bg-amber-50 text-amber-600 flex items-center justify-center text-xs group-hover:scale-105 transition-transform"><i class="fa-solid fa-chart-line"></i></div>
+                                <div class="flex flex-col">
+                                    <p class="text-xs font-bold text-brand-dark group-hover:text-brand-primary">View Reports</p>
+                                    <p class="text-[10px] text-brand-muted">Analytics history logs & metrics</p>
+                                </div>
                             </div>
-                            <div>
-                                <div class="text-sm font-semibold text-gray-900">View Reports</div>
-                                <div class="text-xs text-gray-500">Analytics & audit</div>
-                            </div>
-                        </a>
-
-                        <a href="/admin-system-settings.html" class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-gray-500 hover:bg-gray-100 transition group">
-                            <div class="w-10 h-10 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center font-bold text-lg group-hover:bg-gray-700 group-hover:text-white transition">
-                                <i class="fa-solid fa-sliders"></i>
-                            </div>
-                            <div>
-                                <div class="text-sm font-semibold text-gray-900">System Settings</div>
-                                <div class="text-xs text-gray-500">Global configurations</div>
-                            </div>
+                            <span class="text-brand-muted/60 group-hover:text-brand-primary transition text-xs"><i class="fa-solid fa-arrow-right"></i></span>
                         </a>
                     </div>
-                </section>
+                </div>
 
+                                    <!-- System Audit Log Ledger -->
+                    <div class="lg:col-span-2 bg-white border border-gray-200 rounded-xl p-6 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-gray-900 border-b border-gray-100 pb-2 mb-4">System Settings & Logs</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse text-[11px]">
+                                    <thead>
+                                        <tr class="bg-gray-50 text-gray-700 border-b border-gray-200 font-bold uppercase">
+                                            <th class="p-2.5">Reference ID</th>
+                                            <th class="p-2.5">Event Action</th>
+                                            <th class="p-2.5">Operator</th>
+                                            <th class="p-2.5 text-right">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-gray-600 divide-y divide-gray-100">
+                                        <tr class="hover:bg-gray-50/50">
+                                            <td class="p-2.5 font-mono text-gray-900 font-semibold">#SEC-902</td>
+                                            <td class="p-2.5">Global configurations synchronized</td>
+                                            <td class="p-2.5">Superadmin Core</td>
+                                            <td class="p-2.5 text-right"><span class="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-semibold text-[9px]">Success</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50/50">
+                                            <td class="p-2.5 font-mono text-gray-900 font-semibold">#INV-411</td>
+                                            <td class="p-2.5">Catalog parameters allocated</td>
+                                            <td class="p-2.5">System Automated</td>
+                                            <td class="p-2.5 text-right"><span class="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-semibold text-[9px]">Success</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="text-[10px] text-gray-400 border-t border-gray-100 pt-3 mt-4 flex justify-between items-center">
+                            <span>Workspace Node Instance: **cluster-us-east-01**</span>
+                            <span>Secure Supabase Workspace</span>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </main>
     </div>
 
-    <!-- Script Logic -->
+    <!-- Script Operations Handling -->
     <script>
+        // Placeholder simulation hook for Loading user session variables
         document.addEventListener('DOMContentLoaded', () => {
-            checkSession();
+            const userProfileInfo = document.getElementById('userProfileInfo');
+            if (userProfileInfo) {
+                userProfileInfo.textContent = "admin@lovelace.inc";
+            }
         });
 
-        // Verify Active Session & Populate Superadmin Name
-        async function checkSession() {
-            try {
-                const response = await fetch('/api/dashboard', { credentials: 'include' });
-                
-                if (!response.ok) {
-                    window.location.href = '/login.html';
-                    return;
-                }
-                const data = await response.json();
-                const sessionData = data.userSessionData;
-
-                const firstName = sessionData?.firstName || sessionData?.first_name || '';
-                const lastName = sessionData?.lastName || sessionData?.last_name || '';
-                const fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'Superadmin';
-
-                document.getElementById('userProfileInfo').innerText = fullName;
-
-                if (firstName) {
-                    document.getElementById('welcomeSubheading').innerText = `Welcome back, ${firstName}!`;
-                } else {
-                    document.getElementById('welcomeSubheading').innerText = `Welcome back, Superadmin!`;
-                }
-
-            } catch (err) {
-                console.error('Session check failed:', err);
-                window.location.href = '/login.html';
-            }
-        }
-
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            try {
-                await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
-                window.location.href = '/login.html';
-            } catch (err) {
-                window.location.href = '/login.html';
-            }
+        // Logout listener handler mapping
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            window.location.href = '/login.html';
         });
     </script>
 </body>
