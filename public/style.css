@@ -717,3 +717,9 @@ button:hover {
     font-size: 0.75rem;
     font-weight: normal;
 }
+/* Fix quick action icon centering */
+.action-icon {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
