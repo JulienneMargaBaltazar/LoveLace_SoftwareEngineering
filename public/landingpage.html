@@ -329,16 +329,17 @@
         }
 
         cards.forEach(card => {
-            // 1. Mouse Enter Actions (Hover Effect)
+                        // 1. Mouse Enter Actions (Hover Effect)
             card.addEventListener('mouseenter', () => {
                 const title = card.getAttribute('data-title');
                 displayTitle.textContent = title;
                 displayBody.textContent = card.getAttribute('data-desc');
-                card.classList.add('border-[#5C5C99]', 'shadow-md');
+                card.classList.add('border-[#5C5C99]', 'bg-[#CCCCFF]/5'); // Modified line
                 updateTableVisibility(title);
             });
 
-                        // 2. Mouse Leave Actions (Restore State if none locked)
+
+                                  // 2. Mouse Leave Actions (Restore State if none locked)
             card.addEventListener('mouseleave', () => {
                 const currentSelected = document.querySelector('.module-card.is-active');
                 if (currentSelected) {
@@ -353,7 +354,7 @@
                 }
                 
                 if (!card.classList.contains('is-active')) {
-                    card.classList.remove('border-[#5C5C99]', 'shadow-md');
+                    card.classList.remove('border-[#5C5C99]', 'bg-[#CCCCFF]/5'); // Modified line
                 }
             });
 
