@@ -177,16 +177,16 @@ body {
 .admin-layout {
     display: flex;
     min-height: 100vh;
-    background-color: #f4f6f9;
+    background-color: #f8fafc; /* Figma slate-50 background tint */
 }
 
 
 /* Sidebar */
 .sidebar {
-    width: 240px;
+    width: 260px; /* Expanded space for a modern layout */
     background: #ffffff;
-    border-right: 1px solid #e2e8f0;
-    padding: 1.5rem 1rem;
+    border-right: 1px solid #f1f5f9;
+    padding: 2rem 1.25rem;
     display: flex;
     flex-direction: column;
 }
@@ -195,7 +195,7 @@ body {
 .sidebar-brand {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #292966;
+    color: #1e1b4b; /* Dark indigo brand heading */
     margin-bottom: 2rem;
     display: flex;
     align-items: center;
@@ -215,7 +215,7 @@ body {
     align-items: center;
     gap: 0.75rem;
     padding: 0.65rem 0.85rem;
-    color: #5C5C99;
+    color: #475569; /* Balanced slate navigation links */
     text-decoration: none;
     border-radius: 8px;
     font-size: 0.9rem;
@@ -224,10 +224,61 @@ body {
 }
 
 
-.nav-item.active a, .nav-item a:hover {
-    background-color: #CCCCFF;
-    color: #292966;
+.nav-item a:hover {
+    background-color: #f1f5f9;
+    color: #1e1b4b;
+}
+
+
+/* Active menu state matching the Figma dark select color block */
+.nav-item.active a {
+    background-color: #1e1b4b; /* Deep Indigo 950 block */
+    color: #ffffff !important;
     font-weight: 600;
+}
+
+
+/* Sidebar Footer Profile Area */
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.profile-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.profile-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #cbd5e1;
+}
+
+.profile-email {
+    font-size: 0.75rem;
+    color: #475569;
+    font-weight: 500;
+}
+
+.logout-icon-btn {
+    background: none !important;
+    border: none !important;
+    width: auto !important;
+    padding: 0.25rem !important;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.logout-icon-btn:hover {
+    color: #ef4444;
 }
 
 
@@ -242,7 +293,7 @@ body {
 .top-header {
     background: #ffffff;
     padding: 1rem 2rem;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid #f1f5f9;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -252,7 +303,7 @@ body {
 .top-header h1 {
     font-size: 1.25rem;
     margin: 0;
-    color: #292966;
+    color: #1e1b4b;
 }
 
 
@@ -261,90 +312,147 @@ body {
 }
 
 
-/* Welcome Banner */
+/* Welcome Banner Gradient Hero Container */
 .welcome-banner {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 2px 4px rgba(41, 41, 102, 0.05);
+    background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
 
 .welcome-banner h2 {
-    margin: 0 0 0.25rem 0;
-    font-size: 1.25rem;
-    color: #292966;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.75rem;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.welcome-banner p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #c7d2fe;
 }
 
 
-/* Grid Layouts */
+/* Grid Layouts and Restyled Stat Cards */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1.25rem;
+    gap: 1.5rem;
     margin-bottom: 2rem;
 }
 
 
 .stat-card {
     background: #ffffff;
-    padding: 1.25rem;
-    border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(41, 41, 102, 0.05);
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 
 .stat-header {
     font-size: 0.8rem;
-    color: #5C5C99;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     margin-bottom: 0.5rem;
 }
 
 
 .stat-value {
-    font-size: 1.5rem;
+    font-size: 1.875rem;
     font-weight: 700;
-    color: #292966;
+    color: #0f172a;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-top: 0.25rem;
 }
-
 
 .badge-pill {
     font-size: 0.75rem;
-    padding: 0.2rem 0.5rem;
-    border-radius: 12px;
-    font-weight: 500;
+    padding: 0.25rem 0.6rem;
+    border-radius: 9999px; /* Fully rounded pill layout */
+    font-weight: 600;
 }
 
 
 .badge-pill.success {
-    background: #dcfce7;
-    color: #166534;
+    background: #f0fdf4; /* Modern light green tint */
+    color: #16a34a; /* Accessible green text */
 }
 
 
+.badge-pill.danger {
+    background: #fef2f2; /* Light red tint */
+    color: #dc2626; /* Accessible red text */
+}
+
+
+/* Quick Actions Grid layout matching Figma width layout specs */
 .actions-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(6, 1fr); /* Expanded from 4 to 6 inline items */
     gap: 1.25rem;
 }
 
 
-.action-card {
-    background: #ffffff;
-    border-radius: 12px;
-    height: 90px;
-    box-shadow: 0 2px 4px rgba(41, 41, 102, 0.05);
+/* Centered Square Action Button Cards */
+.action-card-btn {
+    background: #ffffff !important;
+    border: 1px solid #f1f5f9 !important;
+    border-radius: 16px !important;
+    height: 120px !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.75rem !important;
+    color: #334155 !important; /* Soft charcoal typography text */
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important;
 }
 
 
+.action-card-btn:hover {
+    background-color: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+    color: #1e1b4b !important; /* Transitions to brand deep indigo */
+    transform: translateY(-3px); /* Elegant layout hover lift container */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05) !important;
+}
+
+
+/* Colored Badge Icons layout container wraps inside button frame */
+.action-icon-wrapper {
+    padding: 0.6rem;
+    background-color: #e0e7ff; /* Lavender background tint layer */
+    color: #4338ca; /* Classic layout icon tint */
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+
+/* Form Submit Buttons Fallback (For Login/Signup Layout Interfaces) */
 button {
     width: 100%;
     padding: 0.85rem;
-    background-color: #5C5C99;
+    background-color: #4338ca;
     color: #ffffff;
     border: none;
     border-radius: 8px;
@@ -356,7 +464,7 @@ button {
 
 
 button:hover {
-    background-color: #292966;
+    background-color: #1e1b4b;
 }
 
 
@@ -364,12 +472,12 @@ button:hover {
     margin-top: 1.5rem;
     text-align: center;
     font-size: 0.875rem;
-    color: #5C5C99;
+    color: #64748b;
 }
 
 
 .auth-footer a {
-    color: #292966;
+    color: #4338ca;
     font-weight: 600;
     text-decoration: none;
 }
@@ -379,45 +487,40 @@ button:hover {
     text-decoration: underline;
 }
 
-/* Zoom and scale modules nicely on desktop mouse hover */
-.module-card:hover {
-    transform: scale(1.06);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    background-color: #fcfbfe !important;
-}
-
-/* Accent active lock highlight when clicked */
-.module-card.is-active {
-    transform: scale(1.04);
-    border-color: #292966 !important; /* Adjusted to match your primary dark brand color */
-    background-color: #f4f4ff !important;
-    box-shadow: 0 0 0 4px rgba(92, 92, 153, 0.2);
-}
 
 /* ==========================================================================
    LANDING PAGE ERP MODULE CARD ANIMATIONS
    ========================================================================== */
+
+
+.module-card {
+    transition: all 0.3s ease;
+}
+
 
 /* Zoom and scale modules nicely on desktop mouse hover */
 .module-card:hover {
     transform: scale(1.04) !important;
     box-shadow: 0 10px 25px rgba(92, 92, 153, 0.15) !important;
     background-color: #ffffff !important;
-    border-color: #5C5C99 !important;
+    border-color: #4338ca !important;
 }
+
 
 /* Smooth pop transition profile when clicked and locked active */
 .module-card.is-active {
     transform: scale(1.02) !important;
-    border-color: #292966 !important;
-    background-color: rgba(204, 204, 255, 0.15) !important;
-    box-shadow: inset 0 2px 4px rgba(41, 41, 102, 0.05) !important;
+    border-color: #1e1b4b !important;
+    background-color: #f5f3ff !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02) !important;
 }
+
 
 /* Dynamic fade effect for the mock data table tracking */
 #mockTableContainer {
     animation: fadeInTable 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
+
 
 @keyframes fadeInTable {
     from {
