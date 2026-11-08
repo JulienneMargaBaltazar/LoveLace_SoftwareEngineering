@@ -1,20 +1,45 @@
 /* ==========================================================================
-   1. CORE GLOBAL DOCUMENT SETUPS
+   1. RE-CENTERED APPLICATION LAYOUT ENGINE
    ========================================================================== */
-body, html {
+html {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background-color: #F8FAFC;
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
-    height: 100vh !important;
     min-height: 100vh !important;
     color: #292966;
     box-sizing: border-box;
+
+    /* --- THE FIX: This centers your login card perfectly when outside the app layout --- */
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
 }
 
 *, *:before, *:after {
     box-sizing: inherit;
+}
+
+/* ==========================================================================
+   2. APP CONTAINER CONFIG (BLOCKS CENTER OVERRIDE FOR DASHBOARD VIEWS)
+   ========================================================================== */
+/* When .admin-layout is present on the body, it breaks out of login center rules */
+body.admin-layout {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-start !important; /* Forces layout tracking to start left-aligned */
+    align-items: stretch !important;       /* Forces columns to stay full height top to bottom */
+    width: 100% !important;
+    height: 100vh !important;
+    overflow: hidden !important;
 }
 
 /* ==========================================================================
