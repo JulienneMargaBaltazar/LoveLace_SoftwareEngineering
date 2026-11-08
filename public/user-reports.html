@@ -86,7 +86,7 @@
                     <span class="text-xs text-gray-400 font-normal">by LoveLace</span>
                 </div>
                 
-                <ul class="nav-menu px-3 space-y-1 mt-2">
+                <ul id="navMenu" class="nav-menu px-3 space-y-1 mt-2">
                     <li class="nav-item"><a href="/dashboard.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📊 Dashboard</a></li>
                     <li class="nav-item"><a href="/user-customers.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">👥 Customers</a></li>
                     <li class="nav-item"><a href="/user-products.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📦 Products</a></li>
@@ -256,43 +256,10 @@
                 endpoint: '/api/admin/reports/top-sales'
             }
         };
-        document.addEventListener('DOMContentLoaded', async () => {
-    await verifyReportsAccess();
-});
-
-async function verifyReportsAccess() {
-    try {
-        const response = await fetch('/api/user/rights', { credentials: 'include' });
-        if (!response.ok) {
-            window.location.href = '/login.html';
-            return;
-        }
-
-        const data = await response.json();
-        
-        // Superadmins (e.g. roleId 1) always have access
-        if (data.roleId === 1 || data.isSuperAdmin) return;
-
-        // Check user_rights table mapping for Reports access
-        const hasReportsRight = data.rights && data.rights.some(r => 
-            (r.module_name === 'Reports' || r.module_name === 'reports') && 
-            r.action_key === 'view' && 
-            r.is_allowed === true
-        );
-
-        if (!hasReportsRight) {
-            alert('Access Denied: You do not have permission to view Reports.');
-            window.location.href = '/user-dashboard.html';
-        }
-    } catch (err) {
-        console.error('Access check error:', err);
-        window.location.href = '/user-dashboard.html';
-    }
-}
 
         document.addEventListener('DOMContentLoaded', async () => {
             setDefaultDateRange();
-            await checkSession();
+            await checkSessionAndRights();
             await loadEmployeesDropdown();
             switchReport('top-customers');
         });
@@ -312,23 +279,43 @@ async function verifyReportsAccess() {
             return `${year}-${month}-${day}`;
         }
 
-        async function checkSession() {
-            try {
-                const response = await fetch('/api/dashboard', { credentials: 'include' });
-                if (!response.ok) {
-                    window.location.href = '/login.html';
-                    return;
-                }
-                const data = await response.json();
-                const sessionData = data.userSessionData;
-                const firstName = sessionData?.firstName || sessionData?.first_name || '';
-                const lastName = sessionData?.lastName || sessionData?.last_name || '';
-                document.getElementById('userProfileInfo').innerText = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'User';
-            } catch (err) {
-                console.error('Session check failed:', err);
-                window.location.href = '/login.html';
-            }
+        async function checkSessionAndRights() {
+    try {
+        const response = await fetch('/api/dashboard', { credentials: 'include' });
+        if (!response.ok) {
+            window.location.href = '/login.html';
+            return;
         }
+        const data = await response.json();
+        const sessionData = data.userSessionData || {};
+
+        // Populate user name in sidebar
+        const firstName = sessionData.firstName || '';
+        const lastName = sessionData.lastName || '';
+        document.getElementById('userProfileInfo').innerText = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'User';
+
+        // Superadmins (role 1) and Admins (role 2) always have access
+        const roleId = Number(sessionData.roleId || 3);
+        if (roleId === 1 || roleId === 2 || sessionData.isSuperAdmin) {
+            return; // Allow access
+        }
+
+        // Check if user has explicit 'reports' view permission in the fetched rights array
+        const userRights = data.rights || [];
+        const hasReportsRight = userRights.some(r =>
+            String(r.module_name || '').toLowerCase() === 'reports' &&
+            r.is_allowed === true
+        );
+
+        if (!hasReportsRight) {
+            alert('Access Denied: You do not have permission to view Reports.');
+            window.location.href = '/dashboard.html'; // Redirect to normal dashboard
+        }
+    } catch (err) {
+        console.error('Session or rights check failed:', err);
+        window.location.href = '/login.html';
+    }
+}
 
         async function loadEmployeesDropdown() {
             try {

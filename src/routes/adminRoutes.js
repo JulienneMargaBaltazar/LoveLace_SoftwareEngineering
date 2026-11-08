@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import { supabase } from '../config/supabaseClient.js';
 import { requireAdmin, requireAuth, requireSuperadmin } from '../middleware/authMiddleware.js';
+import { requireAnyRight, requireOneOfRights } from '../middleware/requireRight.js';
 
 const router = express.Router();
 
@@ -38,6 +39,8 @@ export const requireModuleRight = (module, action) => async (req, res, next) => 
         return res.status(500).json({ error: 'Unable to verify permission.' });
     }
 };
+
+const requireEmployeeRight = action => requireOneOfRights('human-resources', [action]);
 
 // ---------------------------------------------------------
 // STANDARD ADMIN & SUPERADMIN ROUTES (Protected by requireAdmin)
@@ -464,6 +467,101 @@ router.delete('/product/:prodcode', requireAuth, requireModuleRight('product', '
 });
 
 // ---------------------------------------------------------
+// HUMAN RESOURCES ROUTES
+// ---------------------------------------------------------
+
+router.get('/employees', requireAuth, async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('employee')
+            .select('empno, firstname, lastname, jobcode, deptcode, gender, hiredate, sepdate')
+            .eq('is_deleted', false)
+            .order('empno');
+        if (error) throw error;
+
+        res.json({
+            employees: (data || []).map(employee => ({
+                ...employee,
+                empname: `${employee.firstname || ''} ${employee.lastname || ''}`.trim()
+            }))
+        });
+    } catch (err) {
+        console.error('Error fetching employees:', err.message);
+        res.status(500).json({ error: 'Failed to load employee records.' });
+    }
+});
+
+router.post('/employees', requireAuth, requireEmployeeRight('add-employee'), async (req, res) => {
+    const { empno, empname, jobcode, deptcode } = req.body;
+    const [firstname, ...lastParts] = String(empname || '').trim().split(/\s+/);
+    const lastname = lastParts.join(' ');
+
+    if (!empno?.trim() || !firstname || !lastname || !jobcode?.trim() || !deptcode?.trim()) {
+        return res.status(400).json({ error: 'Employee number, name, job, and department are required.' });
+    }
+
+    try {
+        const { error } = await supabase.from('employee').insert({
+            empno: empno.trim(),
+            firstname,
+            lastname,
+            jobcode: jobcode.trim(),
+            deptcode: deptcode.trim(),
+            is_deleted: false
+        });
+        if (error) throw error;
+        res.status(201).json({ success: true, message: 'Employee created successfully.' });
+    } catch (err) {
+        console.error('Error creating employee:', err.message);
+        res.status(500).json({ error: 'Failed to create employee record.' });
+    }
+});
+
+router.put('/employees/:empno', requireAuth, requireEmployeeRight('edit-employee'), async (req, res) => {
+    const { empname, jobcode, deptcode } = req.body;
+    const [firstname, ...lastParts] = String(empname || '').trim().split(/\s+/);
+    const lastname = lastParts.join(' ');
+
+    if (!firstname || !lastname || !jobcode?.trim() || !deptcode?.trim()) {
+        return res.status(400).json({ error: 'Employee name, job, and department are required.' });
+    }
+
+    try {
+        const { data, error } = await supabase
+            .from('employee')
+            .update({ firstname, lastname, jobcode: jobcode.trim(), deptcode: deptcode.trim() })
+            .eq('empno', req.params.empno)
+            .eq('is_deleted', false)
+            .select('empno')
+            .maybeSingle();
+        if (error) throw error;
+        if (!data) return res.status(404).json({ error: 'Employee not found.' });
+        res.json({ success: true, message: 'Employee updated successfully.' });
+    } catch (err) {
+        console.error('Error updating employee:', err.message);
+        res.status(500).json({ error: 'Failed to update employee record.' });
+    }
+});
+
+router.delete('/employees/:empno', requireAuth, requireEmployeeRight('delete-employee'), async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('employee')
+            .update({ is_deleted: true })
+            .eq('empno', req.params.empno)
+            .eq('is_deleted', false)
+            .select('empno')
+            .maybeSingle();
+        if (error) throw error;
+        if (!data) return res.status(404).json({ error: 'Employee not found.' });
+        res.json({ success: true, message: 'Employee deleted successfully.' });
+    } catch (err) {
+        console.error('Error deleting employee:', err.message);
+        res.status(500).json({ error: 'Failed to delete employee record.' });
+    }
+});
+
+// ---------------------------------------------------------
 // SALES MANAGEMENT ROUTES (Protected by requireAdmin)
 // ---------------------------------------------------------
 
@@ -689,7 +787,7 @@ async function requireReportRight(req, res, next) {
     }
 }
 
-router.get('/reports/options', requireAuth, async (req, res) => {
+router.get('/reports/options', requireAnyRight('reports'), async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('employee_active')
@@ -887,7 +985,9 @@ router.delete('/reports/rights/:userId/:reportKey', requireAdmin, async (req, re
 // GRANULAR RIGHTS MANAGEMENT ROUTES (Protected by requireAdmin)
 // ---------------------------------------------------------
 
+// ==========================================
 // GET User Rights
+// ==========================================
 router.get('/users/:userId/rights', requireAdmin, async (req, res) => {
     const { userId } = req.params;
 
@@ -896,7 +996,8 @@ router.get('/users/:userId/rights', requireAdmin, async (req, res) => {
             .from('user_rights')
             .select('module_name, action_key, is_allowed')
             .eq('user_id', String(userId))
-            .eq('is_deleted', false);
+            .eq('is_deleted', false)
+            .eq('is_allowed', true); // Ensures only active permissions are fetched
 
         if (error) throw error;
 
@@ -925,13 +1026,11 @@ router.put('/users/:id/rights', async (req, res) => {
         const targetUserId = req.params.id;
         const body = req.body;
 
-        // Determine if it's a single toggle change or a batch array of rights
         let rightsToProcess = [];
 
         if (Array.isArray(body.rights)) {
             rightsToProcess = body.rights;
         } else if (body.module && body.action !== undefined) {
-            // Handles the frontend toggle format: { module: 'reports', action: 'top-customers', granted: true }
             rightsToProcess = [{
                 module_name: body.module,
                 action_key: body.action,
@@ -952,6 +1051,7 @@ router.put('/users/:id/rights', async (req, res) => {
                     module_name: right.module_name,
                     action_key: right.action_key,
                     is_allowed: right.is_allowed,
+                    is_deleted: !right.is_allowed,
                     stamp: new Date()
                 }, { onConflict: 'user_id,module_name,action_key' });
 
@@ -1059,7 +1159,7 @@ router.get('/reports/all-employees', requireAuth, async (req, res) => {
 });
 
 // 6. Employee Options Dropdown (Used for Employee History filter)
-router.get('/reports/options', requireAuth, async (req, res) => {
+router.get('/reports/options', requireAnyRight('reports'), async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('app_employee')
