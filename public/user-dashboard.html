@@ -21,16 +21,18 @@
             <li class="nav-item"><a href="user-reports.html">📈 Reports</a></li>
             <li class="nav-item"><a href="settings.html">⚙️ Settings</a></li>
             <li class="nav-item logout-menu-item" style="margin-top: 1rem;"><a href="landingpage.html" style="color: #ef4444 !important;">🚪 Logout</a></li>
-
         </ul>
         
         <div class="sidebar-profile">
             <div class="profile-info">
                 <div class="avatar">👤</div>
                 <div class="profile-text">
-                    <span class="username">Test Person</span>
+                    <!-- FIX 1: Added id="userProfileInfo" here -->
+                    <span class="username" id="userProfileInfo">Loading user...</span>
                     <span class="role">User</span>
-                
+                </div>
+            </div>
+        </div> <!-- FIXED: Repaired missing closing tags from your original code snippet here -->
     </aside>
 
     <!-- MAIN WORKSPACE -->
@@ -47,7 +49,8 @@
             <!-- Purple Welcome Banner Component -->
             <div class="welcome-banner-purple">
                 <div class="banner-content">
-                    <h1>Welcome back, User!</h1>
+                    <!-- FIX 2: Added id="welcomeHeading" here -->
+                    <h1 id="welcomeHeading">Welcome back, User!</h1>
                     <p>LoveLace Inc. ERP - Here is your personal dashboard for today.</p>
                 </div>
             </div>
@@ -143,5 +146,54 @@
         </div>
     </main>
 
+    <!-- FIX 3: Added the live session fetching script block right before the closing body tag -->
+    <script>
+        async function checkSession() {
+            try {
+                const response = await fetch(window.location.origin + '/api/dashboard', { credentials: 'include' });
+                
+                if (!response.ok) {
+                    window.location.href = './login.html';
+                    return;
+                }
+                
+                const data = await response.json();
+                const sessionData = data.userSessionData;
+                
+                let firstName = sessionData.first_name || sessionData.firstName || '';
+                let lastName = sessionData.last_name || sessionData.lastName || '';
+                let fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : '';
+
+                if (!fullName && sessionData.name) {
+                    fullName = sessionData.name;
+                }
+
+                if (fullName && !firstName) {
+                    firstName = fullName.split(' ')[0];
+                }
+
+                if (!fullName) fullName = "User";
+                if (!firstName) firstName = "User";
+                
+                // Inject first name string into the main banner title
+                const welcomeHeading = document.getElementById('welcomeHeading');
+                if (welcomeHeading) {
+                    welcomeHeading.innerText = `Welcome back, ${firstName}!`;
+                }
+                
+                // Inject full name string into the lower sidebar text panel
+                const profileEl = document.getElementById('userProfileInfo');
+                if (profileEl) {
+                    profileEl.innerText = fullName;
+                }
+                
+            } catch (err) {
+                console.error('Session check failed:', err);
+                window.location.href = './login.html';
+            }
+        }
+
+        checkSession();
+    </script>
 </body>
 </html>
