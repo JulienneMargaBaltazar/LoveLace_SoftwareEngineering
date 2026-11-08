@@ -6,6 +6,49 @@
     <title>Sign Up - LoveLace</title>
     <!-- External Stylesheet -->
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Embedded styling needed to control position without modifying your external style.css structure */
+        .input-relative-group {
+            position: relative;
+            margin-bottom: 25px; /* Adds space for the bubble to sit comfortably between fields */
+        }
+        
+        .error-bubble {
+            position: absolute;
+            left: 0;
+            top: 100%;
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid #f97316;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin-top: 4px;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #1e293b;
+            width: max-content;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .error-icon {
+            background-color: #f97316;
+            color: #ffffff;
+            font-weight: 800;
+            border-radius: 4px;
+            padding: 1px 6px;
+            display: inline-block;
+            font-family: sans-serif;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
 
@@ -31,11 +74,17 @@
                 <input type="email" id="email" placeholder="john.doe@example.com" required>
             </div>
 
-            <div class="input-group">
+            <!-- Changed class to input-relative-group to anchor error bubble right below password input wrapper -->
+            <div class="input-group input-relative-group">
                 <label for="password">Password</label>
                 <div class="password-wrapper">
                     <input type="password" id="password" placeholder="••••••••" minlength="8" required>
                     <button type="button" class="password-toggle" data-target="password">View</button>
+                </div>
+                <!-- Inline Error Bubble placed directly before Confirm Password block -->
+                <div id="passwordErrorBubble" class="error-bubble hidden">
+                    <span class="error-icon">!</span>
+                    <span id="passwordErrorText"></span>
                 </div>
             </div>
 
@@ -79,9 +128,18 @@
             });
         });
 
+        // --- UI Error Element DOM Bindings ---
+        const pwdBubble = document.getElementById('passwordErrorBubble');
+        const pwdText = document.getElementById('passwordErrorText');
+
+        // Typing inputs clear errors instantly
+        document.getElementById('password').addEventListener('input', () => pwdBubble.classList.add('hidden'));
+        document.getElementById('confirmPassword').addEventListener('input', () => pwdBubble.classList.add('hidden'));
+
         // --- 2. Signup Form Submission Flow ---
         document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            pwdBubble.classList.add('hidden'); // Clear prior bubbles on re-submit
 
             const first_name = document.getElementById('firstName').value.trim();
             const last_name = document.getElementById('lastName').value.trim();
@@ -91,7 +149,8 @@
 
             // Password matching validation
             if (password !== confirmPassword) {
-                alert("Passwords do not match. Please try again.");
+                pwdText.textContent = "Passwords do not match. Please try again.";
+                pwdBubble.classList.remove('hidden');
                 return;
             }
 
@@ -112,7 +171,14 @@
                 window.location.href = '/login.html';
 
             } catch (err) {
-                alert(err.message);
+                // If backend throws an evaluation constraint about password requirements, bind to inline layout bubble
+                if (err.message.toLowerCase().includes('password')) {
+                    pwdText.textContent = err.message;
+                    pwdBubble.classList.remove('hidden');
+                } else {
+                    // Standard system wide alert fallback for non-password database conflicts (such as email duplication)
+                    alert(err.message);
+                }
             }
         });
     </script>
