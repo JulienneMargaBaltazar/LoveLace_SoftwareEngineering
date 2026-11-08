@@ -1,6 +1,6 @@
 # Developer Handoff: LoveLace, Inc. ERP
 
-This document outlines the design tokens, responsive layouts, interaction states, and form validation logic required to implement the LoveLace, Inc. ERP suite (Marketing Site, Web App, and Authentication Flows).
+This document outlines the design tokens, responsive layouts, interaction states, and form validation logic required to implement the LoveLace, Inc. ERP 
 
 ---
 
