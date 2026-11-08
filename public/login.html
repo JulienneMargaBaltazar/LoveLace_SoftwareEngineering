@@ -25,35 +25,38 @@
 </head>
 <body>
 
-    <div class="card">
-        <h2>Welcome back</h2>
-        <h4>Log in to continue to your workspace.</h4>
+    <!-- ADDED AUTHENTICATION LAYOUT BLOCK WRAPPER SHELL TO CENTER CONTAINER -->
+    <div class="auth-wrapper">
+        <div class="card">
+            <h2>Welcome back</h2>
+            <h4>Log in to continue to your workspace.</h4>
 
-        <!-- Login Form -->
-        <form id="loginForm">
-            <div class="input-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" placeholder="you@company.com" required>
-            </div>
-            
-            <div class="input-group">
-                <label for="password">Password</label>
-                <div class="password-wrapper">
-                    <input type="password" id="password" placeholder="Enter your password" required>
-                    <button type="button" class="password-toggle" data-target="password">View</button>
+            <!-- Login Form -->
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="you@company.com" required>
                 </div>
+                
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" placeholder="Enter your password" required>
+                        <button type="button" class="password-toggle" data-target="password">View</button>
+                    </div>
+                </div>
+
+                <!-- Forgot Password Link -->
+                <div class="forgot-container">
+                    <a href="/forgotpassword.html">Forgot password?</a>
+                </div>
+
+                <button type="submit">Log In</button>
+            </form>
+
+            <div class="auth-footer">
+                Don't have an account? <a href="/signup.html">Sign up</a>
             </div>
-
-            <!-- Forgot Password Link -->
-            <div class="forgot-container">
-                <a href="/forgotpassword.html">Forgot password?</a>
-            </div>
-
-            <button type="submit">Log In</button>
-        </form>
-
-        <div class="auth-footer">
-            Don't have an account? <a href="/signup.html">Sign up</a>
         </div>
     </div>
 
