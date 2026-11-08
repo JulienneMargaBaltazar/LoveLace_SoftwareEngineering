@@ -60,15 +60,6 @@ The design must adapt fluidly across devices.
 *   **Auth Pages:** Split-screen layout (Image/Info panel on left, Form on right).
 *   **App:** Sidebar fixed on the left, full data tables, inline action buttons.
 
-### Tablet (768px - 1023px)
-*   **Marketing:** Grids collapse from 3 columns to 2.
-*   **Auth Pages:** The left image panel is hidden to maximize form space. Form centers on screen.
-*   **App:** Sidebar collapses to a hamburger menu. Data tables may hide non-essential columns or allow horizontal scrolling.
-
-### Mobile (< 767px)
-*   **Marketing:** Single-column stack. Navigation becomes a hamburger menu.
-*   **App:** Sidebar hidden (drawer menu). Table rows convert to stacked cards (Label: Value format). Action buttons (Edit, Rights, Block) move into an ellipsis (`...`) dropdown menu.
-
 ---
 
 ## 3. Component Interaction States
