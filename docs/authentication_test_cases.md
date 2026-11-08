@@ -9,11 +9,11 @@
 | :--- | :--- | :--- | :--- | :--- |
 | TC-01 | Register with valid, complex credentials | S1-DEV-02 | 🟢 Passed | Account registered cleanly with mock profile; user successfully redirected to dashboard. |
 | TC-02 | Register with a password below length boundaries | S1-DEV-02 | 🟢 Passed | Form rejected submission and displayed validation error: "Password must be at least 8 characters long." |
-| TC-03 | Register with credentials missing complexity requirements | S1-DEV-02 | 🔴 Failed | Server accepted password lagging required special character constraints. (Logged as Issue #81) |
+| TC-03 | Register with credentials missing complexity requirements | S1-DEV-02 | 🟢 Passed | Server rejected password lacking required special character constraints. |
 | TC-04 | Log in with valid credentials and establish secure session | S1-DEV-02 | 🟢 Passed | Secure session initialized cleanly on server-side dashboard route. |
 | Test Case 05 | Explicit log out session invalidation verification | S1-DEV-02 | 🟢 Passed | Token invalidated instantly on server; browser back button forced a redirect back to login. |
-| TC-06 | Attempt password reset using an expired security token | S1-DEV-02 | 🟢 Passed | Application accurately caught expired timestamp token and safely rejected modifications. |
-| TC-07 | Attempt password reset using a reused security token | S1-DEV-02 | 🟢 Passed | Server-side security guardrail caught identical token resubmission and dropped request. |
+| TC-06 | Attempt password reset using an expired security token | S1-DEV-02 | 🔄 In Progress | [Application accurately caught expired timestamp token and safely rejected modifications.]|
+| TC-07 | Attempt password reset using a reused security token | S1-DEV-02 | ⚪ Not Run | [Server-side security guardrail caught identical token resubmission and dropped request.] |
 
 ---
 
