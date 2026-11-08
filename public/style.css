@@ -715,3 +715,32 @@ button:hover {
     color: #5C5C99;
     font-size: 0.75rem;
 }
+
+/* The container wrapping your 4 metric cards (Revenue, Active Users, etc.) */
+.stats-row {
+  display: flex;
+  flex-direction: row; /* Forces them to stand side-by-side horizontally */
+  justify-content: space-between; /* Spreads them evenly from edge to edge */
+  gap: 24px; /* Creates the perfect uniform gap between each card */
+  width: 100%;
+}
+
+/* Make sure each card scales proportionally to fill the row perfectly */
+.metric-card {
+  flex: 1; /* Gives every card an identical, equal width */
+  min-width: 0; /* Prevents text overflow from stretching individual cards */
+}
+
+/* The container wrapping your 6 quick actions buttons */
+.quick-actions-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+}
+
+.action-card {
+  flex: 1;
+}
+
