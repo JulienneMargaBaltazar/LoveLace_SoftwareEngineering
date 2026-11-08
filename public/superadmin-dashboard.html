@@ -41,182 +41,164 @@
     </style>
 </head>
 <body class="bg-[#F4F6F9] text-gray-800 antialiased">
-    <div class="admin-layout" style="display: flex; width: 100%; min-height: 100vh; overflow: hidden;">
-        <!-- Sidebar Navigation Area -->
-        <aside class="sidebar">
-            <div class="sidebar-brand">
-                <i class="fa-solid fa-laptop-code"></i>
-                <span>LoveLace Inc. ERP</span>
-            </div>
-            
-            <ul class="nav-menu">
-                <li class="nav-item active">
-                    <a href="superadmin-dashboard.html">
-                        <i class="fa-solid fa-chart-pie"></i> Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="superadmin-customers.html">
-                        <i class="fa-solid fa-users"></i> Customers
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="superadmin-products.html">
-                        <i class="fa-solid fa-box"></i> Products
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="superadmin-sales.html">
-                        <i class="fa-solid fa-credit-card"></i> Sales
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="superadmin-reports.html">
-                        <i class="fa-solid fa-chart-line"></i> Reports
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="superadmin-usermanagement.html">
-                        <i class="fa-solid fa-user-gear"></i> User Management
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="superadmin-settings.html">
-                        <i class="fa-solid fa-sliders"></i> System Settings
-                    </a>
-                </li>
-            </ul>
 
-            <!-- Minimal Profile Sidebar Footer -->
-            <div class="sidebar-footer">
-                <div class="profile-container">
-                    <div class="profile-avatar"></div>
-                    <span class="profile-email">admin@lovelace.inc</span>
+    <div class="admin-layout flex h-screen overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0">
+            <div>
+                <div class="sidebar-brand px-6 py-5 border-b border-gray-100 font-bold text-gray-900 flex flex-col">
+                    <span>LoveLace Inc. ERP</span>
+                    <span class="text-xs text-gray-400 font-normal">by LoveLace</span>
                 </div>
-                <button class="logout-icon-btn" title="Logout">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                </button>
+                
+                <ul class="nav-menu px-3 space-y-1 mt-2">
+                    <li class="nav-item active"><a href="/superadmin-dashboard.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg transition border-l-4 border-blue-600">📊 Dashboard</a></li>
+                    <li class="border-t border-gray-200 my-2"></li>
+
+                    <li class="nav-item"><a href="/superadmin-customers.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">👥 Customers</a></li>
+                    <li class="nav-item"><a href="/superadmin-products.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📦 Products</a></li>
+                     <li class="nav-item"><a href="/superadmin-human-resources.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition"> 👔 Human Resources</a></li>
+                    <li class="nav-item"><a href="/superadmin-sales.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">💳 Sales</a></li>
+                
+
+                    <!-- Separator Line -->
+                    <li class="border-t border-gray-200 my-2"></li>
+
+                    <!-- Separated User Management Menu Item -->
+                    <li class="nav-item"><a href="/user-management.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">⚙️ User Management</a></li>
+                    <li class="nav-item"><a href="/system-settings.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">🔧 System Settings</a></li>
+                </ul>
+            </div>
+
+            <!-- Bottom Left User Info & Logout -->
+            <div class="sidebar-footer p-4 border-t border-gray-100 bg-gray-900">
+                <div id="userProfileInfo" class="user-profile-info text-white text-sm font-semibold mb-3">
+                    Loading user...
+                </div>
+                <button id="logoutBtn" class="sidebar-logout-btn flex items-center justify-center gap-2">Logout</button>
             </div>
         </aside>
 
         <!-- Main Workspace Area -->
-                <main class="main-content" style="flex: 1; min-width: 0; width: 100%; height: 100vh; overflow-y: auto; display: flex; flex-direction: column;">
+        <main class="main-content flex-1 flex flex-col overflow-y-auto">
             
-            <!-- Header Bar Component -->
-            <header class="top-header">
+            <!-- Header Bar -->
+            <header class="top-header bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
                 <div>
-                    <h1>Dashboard</h1>
-                    <p style="margin: 0; color: #64748b; font-size: 0.75rem;">Welcome back!</p>
+                    <h1 class="text-xl font-bold text-gray-900">Dashboard</h1>
+                    <p class="text-xs text-gray-500" id="welcomeSubheading">Welcome back!</p>
                 </div>
-                <div>
-                    <span class="badge-pill success">Superadmin</span>
+                <div class="flex items-center gap-3">
+                    <span class="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-md border border-purple-200">Superadmin</span>
                 </div>
             </header>
 
-
-  <div class="dashboard-container">
+            <div class="dashboard-container p-8 space-y-6 max-w-7xl mx-auto w-full">
                 
-                <!-- Welcome Banner (Purple Gradient Layout Matching Figma) -->
-                <div class="welcome-banner">
-                    <h2>Welcome back, Superadmin!</h2>
-                    <p>Lovelace Inc. ERP | Here's what's happening across your platform today.</p>
-                </div>
-
-                <!-- Numerical Summary Stats Cards Grid Row Layout -->
-                <section class="stats-grid">
-                    <!-- Revenue Card -->
-                    <div class="stat-card">
-                        <div class="flex items-center justify-between">
-                            <span class="stat-header">Revenue</span>
-                            <span class="badge-pill success">+12.5%</span>
-                        </div>
-                        <div class="stat-value">$48,290</div>
+                <!-- Welcome Banner with Add User Button -->
+                <section class="welcome-banner bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <h2 id="welcomeHeading" class="text-lg font-bold text-gray-900">System Management</h2>
+                        <p style="margin: 0; color: #5C5C99; font-size: 0.875rem;" class="mt-0.5">Manage system-wide accounts and security clearances.</p>
                     </div>
-
-                    <!-- Active Users Card -->
-                    <div class="stat-card">
-                        <div class="flex items-center justify-between">
-                            <span class="stat-header">Active Users</span>
-                            <span class="badge-pill success">+8.1%</span>
-                        </div>
-                        <div class="stat-value">2,352</div>
-                    </div>
-
-                    <!-- New Orders Card -->
-                    <div class="stat-card">
-                        <div class="flex items-center justify-between">
-                            <span class="stat-header">New Orders</span>
-                            <span class="badge-pill success">+3.2%</span>
-                        </div>
-                        <div class="stat-value">1,204</div>
-                    </div>
-
-                    <!-- Refunds Card -->
-                    <div class="stat-card">
-                        <div class="flex items-center justify-between">
-                            <span class="stat-header">Refunds</span>
-                            <span class="badge-pill danger">-2.4%</span>
-                        </div>
-                        <div class="stat-value">$1,420</div>
+                    <div class="shrink-0">
+                        <button id="openAddUserModal" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm rounded-lg shadow-sm transition flex items-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Add User
+                        </button>
                     </div>
                 </section>
 
-                <!-- Quick Action Buttons Square Box Matrix Row Component Grid Area -->
-                                <!-- Quick Action Buttons Square Box Matrix Row Component Grid Area -->
-                <section class="mb-4">
-                    <h3 class="text-slate-700 font-bold mb-4 text-lg">Quick Actions</h3>
-                    <div class="actions-grid">
-                        <!-- Action 1: Add User -->
-                        <button class="action-card-btn">
-                            <div class="action-icon-wrapper">
-                                <i class="fa-solid fa-user-plus"></i>
+                <!-- Key Metrics / Stats Row -->
+                <section class="stats-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <div class="stat-card bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex justify-between items-start">
+                        <div>
+                            <div class="stat-header text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue</div>
+                            <div class="stat-value text-2xl font-bold text-gray-900 mt-2">
+                                $48,290
+                                <span class="badge-pill success inline-flex items-center gap-1 mt-2 text-xs font-semibold px-2 py-0.5 rounded bg-green-50 text-green-700 border border-green-200">+12.5%</span>
                             </div>
-                            <span>Add Account</span>
-                        </button>
+                        </div>
+                    </div>
+                    <div class="stat-card bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex justify-between items-start">
+                        <div>
+                            <div class="stat-header text-xs font-medium text-gray-500 uppercase tracking-wider">Active users</div>
+                            <div class="stat-value text-2xl font-bold text-gray-900 mt-2">
+                                2,352
+                                <span class="badge-pill success inline-flex items-center gap-1 mt-2 text-xs font-semibold px-2 py-0.5 rounded bg-green-50 text-green-700 border border-green-200">+8.1%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex justify-between items-start">
+                        <div>
+                            <div class="stat-header text-xs font-medium text-gray-500 uppercase tracking-wider">New orders</div>
+                            <div class="stat-value text-2xl font-bold text-gray-900 mt-2">
+                                1,204
+                                <span class="badge-pill success inline-flex items-center gap-1 mt-2 text-xs font-semibold px-2 py-0.5 rounded bg-green-50 text-green-700 border border-green-200">+3.2%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex justify-between items-start">
+                        <div>
+                            <div class="stat-header text-xs font-medium text-gray-500 uppercase tracking-wider">Refunds</div>
+                            <div class="stat-value text-2xl font-bold text-gray-900 mt-2">
+                                $1,420
+                                <span class="badge-pill success inline-flex items-center gap-1 mt-2 text-xs font-semibold px-2 py-0.5 rounded bg-red-50 text-red-700 border border-red-200">-2.4%</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
-                        <!-- Action 2: Manage Users -->
-                        <button class="action-card-btn">
-                            <div class="action-icon-wrapper">
+                <!-- Quick Actions Panel -->
+                <section class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                    <h3 class="font-bold text-gray-900 text-base mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-bolt text-amber-500"></i> Quick Actions
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <a href="/user-management.html" class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50/50 transition group">
+                            <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg group-hover:bg-blue-600 group-hover:text-white transition">
                                 <i class="fa-solid fa-users-gear"></i>
                             </div>
-                            <span>Manage Users</span>
+                            <div>
+                                <div class="text-sm font-semibold text-gray-900">Manage Users</div>
+                                <div class="text-xs text-gray-500">Roles & permissions</div>
+                            </div>
+                        </a>
+
+                        <button id="quickAddUserBtn" class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-purple-500 hover:bg-purple-50/50 transition group text-left">
+                            <div class="w-10 h-10 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-lg group-hover:bg-purple-600 group-hover:text-white transition">
+                                <i class="fa-solid fa-user-plus"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-semibold text-gray-900">Add Account</div>
+                                <div class="text-xs text-gray-500">Create new user</div>
+                            </div>
                         </button>
 
-                        <!-- Action 3: View Products -->
-                        <button class="action-card-btn">
-                            <div class="action-icon-wrapper">
-                                <i class="fa-solid fa-boxes-stacked"></i>
+                        <a href="/reports.html" class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-green-500 hover:bg-green-50/50 transition group">
+                            <div class="w-10 h-10 rounded-lg bg-green-100 text-green-600 flex items-center justify-center font-bold text-lg group-hover:bg-green-600 group-hover:text-white transition">
+                                <i class="fa-solid fa-chart-line"></i>
                             </div>
-                            <span>Products</span>
-                        </button>
+                            <div>
+                                <div class="text-sm font-semibold text-gray-900">View Reports</div>
+                                <div class="text-xs text-gray-500">Analytics & audit</div>
+                            </div>
+                        </a>
 
-                        <!-- Action 4: Sales Pipeline -->
-                        <button class="action-card-btn">
-                            <div class="action-icon-wrapper">
-                                <i class="fa-solid fa-wallet"></i>
+                        <a href="/system-settings.html" class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-gray-500 hover:bg-gray-100 transition group">
+                            <div class="w-10 h-10 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center font-bold text-lg group-hover:bg-gray-700 group-hover:text-white transition">
+                                <i class="fa-solid fa-sliders"></i>
                             </div>
-                            <span>Sales</span>
-                        </button>
-
-                        <!-- Action 5: View Reports -->
-                        <button class="action-card-btn">
-                            <div class="action-icon-wrapper">
-                                <i class="fa-solid fa-chart-pie"></i>
+                            <div>
+                                <div class="text-sm font-semibold text-gray-900">System Settings</div>
+                                <div class="text-xs text-gray-500">Global configurations</div>
                             </div>
-                            <span>View Reports</span>
-                        </button>
-
-                        <!-- Action 6: System Settings Configuration -->
-                        <button class="action-card-btn">
-                            <div class="action-icon-wrapper">
-                                <i class="fa-solid fa-gear"></i>
-                            </div>
-                            <span>Settings</span>
-                        </button>
+                        </a>
                     </div>
                 </section>
 
             </div>
+        </main>
+    </div>
 
     <!-- ADD USER MODAL -->
     <div id="addUserModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
