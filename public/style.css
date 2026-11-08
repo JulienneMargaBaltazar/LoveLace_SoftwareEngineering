@@ -240,12 +240,14 @@ body {
 
 
 .top-header {
-    background: #ffffff;
-    padding: 1rem 2rem;
-    border-bottom: 1px solid #e2e8f0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    background: #ffffff !important;
+    padding: 1rem 2rem !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important; /* Forces it to fill the whole right side */
+    box-sizing: border-box !important;
 }
 
 
@@ -718,4 +720,14 @@ button:hover {
 .action-label span {
     color: #5C5C99;
     font-size: 0.75rem;
+}
+
+/* --- NEW METRICS PANEL CONTAINER --- */
+.dashboard-card-panel {
+    background: #ffffff !important;
+    border-radius: 16px !important;
+    padding: 2rem !important;
+    margin-bottom: 2rem !important;
+    border: 1px solid #A3A3CC !important;
+    box-shadow: 0 4px 20px rgba(41, 41, 102, 0.02) !important;
 }
