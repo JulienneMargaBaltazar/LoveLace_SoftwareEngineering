@@ -74,63 +74,35 @@
             });
         });
 
-        // --- 2. Login Form Submission Flow ---
+        // --- 2. Cleaned & Consolidated Login Form Submission Flow ---
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault(); // Stop default form reload
-
+            e.preventDefault(); // Stop default browser page reload loop
+            
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
             try {
-                const response = await fetch('/api/auth/login', {
+                // Sends structured payload directly to router.post('/login') inside authRoutes.js
+                const response = await fetch('/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include', // Crucial for cookies/sessions
                     body: JSON.stringify({ email, password })
                 });
-
+                
                 const data = await response.json();
-
+                
                 if (response.ok) {
-                    // Check if backend provided a redirect URL, or fallback based on role
-                    if (data.redirectUrl) {
-                        window.location.href = data.redirectUrl;
-                    } else if (data.roleId === 1) {
-                        window.location.href = '/superadmin-dashboard.html';
-                    } else if (data.roleId === 2) {
-                        window.location.href = '/dashboard.html';
-                    } else {
-                        window.location.href = '/user-dashboard.html';
-                    }
+                    // Success! Redirect straight to your updated superadmin dashboard view layout
+                    window.location.href = '/superadmin-dashboard.html';
                 } else {
+                    // Triggers alert with the backend error message from your router checks
                     alert(data.error || 'Login failed. Please check your credentials.');
                 }
-            } catch (err) {
-                console.error('Login network error:', err);
-                alert('An unexpected error occurred. Please try again.');
+            } catch (error) {
+                console.error('Frontend Login Fetch Error:', error);
+                alert('Could not establish contact with the backend server. Please try again.');
             }
         });
-
-       document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-
-    const response = await fetch('/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-    });
-    
-    const data = await response.json();
-    if (response.ok) {
-        window.location.href = '/superadmin-dashboard.html';
-    } else {
-        alert(data.error);
-    }
-});
- 
     </script>
 </body>
 </html>
