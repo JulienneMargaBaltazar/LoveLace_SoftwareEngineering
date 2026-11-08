@@ -715,44 +715,35 @@ button:hover {
     color: #5C5C99;
     font-size: 0.75rem;
 }
-/* --- DASHBOARD ALIGNMENT FIXES --- */
+/* --- OVERRIDE FIXED ALIGNMENT CODES --- */
 
-/* 1. Sets up the sidebar next to the main content layout */
-body.admin-layout {
-  display: flex;
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  width: 100%;
-}
-
-/* 2. Fixes the top metrics row alignment so all 4 cards sit perfectly side-by-side */
+/* 1. Forces the metrics row to lay out side-by-side cleanly */
 .stats-grid {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 20px; /* Equal spacing between all 4 cards */
-  width: 100%;
-  margin-bottom: 32px;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  gap: 20px !important; 
+  width: 100% !important;
+  margin-bottom: 32px !important;
 }
 
-/* Forces each card to share the row space identically with zero crowding */
+/* Dynamically resizes the 4 top cards so they sit together perfectly */
 .stats-grid .stat-card {
-  flex: 1;
-  min-width: 0;
+  flex: 1 !important;
+  min-width: 0 !important;
 }
 
-/* 3. Fixes the Quick Actions alignment row to span properly */
+/* 2. Forces the Quick Actions to line up side-by-side cleanly */
 .actions-grid {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 16px; /* Equal spacing between all action buttons */
-  width: 100%;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  gap: 16px !important; 
+  width: 100% !important;
 }
 
-/* Forces each action card to stay on one row and scale uniformly */
+/* Dynamically resizes the action buttons to fill the row uniformly */
 .actions-grid .action-btn-card {
-  flex: 1;
-  min-width: 0;
+  flex: 1 !important;
+  min-width: 0 !important;
 }
