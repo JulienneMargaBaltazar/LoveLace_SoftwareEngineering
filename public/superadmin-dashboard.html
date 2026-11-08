@@ -149,6 +149,47 @@
             </section>
         </div>
     </main>
+    <!-- Script added right before the closing body tag to load user session metrics -->
+    <script>
+        async function checkSession() {
+            try {
+                const response = await fetch(window.location.origin + '/api/dashboard', { credentials: 'include' });
+                
+                if (!response.ok) {
+                    window.location.href = './login.html';
+                    return;
+                }
+                
+                const data = await response.json();
+                const sessionData = data.userSessionData;
+                
+                const firstName = sessionData.first_name || sessionData.firstName || '';
+                const lastName = sessionData.last_name || sessionData.lastName || '';
+                const fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'Superadmin';
+                
+                // 1. Injects first name into the purple welcome header banner
+                const welcomeHeading = document.getElementById('welcomeHeading');
+                if (welcomeHeading) {
+                    welcomeHeading.innerText = firstName ? `Welcome back, ${firstName}!` : 'Welcome back, Superadmin!';
+                }
+                
+                // 2. Injects full name into the bottom sidebar profile slot
+                const profileEl = document.getElementById('userProfileInfo');
+                if (profileEl) {
+                    profileEl.innerText = fullName;
+                }
+                
+            } catch (err) {
+                console.error('Session check failed:', err);
+                window.location.href = './login.html';
+            }
+        }
+
+        // Make sure the function runs automatically on page load
+        checkSession();
+    </script>
+</body>
+</html>
 
 </body>
 </html>
