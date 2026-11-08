@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard (Admin) - LoveLace Inc. ERP</title>
+    <title>Dashboard (Superadmin) - LoveLace Inc. ERP</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -53,17 +53,17 @@
                 
                 <ul class="nav-menu px-3 space-y-1 mt-2">
                     <li class="nav-item active"><a href="/dashboard.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg transition border-l-4 border-blue-600">📊 Dashboard</a></li>
-                    <li class="nav-item"><a href="/customers.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">👥 Customers</a></li>
-                    <li class="nav-item"><a href="/products.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📦 Products</a></li>
-                    <li class="nav-item"><a href="/sales.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">💳 Sales</a></li>
-                    <li class="nav-item"><a href="/reports.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📈 Reports</a></li>
+                    <li class="nav-item"><a href="/admin-customers.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">👥 Customers</a></li>
+                    <li class="nav-item"><a href="/admin-products.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📦 Products</a></li>
+                    <li class="nav-item"><a href="/admin-sales.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">💳 Sales</a></li>
+                    <li class="nav-item"><a href="/admin-reports.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📈 Reports</a></li>
                     
                     <!-- Separator Line -->
                     <li class="border-t border-gray-200 my-2"></li>
 
-                    <!-- User Management pointing to Admin-specific view -->
+                    <!-- Separated User Management Menu Item -->
                     <li class="nav-item"><a href="/admin-user-management.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">⚙️ User Management</a></li>
-                    <li class="nav-item"><a href="/system-settings.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">🔧 System Settings</a></li>
+                    <li class="nav-item"><a href="/admin-system-settings.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">🔧 System Settings</a></li>
                 </ul>
             </div>
 
@@ -92,11 +92,11 @@
 
             <div class="dashboard-container p-8 space-y-6 max-w-7xl mx-auto w-full">
                 
-                <!-- Welcome Banner -->
+                <!-- Welcome Banner (Minus Add User Button) -->
                 <section class="welcome-banner bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
                     <div>
-                        <h2 id="welcomeHeading" class="text-lg font-bold text-gray-900">Workspace Management</h2>
-                        <p style="margin: 0; color: #5C5C99; font-size: 0.875rem;" class="mt-0.5">Manage standard accounts and operational records.</p>
+                        <h2 id="welcomeHeading" class="text-lg font-bold text-gray-900">System Management</h2>
+                        <p style="margin: 0; color: #5C5C99; font-size: 0.875rem;" class="mt-0.5">Manage system-wide accounts and security clearances.</p>
                     </div>
                 </section>
 
@@ -116,7 +116,7 @@
                             <div class="stat-header text-xs font-medium text-gray-500 uppercase tracking-wider">Active users</div>
                             <div class="stat-value text-2xl font-bold text-gray-900 mt-2">
                                 2,352
-                                <span class="badge-pill success inline-flex items-center gap-1 mt-2 text-xs font-semibold px-2.5 py-0.5 rounded bg-green-50 text-green-700 border border-green-200">+8.1%</span>
+                                <span class="badge-pill success inline-flex items-center gap-1 mt-2 text-xs font-semibold px-2 py-0.5 rounded bg-green-50 text-green-700 border border-green-200">+8.1%</span>
                             </div>
                         </div>
                     </div>
@@ -125,7 +125,7 @@
                             <div class="stat-header text-xs font-medium text-gray-500 uppercase tracking-wider">New orders</div>
                             <div class="stat-value text-2xl font-bold text-gray-900 mt-2">
                                 1,204
-                                <span class="badge-pill success inline-flex items-center gap-1 mt-2 text-xs font-semibold px-2.5 py-0.5 rounded bg-green-50 text-green-700 border border-green-200">+3.2%</span>
+                                <span class="badge-pill success inline-flex items-center gap-1 mt-2 text-xs font-semibold px-2 py-0.5 rounded bg-green-50 text-green-700 border border-green-200">+3.2%</span>
                             </div>
                         </div>
                     </div>
@@ -134,7 +134,7 @@
                             <div class="stat-header text-xs font-medium text-gray-500 uppercase tracking-wider">Refunds</div>
                             <div class="stat-value text-2xl font-bold text-gray-900 mt-2">
                                 $1,420
-                                <span class="badge-pill success inline-flex items-center gap-1 mt-2 text-xs font-semibold px-2.5 py-0.5 rounded bg-red-50 text-red-700 border border-red-200">-2.4%</span>
+                                <span class="badge-pill success inline-flex items-center gap-1 mt-2 text-xs font-semibold px-2 py-0.5 rounded bg-red-50 text-red-700 border border-red-200">-2.4%</span>
                             </div>
                         </div>
                     </div>
@@ -152,26 +152,37 @@
                             </div>
                             <div>
                                 <div class="text-sm font-semibold text-gray-900">Manage Users</div>
-                                <div class="text-xs text-gray-500">Directory & status</div>
+                                <div class="text-xs text-gray-500">Roles & permissions</div>
                             </div>
                         </a>
-                        <a href="/reports.html" class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-green-500 hover:bg-green-50/50 transition group">
+
+                        <a href="/admin-customers.html" class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-purple-500 hover:bg-purple-50/50 transition group">
+                            <div class="w-10 h-10 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-lg group-hover:bg-purple-600 group-hover:text-white transition">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-semibold text-gray-900">Customers</div>
+                                <div class="text-xs text-gray-500">View customer list</div>
+                            </div>
+                        </a>
+
+                        <a href="/admin-reports.html" class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-green-500 hover:bg-green-50/50 transition group">
                             <div class="w-10 h-10 rounded-lg bg-green-100 text-green-600 flex items-center justify-center font-bold text-lg group-hover:bg-green-600 group-hover:text-white transition">
                                 <i class="fa-solid fa-chart-line"></i>
                             </div>
                             <div>
                                 <div class="text-sm font-semibold text-gray-900">View Reports</div>
-                                <div class="text-xs text-gray-500">Analytics overview</div>
+                                <div class="text-xs text-gray-500">Analytics & audit</div>
                             </div>
                         </a>
 
-                        <a href="/system-settings.html" class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-gray-500 hover:bg-gray-100 transition group">
+                        <a href="/admin-system-settings.html" class="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-gray-500 hover:bg-gray-100 transition group">
                             <div class="w-10 h-10 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center font-bold text-lg group-hover:bg-gray-700 group-hover:text-white transition">
                                 <i class="fa-solid fa-sliders"></i>
                             </div>
                             <div>
                                 <div class="text-sm font-semibold text-gray-900">System Settings</div>
-                                <div class="text-xs text-gray-500">Preferences</div>
+                                <div class="text-xs text-gray-500">Global configurations</div>
                             </div>
                         </a>
                     </div>
@@ -181,97 +192,13 @@
         </main>
     </div>
 
-    <!-- ADD USER MODAL (Restricted to User and Admin roles only) -->
-    <div id="addUserModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden transform transition-all">
-            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                <h3 class="font-bold text-gray-900">Add New User Account</h3>
-                <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600 text-lg">&times;</button>
-            </div>
-            
-            <form id="addUserForm" class="p-6 space-y-4">
-                <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">Email Address</label>
-                    <input type="email" id="modalEmail" required placeholder="user@lovelace.com" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">Temporary Password</label>
-                    <input type="password" id="modalPassword" required placeholder="••••••••" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">Role Assignment</label>
-                    <select id="modalRole" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
-                        <option value="3">User</option>
-                        <option value="2">Admin</option>
-                    </select>
-                </div>
-
-                <div id="modalAlert" class="hidden p-3 rounded-lg text-xs font-medium"></div>
-
-                <div class="flex justify-end gap-3 pt-3">
-                    <button type="button" id="cancelModalBtn" class="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition">Cancel</button>
-                    <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition shadow-sm">Save User</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- Script Logic -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             checkSession();
-
-            // Modal Controls
-            const modal = document.getElementById('addUserModal');
-            const openModal = () => modal.classList.replace('hidden', 'flex');
-            
-            document.getElementById('openAddUserModal').addEventListener('click', openModal);
-            document.getElementById('quickAddUserBtn').addEventListener('click', openModal);
-            document.getElementById('closeModalBtn').addEventListener('click', () => modal.classList.replace('flex', 'hidden'));
-            document.getElementById('cancelModalBtn').addEventListener('click', () => modal.classList.replace('flex', 'hidden'));
-
-            // Add User Form Submission
-            document.getElementById('addUserForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('modalEmail').value;
-                const password = document.getElementById('modalPassword').value;
-                const role_id = document.getElementById('modalRole').value;
-                const alertBox = document.getElementById('modalAlert');
-
-                try {
-                    const res = await fetch('/api/admin/users', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include',
-                        body: JSON.stringify({ email, password, role_id })
-                    });
-
-                    const data = await res.json();
-
-                    if (!res.ok) {
-                        alertBox.className = "p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200 block";
-                        alertBox.textContent = data.error || 'Failed to add user.';
-                        return;
-                    }
-
-                    alertBox.className = "p-3 rounded-lg text-xs font-medium bg-green-50 text-green-700 border border-green-200 block";
-                    alertBox.textContent = "User created successfully!";
-                    setTimeout(() => {
-                        modal.classList.replace('flex', 'hidden');
-                        document.getElementById('addUserForm').reset();
-                        alertBox.className = "hidden";
-                    }, 1000);
-
-                } catch (err) {
-                    alertBox.className = "p-3 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200 block";
-                    alertBox.textContent = 'Server error. Please try again.';
-                }
-            });
         });
 
-        // Verify Active Session & Enforce Role Guards
+        // Verify Active Session & Populate Superadmin Name
         async function checkSession() {
             try {
                 const response = await fetch('/api/dashboard', { credentials: 'include' });
@@ -283,24 +210,16 @@
                 const data = await response.json();
                 const sessionData = data.userSessionData;
 
-                const roleId = Number(sessionData?.roleId || sessionData?.role_id || 3);
-
-                // Security Guard: If Superadmin (role 1) visits regular dashboard, redirect to superadmin dashboard
-                if (roleId === 1) {
-                    window.location.href = '/superadmin-dashboard.html';
-                    return;
-                }
-
                 const firstName = sessionData?.firstName || sessionData?.first_name || '';
                 const lastName = sessionData?.lastName || sessionData?.last_name || '';
-                const fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'Admin';
+                const fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'Superadmin';
 
                 document.getElementById('userProfileInfo').innerText = fullName;
 
                 if (firstName) {
                     document.getElementById('welcomeSubheading').innerText = `Welcome back, ${firstName}!`;
                 } else {
-                    document.getElementById('welcomeSubheading').innerText = `Welcome back, Admin!`;
+                    document.getElementById('welcomeSubheading').innerText = `Welcome back, Superadmin!`;
                 }
 
             } catch (err) {

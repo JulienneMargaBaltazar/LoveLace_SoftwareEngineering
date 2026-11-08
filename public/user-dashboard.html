@@ -53,11 +53,12 @@
                     <span class="text-xs text-gray-400 font-normal">by LoveLace</span>
                 </div>
                 
-                <ul class="nav-menu px-3 space-y-1 mt-2">
+                <ul id="navMenu" class="nav-menu px-3 space-y-1 mt-2">
                     <li class="nav-item active"><a href="/user-dashboard.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg transition border-l-4 border-blue-600">📊 Dashboard</a></li>
-                    <li class="nav-item"><a href="/customers.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">👥 Customers</a></li>
-                    <li class="nav-item"><a href="/products.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📦 Products</a></li>
-                    <li class="nav-item"><a href="/system-settings.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">⚙️ Settings</a></li>
+                    <li class="border-t border-gray-200 my-2"></li>
+                    <li class="nav-item"><a href="/user-customers.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">👥 Customers</a></li>
+                    <li class="nav-item"><a href="/user-products.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📦 Products</a></li>
+                    <li class="nav-item"><a href="/user-sales.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">💳 Sales</a></li>
                 </ul>
             </div>
 
@@ -142,10 +143,10 @@
     </div>
 
     <script>
-        // Fetch session details on load to verify access and personalize welcome text with full name
+        // Fetch session details on load to verify access and personalize welcome text
         async function loadUserData() {
             try {
-                const response = await fetch('/api/auth/dashboard', {
+                const response = await fetch('/api/dashboard', {
                     method: 'GET',
                     credentials: 'include', // Sends session cookie
                     headers: { 'Content-Type': 'application/json' }
@@ -163,6 +164,27 @@
 
                     document.getElementById('welcomeText').innerText = `Welcome back, ${fullName}!`;
                     document.getElementById('userProfileInfo').innerText = fullName;
+
+                    // --- DYNAMICALLY INJECT REPORTS LINK IF AUTHORIZED ---
+                    const roleId = Number(sessionData.roleId || sessionData.role_id || 3);
+                    const userRights = data.rights || [];
+                    const hasReportsAccess = roleId === 1 || roleId === 2 || userRights.some(r =>
+                        String(r.module_name || '').toLowerCase() === 'reports' &&
+                        r.is_allowed === true
+                    );
+
+                    if (hasReportsAccess) {
+                        const navMenu = document.getElementById('navMenu');
+                        navMenu.innerHTML += `
+                            <li class="nav-item">
+                                <a href="/user-reports.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">
+                                    📈 Reports
+                                </a>
+                            </li>
+                        `;
+                    }
+                    // ----------------------------------------------------
+
                 } else {
                     window.location.href = '/login.html';
                 }
@@ -177,18 +199,17 @@
             try {
                 const response = await fetch('/api/auth/logout', { 
                     method: 'POST',
-                    credentials: 'include' // Crucial: tells the browser to send and clear the session cookie
+                    credentials: 'include'
                 });
 
                 if (response.ok) {
-                    // Successfully logged out, redirect user to login
                     window.location.href = '/login.html';
                 } else {
                     alert('Logout failed. Please try again.');
                 }
             } catch (err) {
                 console.error('Logout error:', err);
-                window.location.href = '/login.html'; // Fallback redirect on error
+                window.location.href = '/login.html';
             }
         });
 

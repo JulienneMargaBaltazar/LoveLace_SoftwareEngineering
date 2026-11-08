@@ -7,6 +7,7 @@ import authRoutes from './src/routes/authRoutes.js';
 import { supabase } from './src/config/supabaseClient.js';
 import { requireAuth } from './src/middleware/authMiddleware.js';
 import adminRoutes from './src/routes/adminRoutes.js';
+import { requireAnyRight } from './src/middleware/requireRight.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,7 +19,6 @@ const PORT = process.env.PORT || 3000;
 // 1. Core Global Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
 
 // 2. Session Middleware (MUST be registered BEFORE routes)
 app.use(
@@ -34,27 +34,53 @@ app.use(
   })
 );
 
+// Protect the reports page before falling through to static file handling.
+app.get('/user-reports.html', requireAnyRight('reports'), (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'user-reports.html'));
+});
+
+app.use(express.static(path.join(__dirname, 'public')));
+
 // 3. API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/admin/reports', requireAnyRight('reports'));
 app.use('/api/admin', adminRoutes);
 
 // 4. Protected Route Example
 app.get('/api/dashboard', requireAuth, (req, res) => {
-  return res.status(200).json({
-    message: 'Welcome to the protected dashboard!',
-    userSessionData: {
-      userId: req.session.userId,
-      email: req.session.email,
-      roleId: req.session.roleId,
-      firstName: req.session.firstName,
-      lastName: req.session.lastName
-    }
-  });
+  supabase
+    .from('user_rights')
+    .select('module_name, action_key, is_allowed')
+    .eq('user_id', String(req.session.userId))
+    .eq('is_deleted', false)
+    .eq('is_allowed', true)
+    .then(({ data: rights, error }) => {
+      if (error) {
+        console.error('Dashboard rights error:', error.message);
+        return res.status(500).json({ error: 'Unable to load user rights.' });
+      }
+
+      return res.status(200).json({
+        message: 'Welcome to the protected dashboard!',
+        userSessionData: {
+          userId: req.session.userId,
+          email: req.session.email,
+          roleId: req.session.roleId,
+          firstName: req.session.firstName,
+          lastName: req.session.lastName
+        },
+        rights: rights || []
+      });
+    })
+    .catch(error => {
+      console.error('Dashboard rights error:', error);
+      return res.status(500).json({ error: 'Unable to load user rights.' });
+    });
 });
 
 // 5. Root Redirect (Ensure this matches your actual filename: signup.html vs signUp.html)
 app.get('/', (req, res) => {
-  res.redirect('/signup.html');
+  res.redirect('/landingpage.html');
 });
 
 // 6. Database Connection Test & Server Startup

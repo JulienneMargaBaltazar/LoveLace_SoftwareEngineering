@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Resources Management - LoveLace Inc. ERP</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Shared Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .sidebar-footer {
+            padding: 1.25rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.1);
+        }
+        .user-profile-info {
+            font-size: 0.9rem;
+            color: #ffffff;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            word-break: break-all;
+        }
+        .sidebar-logout-btn {
+            width: 100%;
+            background-color: #dc2626;
+            color: white;
+            border: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+        .sidebar-logout-btn:hover {
+            background-color: #b91c1c;
+        }
+    </style>
+</head>
+<body class="bg-[#F4F6F9] text-gray-800 antialiased min-h-screen">
+
+    <!-- Full screen flex layout -->
+    <div class="flex h-screen w-full overflow-hidden">
+        <!-- Sidebar Navigation (User View) -->
+        <aside class="sidebar w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0 h-full">
+            <div>
+                <div class="sidebar-brand px-6 py-5 border-b border-gray-100 font-bold text-gray-900 flex flex-col">
+                    <span>LoveLace Inc. ERP</span>
+                    <span class="text-xs text-gray-400 font-normal">by LoveLace</span>
+                </div>
+                
+                <ul class="nav-menu px-3 space-y-1 mt-2">
+                    <li class="nav-item"><a href="/user-dashboard.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📊 Dashboard</a></li>
+                    <li class="border-t border-gray-200 my-2"></li>
+                    <li class="nav-item"><a href="/user-customers.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">👥 Customers</a></li>
+                    <li class="nav-item"><a href="/user-products.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📦 Products</a></li>
+                    <li class="nav-item"><a href="/user-sales.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">💳 Sales</a></li>
+                    <li class="nav-item active"><a href="/user-human-resources.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg transition border-l-4 border-blue-600">👔 Human Resources</a></li>
+                </ul>
+            </div>
+
+            <!-- Bottom Left User Info & Logout -->
+            <div class="sidebar-footer p-4 border-t border-gray-100 bg-gray-900">
+                <div id="userProfileInfo" class="user-profile-info text-white text-sm font-semibold mb-3">
+                    Loading user...
+                </div>
+                <button id="logoutBtn" class="sidebar-logout-btn flex items-center justify-center gap-2">Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace Area -->
+        <main class="flex-1 w-full flex flex-col overflow-y-auto">
+            
+            <!-- Header Bar -->
+            <header class="top-header bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900">Human Resources Management</h1>
+                    <p class="text-xs text-gray-500">Manage employees, organizational jobs, and department structures.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="addEmployeeBtn" onclick="openEmployeeModal()" class="hidden px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-md shadow-sm transition items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Add Employee
+                    </button>
+                    <span id="roleBadge" class="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-semibold rounded-md border border-amber-200">USER</span>
+                </div>
+            </header>
+
+            <div class="dashboard-container p-8 space-y-6 max-w-7xl mx-auto w-full">
+
+                <!-- EMPLOYEES DIRECTORY SECTION -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between w-full gap-4">
+                        <div>
+                            <h3 class="font-bold text-gray-900 text-base">Employee Directory</h3>
+                            <p class="text-xs text-gray-500">View active personnel records and assignments.</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="text" id="searchEmployeeInput" onkeyup="filterEmployees()" placeholder="Search employees..." class="px-3 py-1.5 border border-gray-300 rounded-md text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 w-48 sm:w-64">
+                            <button id="refreshBtn" class="shrink-0 whitespace-nowrap px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-md border border-gray-300 transition flex items-center gap-1.5 w-auto">
+                                <i id="refreshIcon" class="fa-solid fa-rotate"></i> Refresh List
+                            </button>
+                        </div>
+                    </div>
+                    <div id="errorContainer" class="px-6 pt-3 text-xs font-medium text-red-600"></div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    <th class="py-3.5 px-6">Emp No</th>
+                                    <th class="py-3.5 px-6">Employee Name</th>
+                                    <th class="py-3.5 px-6">Job Code</th>
+                                    <th class="py-3.5 px-6">Dept Code</th>
+                                    <th class="py-3.5 px-6 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="employeeTableBody" class="divide-y divide-gray-100 text-sm">
+                                <tr>
+                                    <td colspan="5" class="py-6 text-center text-gray-400">Loading employees...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Employee Form Modal (Add / Edit) -->
+    <div id="employeeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-lg border border-gray-200 w-full max-w-md overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                <h3 id="modalTitle" class="font-bold text-gray-900 text-base">Add New Employee</h3>
+                <button onclick="closeEmployeeModal()" class="text-gray-400 hover:text-gray-600 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form id="employeeForm" onsubmit="handleFormSubmit(event)" class="p-6 space-y-4">
+                <input type="hidden" id="modalOriginalEmpNo">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">empno *</label>
+                    <input type="text" id="empno" required class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">empname *</label>
+                    <input type="text" id="empname" required class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">jobcode *</label>
+                    <input type="text" id="jobcode" required class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">deptcode *</label>
+                    <input type="text" id="deptcode" required class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                </div>
+                <div id="modalFormError" class="text-xs text-red-600 font-medium"></div>
+                <div class="flex items-center justify-end gap-3 pt-2 border-t border-gray-100">
+                    <button type="button" onclick="closeEmployeeModal()" class="px-4 py-2 border border-gray-300 text-gray-700 text-xs font-semibold rounded-md hover:bg-gray-50 transition">Cancel</button>
+                    <button type="submit" id="saveEmployeeBtn" class="px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-md hover:bg-blue-700 transition">Save Employee</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        let currentUserId = null;
+        let currentUserRoleId = null;
+        let userRights = [];
+        let employeesData = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkSession();
+            await fetchEmployeeDirectory();
+            
+            document.getElementById('refreshBtn').addEventListener('click', async () => {
+                const icon = document.getElementById('refreshIcon');
+                icon.classList.add('fa-spin');
+                await fetchEmployeeDirectory();
+                setTimeout(() => icon.classList.remove('fa-spin'), 400);
+            });
+        });
+
+        async function checkSession() {
+            try {
+                const response = await fetch('/api/dashboard', { credentials: 'include' });
+                if (!response.ok) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                const data = await response.json();
+                const sessionData = data.userSessionData;
+
+                currentUserId = sessionData?.userId || sessionData?.user_id || sessionData?.id;
+                currentUserRoleId = Number(sessionData?.roleId || sessionData?.role_id || 3);
+                userRights = data.rights || [];
+
+                const firstName = sessionData?.firstName || sessionData?.first_name || '';
+                const lastName = sessionData?.lastName || sessionData?.last_name || '';
+                const fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'User';
+                
+                document.getElementById('userProfileInfo').innerText = fullName;
+
+                // Check if user has add permission to show/hide the Add Employee button
+                const isSuperOrAdmin = (currentUserRoleId === 1 || currentUserRoleId === 2);
+                const canAddEmployee = isSuperOrAdmin || userRights.some(r => 
+                    String(r.module_name || '').toLowerCase() === 'human-resources' && 
+                    String(r.action_key || '').toLowerCase() === 'add-employee' && 
+                    r.is_allowed === true
+                );
+
+                if (canAddEmployee) {
+                    document.getElementById('addEmployeeBtn').classList.remove('hidden');
+                    document.getElementById('addEmployeeBtn').classList.add('flex');
+                } else {
+                    document.getElementById('addEmployeeBtn').classList.add('hidden');
+                    document.getElementById('addEmployeeBtn').classList.remove('flex');
+                }
+            } catch (err) {
+                console.error('Session check failed:', err);
+                window.location.href = '/login.html';
+            }
+        }
+
+        async function fetchEmployeeDirectory() {
+            const errorContainer = document.getElementById('errorContainer');
+            errorContainer.innerText = '';
+
+            try {
+                const response = await fetch('/api/admin/employees', { credentials: 'include' });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Failed to load employee records.');
+
+                employeesData = data.employees || data.data || (Array.isArray(data) ? data : []);
+                renderEmployeeTable(employeesData);
+            } catch (err) {
+                console.error('Error loading employees:', err);
+                errorContainer.innerText = 'Error loading employee records: ' + err.message;
+            }
+        }
+
+        function renderEmployeeTable(employees) {
+            const tbody = document.getElementById('employeeTableBody');
+
+            if (!Array.isArray(employees) || employees.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-gray-400">No employee records found.</td></tr>`;
+                return;
+            }
+
+            const isSuperOrAdmin = (currentUserRoleId === 1 || currentUserRoleId === 2);
+            const canEditEmployee = isSuperOrAdmin || userRights.some(r => 
+                String(r.module_name || '').toLowerCase() === 'human-resources' && 
+                String(r.action_key || '').toLowerCase() === 'edit-employee' && 
+                r.is_allowed === true
+            );
+            const canDeleteEmployee = isSuperOrAdmin || userRights.some(r => 
+                String(r.module_name || '').toLowerCase() === 'human-resources' && 
+                String(r.action_key || '').toLowerCase() === 'delete-employee' && 
+                r.is_allowed === true
+            );
+
+            tbody.innerHTML = employees.map(employee => {
+                const empno = employee.empno || employee.employee_no || employee.id || 'N/A';
+                const empname = employee.empname || employee.name || 'N/A';
+                const jobcode = employee.jobcode || 'N/A';
+                const deptcode = employee.deptcode || 'N/A';
+
+                const editBtnHtml = canEditEmployee ? `
+                    <button onclick="openEmployeeModal('${escapeHtml(String(empno))}')" class="px-2.5 py-1 text-xs font-semibold rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 transition">
+                        Edit
+                    </button>` : '';
+
+                const deleteBtnHtml = canDeleteEmployee ? `
+                    <button onclick="deleteEmployee('${escapeHtml(String(empno))}')" class="px-2.5 py-1 text-xs font-semibold rounded-md border border-red-300 text-red-700 hover:bg-red-50 transition">
+                        Delete
+                    </button>` : '';
+
+                const actionsHtml = (editBtnHtml || deleteBtnHtml) ? `
+                    <div class="inline-flex items-center gap-2 justify-end">
+                        ${editBtnHtml}
+                        ${deleteBtnHtml}
+                    </div>` : `<span class="text-xs text-gray-400 italic">View Only</span>`;
+
+                return `
+                    <tr class="hover:bg-gray-50/80 transition">
+                        <td class="py-4 px-6 font-mono font-semibold text-xs text-blue-600 align-middle">${escapeHtml(String(empno))}</td>
+                        <td class="py-4 px-6 font-medium text-gray-900 align-middle">${escapeHtml(String(empname))}</td>
+                        <td class="py-4 px-6 text-xs text-gray-600 align-middle">${escapeHtml(String(jobcode))}</td>
+                        <td class="py-4 px-6 text-xs text-gray-600 align-middle">${escapeHtml(String(deptcode))}</td>
+                        <td class="py-4 px-6 text-right align-middle">
+                            ${actionsHtml}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterEmployees() {
+            const query = document.getElementById('searchEmployeeInput').value.toLowerCase();
+            const filtered = employeesData.filter(e => {
+                const empno = String(e.empno || e.employee_no || e.id || '').toLowerCase();
+                const empname = String(e.empname || e.name || '').toLowerCase();
+                return empno.includes(query) || empname.includes(query);
+            });
+            renderEmployeeTable(filtered);
+        }
+
+        function openEmployeeModal(empno = null) {
+            const modal = document.getElementById('employeeModal');
+            const title = document.getElementById('modalTitle');
+            const errDiv = document.getElementById('modalFormError');
+            errDiv.innerText = '';
+            document.getElementById('employeeForm').reset();
+            document.getElementById('modalOriginalEmpNo').value = '';
+            document.getElementById('empno').removeAttribute('readonly');
+
+            if (empno && empno !== 'N/A') {
+                title.innerText = 'Edit Employee';
+                const employee = employeesData.find(e => String(e.empno || e.employee_no || e.id) === String(empno));
+                if (employee) {
+                    document.getElementById('modalOriginalEmpNo').value = empno;
+                    document.getElementById('empno').value = employee.empno || employee.employee_no || employee.id || '';
+                    document.getElementById('empno').setAttribute('readonly', true);
+                    document.getElementById('empname').value = employee.empname || employee.name || '';
+                    document.getElementById('jobcode').value = employee.jobcode || '';
+                    document.getElementById('deptcode').value = employee.deptcode || '';
+                }
+            } else {
+                title.innerText = 'Add New Employee';
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeEmployeeModal() {
+            document.getElementById('employeeModal').classList.remove('flex');
+            document.getElementById('employeeModal').classList.add('hidden');
+        }
+
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+            const originalEmpNo = document.getElementById('modalOriginalEmpNo').value;
+            const errDiv = document.getElementById('modalFormError');
+            errDiv.innerText = '';
+
+            const payload = {
+                empno: document.getElementById('empno').value.trim(),
+                empname: document.getElementById('empname').value.trim(),
+                jobcode: document.getElementById('jobcode').value.trim(),
+                deptcode: document.getElementById('deptcode').value.trim()
+            };
+
+            const url = originalEmpNo ? `/api/admin/employees/${encodeURIComponent(originalEmpNo)}` : '/api/admin/employees';
+            const method = originalEmpNo ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(payload)
+                });
+
+                const resData = await res.json();
+                if (!res.ok) throw new Error(resData.error || 'Failed to save employee record.');
+
+                closeEmployeeModal();
+                await fetchEmployeeDirectory();
+            } catch (err) {
+                errDiv.innerText = err.message;
+            }
+        }
+
+        async function deleteEmployee(empno) {
+            if (!confirm(`Are you sure you want to delete employee #${empno}?`)) {
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/admin/employees/${encodeURIComponent(empno)}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to delete employee record.');
+
+                await fetchEmployeeDirectory();
+            } catch (err) {
+                alert('Error deleting employee: ' + err.message);
+            }
+        }
+
+        function escapeHtml(str) {
+            return (str || '').toString().replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+                window.location.href = '/login.html';
+            } catch (err) {
+                window.location.href = '/login.html';
+            }
+        });
+    </script>
+</body>
+</html>
