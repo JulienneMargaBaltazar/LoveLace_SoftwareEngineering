@@ -149,7 +149,7 @@
             </section>
         </div>
     </main>
-    <!-- Script added right before the closing body tag to load user session metrics -->
+    <!-- Updated script to safely parse and display full user names in both areas -->
     <script>
         async function checkSession() {
             try {
@@ -163,17 +163,33 @@
                 const data = await response.json();
                 const sessionData = data.userSessionData;
                 
-                const firstName = sessionData.first_name || sessionData.firstName || '';
-                const lastName = sessionData.last_name || sessionData.lastName || '';
-                const fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'Superadmin';
+                // Formats fallback name attributes coming out of your backend session database records
+                let firstName = sessionData.first_name || sessionData.firstName || '';
+                let lastName = sessionData.last_name || sessionData.lastName || '';
+                let fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : '';
+
+                // FALLBACK: If first/last name keys are blank but a combined name string like "Ada Lovelace" is found
+                if (!fullName && sessionData.name) {
+                    fullName = sessionData.name;
+                }
+
+                // If fullName is populated but firstName is blank, extract the first word as the first name
+                if (fullName && !firstName) {
+                    firstName = fullName.split(' ')[0];
+                }
+
+                // Default string updates if no names are retrieved
+                if (!fullName) fullName = "Superadmin";
+                if (!firstName) firstName = "Superadmin";
                 
-                // 1. Injects first name into the purple welcome header banner
+                // 1. Injects the name into the main purple banner header text track
                 const welcomeHeading = document.getElementById('welcomeHeading');
                 if (welcomeHeading) {
-                    welcomeHeading.innerText = firstName ? `Welcome back, ${firstName}!` : 'Welcome back, Superadmin!';
+                    // Change this to `${fullName}` if you want the full name displayed inside the banner instead of just the first name
+                    welcomeHeading.innerText = `Welcome back, ${firstName}!`;
                 }
                 
-                // 2. Injects full name into the bottom sidebar profile slot
+                // 2. Injects the Full Name into the bottom-left sidebar text span
                 const profileEl = document.getElementById('userProfileInfo');
                 if (profileEl) {
                     profileEl.innerText = fullName;
@@ -185,11 +201,9 @@
             }
         }
 
-        // Make sure the function runs automatically on page load
+        // Auto execute on layout load
         checkSession();
     </script>
 </body>
 </html>
 
-</body>
-</html>
