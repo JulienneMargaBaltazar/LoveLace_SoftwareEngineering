@@ -453,3 +453,47 @@ button:hover { background-color: #292966; }
 .action-label { display: flex !important; flex-direction: column !important; }
 .action-label strong { color: #292966; font-size: 0.9rem; }
 .action-label span { color: #5C5C99; font-size: 0.75rem; }
+
+/* ==========================================================================
+   FIGMA LAYOUT CARD WRAPPER & COMPACT DATA TABLE 
+   ========================================================================== */
+
+/* This container acts as the solid white frame panel card surrounding the table grid */
+.table-container-panel {
+    background: #FFFFFF !important;
+    border-radius: 8px !important;
+    padding: 1.5rem !important;
+    border: 1px solid #E2E8F0 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    width: 100% !important;
+    margin-top: 1.5rem !important;
+    box-sizing: border-box !important;
+}
+
+/* Forces table canvas boundaries to expand inside the card panel flawlessly */
+.customer-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    background-color: #FFFFFF !important;
+    margin: 0 !important;
+}
+
+/* Figma-accurate Dark corporate header layout track definitions */
+.customer-table th {
+    background-color: #292966 !important; /* Signature dark purple wireframe banner fill */
+    color: #FFFFFF !important;            /* Crisp white text typography */
+    font-weight: 600 !important;
+    padding: 0.75rem 1rem !important;
+    text-align: left !important;
+    font-size: 0.85rem !important;
+    border: none !important;
+}
+
+/* Clean row tracks divider configuration values */
+.customer-table td {
+    padding: 0.85rem 1rem !important;
+    border-bottom: 1px solid #F1F5F9 !important;
+    color: #334155 !important;
+    font-size: 0.875rem !important;
+    background-color: #FFFFFF !important; /* Locks background fields to pure white */
+}
