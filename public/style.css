@@ -280,10 +280,11 @@ body {
 
 /* Grid Layouts */
 .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.25rem;
-    margin-bottom: 2rem;
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important; /* Changed from repeat(4, 1fr) to force it explicitly */
+    gap: 1.25rem !important;
+    padding: 0 0.5rem !important;
+    margin-bottom: 2.5rem !important;
 }
 
 
@@ -327,9 +328,9 @@ body {
 
 
 .actions-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.25rem;
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 1.25rem !important;
 }
 
 
@@ -714,34 +715,4 @@ button:hover {
 .action-label span {
     color: #5C5C99;
     font-size: 0.75rem;
-}
-/* --- OVERRIDE FIXED ALIGNMENT CODES (GRID VERSION) --- */
-
-/* 1. Forces exactly 4 equal columns for your top metrics row */
-.stats-grid {
-  display: grid !important;
-  grid-template-columns: repeat(4, 1fr) !important; /* Explicitly builds 4 equal columns */
-  gap: 20px !important; 
-  width: 100% !important;
-  margin-bottom: 32px !important;
-}
-
-/* Ensures each individual metric card adapts to the grid track layout properly */
-.stats-grid .stat-card {
-  width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-/* 2. Forces exactly 4 equal columns for your quick actions row */
-.actions-grid {
-  display: grid !important;
-  grid-template-columns: repeat(4, 1fr) !important; /* Explicitly builds 4 equal columns */
-  gap: 16px !important; 
-  width: 100% !important;
-}
-
-/* Ensures the action buttons scale uniformly inside the grid system */
-.actions-grid .action-btn-card {
-  width: 100% !important;
-  box-sizing: border-box !important;
 }
