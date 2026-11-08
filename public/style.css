@@ -1,246 +1,46 @@
+/* ==========================================================================
+   GLOBAL LAYOUT STYLES & THEMING
+   ========================================================================== */
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background-color: #f1eff2;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+    background-color: #EDE9FE; /* Light muted lavender-gray layout tint from Figma */
     margin: 0;
-    color: #e9e7e9;
+    padding: 0;
+    color: #121619; /* Primary deep charcoal text */
+    min-height: 100vh;
 }
 
-
-.card {
-    background: #FFFFFF;
-    padding: 2.5rem;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(41, 41, 102, 0.15);
-    width: 100%;
-    max-width: 480px;
-}
-
-
-.card h2 {
-    margin-top: 0;
-    margin-bottom: 0.25rem;
-    color: #292966;
-    font-size: 1.75rem;
-    text-align: left;
-}
-
-
-.card h4 {
-    margin-top: 0;
-    margin-bottom: 1.5rem;
-    color: #acacb1;
-    font-size: 0.95rem;
-    text-align: left;
-    font-weight: normal;
-}
-
-
-.card-subtitle {
-    margin-top: 0;
-    margin-bottom: 1.5rem;
-    color: #5C5C99; /* Deep Slate */
-    font-size: 0.9rem;
-    font-weight: normal;
-    text-align: left;
-    line-height: 1.4;
-}
-
-
-.msg-success {
-    color: #292966;
-}
-
-
-.msg-error {
-    color: #ef4444;
-}
-.name-row {
-    display: flex;
-    gap: 1rem;
-}
-
-
-.name-row .input-group {
-    flex: 1;
-}
-
-
-.input-group {
-    margin-bottom: 1.25rem;
-}
-
-
-.input-group label {
-    display: block;
-    font-size: 0.875rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: #292966;
-}
-
-
-.input-group input {
-    width: 100%;
-    padding: 0.75rem 0.85rem;
-    border: 2px solid #A3A3CC;
-    border-radius: 8px;
-    font-size: 1rem;
-    box-sizing: border-box;
-    transition: all 0.2s ease;
-}
-
-
-.input-group input:focus {
-    outline: none;
-    border-color: #5C5C99;
-    box-shadow: 0 0 0 3px rgba(92, 92, 153, 0.25);
-}
-
-
-/* ==========================================================================
-   PASSWORD VIEW/HIDE ALIGNMENT FIX
-   ========================================================================== */
-.password-wrapper {
-    position: relative !important;
-    width: 100% !important;
-    display: block !important;
-}
-
-
-/* Extra padding-right keeps long passwords from text-overlapping your button */
-.password-wrapper input {
-    padding-right: 70px !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-}
-
-
-/* Pins your text-toggles perfectly on the right-hand margin */
-.password-toggle {
-    position: absolute !important;
-    right: 16px !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    background: none !important;
-    border: none !important;
-    cursor: pointer !important;
-    padding: 0 !important;
-    font-family: inherit !important;
-    width: auto !important;
-   
-    /* ADD THESE TWO LINES TO FIX THE COLOR AND TEXT STYLE: */
-    color: #5C5C99 !important; /* Matches your main purple button theme */
-    text-transform: uppercase !important; /* Keeps it looking clean and uniform */
-}
-/* ========================================================================== */
-
-
-.terms-group {
-    margin-bottom: 1.25rem;
-}
-
-
-.checkbox-label {
-    display: flex;
-    align-items: center;
-    font-size: 0.875rem;
-    font-weight: normal;
-    color: #292966;
-    cursor: pointer;
-}
-
-
-.checkbox-label input[type="checkbox"] {
-    width: 1.1rem;
-    height: 1.1rem;
-    margin-right: 0.5rem;
-    accent-color: #5C5C99;
-    cursor: pointer;
-}
-
-
-.checkbox-label a {
-    color: #5C5C99;
-    font-weight: 600;
-    text-decoration: none;
-    margin-left: 0.25rem;
-}
-
-
-.checkbox-label a:hover {
-    text-decoration: underline;
-}
-/* ==========================================================================
-   UPDATED COLOR PALETTE ALIGNED WITH FIGMA SELECTIONS
-   ========================================================================== */
-
+/* Base Master Frame to split Sidebar on the side and content on the right */
 .admin-layout {
     display: flex;
+    flex-direction: row; /* Forces sidebar side-by-side with workspace */
+    width: 100%;
     min-height: 100vh;
-    background-color: #EDE9FE; /* True light muted lavender-gray layout tint from Figma */
 }
 
-/* Sidebar */
+/* ==========================================================================
+   SIDEBAR COMPONENT (LOCKED TO THE SIDE)
+   ========================================================================== */
 .sidebar {
     width: 260px;
-    background-color: #ffffff;
-    border-right: 1px solid #DCD9FD; /* Soft purple divider stroke */
+    background-color: #FFFFFF;
+    border-right: 1px solid #DCD9FD; /* Soft purple structural stroke divider */
     padding: 2rem 1.25rem;
     display: flex;
     flex-direction: column;
-    flex-shrink: 0; /* Prevents the sidebar from shrinking or crushing inward */
+    flex-shrink: 0; /* Prevents layout squeezing */
+    box-sizing: border-box;
 }
-
-/* Active Dashboard Navigation Link block matching dark navy option */
-.nav-item.active a {
-    background-color: #2D2167 !important; /* Exact deep violet-indigo hex code */
-    color: #ffffff !important;
-    font-weight: 600;
-}
-
-.nav-item a:hover {
-    background-color: #F5F3FF; /* Very light purple hover tint */
-    color: #2D2167;
-}
-
-/* Welcome Banner Hero Element Gradient Adjustments */
-.welcome-banner {
-    background: linear-gradient(135deg, #2D2167 0%, #7C3AED 100%); /* Seamless Figma gradient string blend */
-    border-radius: 16px;
-    padding: 2.5rem 2rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 15px rgba(45, 33, 103, 0.15);
-}
-
-.welcome-banner h2 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.75rem;
-    color: #ffffff;
-    font-weight: 700;
-}
-
-.welcome-banner p {
-    margin: 0;
-    font-size: 0.95rem;
-    color: #DDD6FE; /* Soft lavender-white typography string text layer */
-}
-
-
 
 .sidebar-brand {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #1e1b4b; /* Dark indigo brand heading */
+    color: #2D2167; /* Core Deep Violet Indigo brand heading */
     margin-bottom: 2rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
-
 
 .nav-menu {
     list-style: none;
@@ -248,13 +48,12 @@ body {
     margin: 0;
 }
 
-
 .nav-item a {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     padding: 0.65rem 0.85rem;
-    color: #475569; /* Balanced slate navigation links */
+    color: #5C5C99; /* Deep Slate navigation links */
     text-decoration: none;
     border-radius: 8px;
     font-size: 0.9rem;
@@ -262,26 +61,21 @@ body {
     transition: all 0.2s ease;
 }
 
-
 .nav-item a:hover {
-    background-color: #f1f5f9;
-    color: #1e1b4b;
+    background-color: #F5F3FF; /* Light purple hover tint selection */
+    color: #2D2167;
 }
 
-
-/* Active menu state matching the Figma dark select color block */
 .nav-item.active a {
-    background-color: #1e1b4b; /* Deep Indigo 950 block */
-    color: #ffffff !important;
+    background-color: #2D2167 !important; /* Exact deep violet-indigo block */
+    color: #FFFFFF !important;
     font-weight: 600;
 }
 
-
-/* Sidebar Footer Profile Area */
 .sidebar-footer {
     margin-top: auto;
     padding-top: 1rem;
-    border-top: 1px solid #f1f5f9;
+    border-top: 1px solid #EDE9FE;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -297,12 +91,12 @@ body {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background-color: #cbd5e1;
+    background-color: #C1B5FB;
 }
 
 .profile-email {
     font-size: 0.75rem;
-    color: #475569;
+    color: #5C5C99;
     font-weight: 500;
 }
 
@@ -311,263 +105,177 @@ body {
     border: none !important;
     width: auto !important;
     padding: 0.25rem !important;
-    color: #94a3b8;
+    color: #9988F9;
     cursor: pointer;
     transition: color 0.2s ease;
 }
 
 .logout-icon-btn:hover {
-    color: #ef4444;
+    color: #08070E;
 }
 
-
-/* Main Workspace */
+/* ==========================================================================
+   MAIN WORKSPACE CONTAINER (LONGER & EXPANDED WIDTH Layout)
+   ========================================================================== */
 .main-content {
-    flex: 1;
+    flex: 1; /* Automatically consumes all remaining layout width workspace */
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
 }
 
-
 .top-header {
-    background: #ffffff;
-    padding: 1rem 2rem;
-    border-bottom: 1px solid #f1f5f9;
+    background: #FFFFFF;
+    padding: 1rem 2.5rem;
+    border-bottom: 1px solid #DCD9FD;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-
 .top-header h1 {
     font-size: 1.25rem;
     margin: 0;
-    color: #1e1b4b;
+    color: #2D2167;
 }
 
-
+/* Stretches content out fully along the canvas layout paths */
 .dashboard-container {
-    padding: 2rem;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 1400px; /* Increased constraint cap so containers render longer */
+    box-sizing: border-box;
 }
 
-
-/* Welcome Banner Gradient Hero Container */
+/* Hero Section / Banner Elements */
 .welcome-banner {
-    background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 100%);
+    background: linear-gradient(135deg, #2D2167 0%, #7C3AED 100%); /* Seamless gradient string blend from panel */
     border-radius: 16px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    padding: 2.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 4px 15px rgba(45, 33, 103, 0.15);
 }
-
 
 .welcome-banner h2 {
     margin: 0 0 0.5rem 0;
     font-size: 1.75rem;
-    color: #ffffff;
+    color: #FFFFFF;
     font-weight: 700;
 }
 
 .welcome-banner p {
     margin: 0;
     font-size: 0.95rem;
-    color: #c7d2fe;
+    color: #DDD6FE; /* Soft lavender-white typography overlay accents */
 }
 
-
-/* Grid Layouts and Restyled Stat Cards */
+/* ==========================================================================
+   CARDS GRID (LONGER CONTAINER FLEXES)
+   ========================================================================== */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* Fluid grid track generation */
     gap: 1.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
+    width: 100%;
 }
 
-
 .stat-card {
-    background: #ffffff;
-    padding: 1.5rem;
+    background: #FFFFFF;
+    padding: 1.75rem;
     border-radius: 16px;
-    border: 1px solid #f1f5f9;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.04);
+    border: 1px solid #EDE9FE;
+    box-shadow: 0 4px 12px rgba(45, 33, 103, 0.02);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 
-
 .stat-header {
     font-size: 0.8rem;
-    color: #64748b;
+    color: #5C5C99;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
 }
 
-
 .stat-value {
-    font-size: 1.875rem;
+    font-size: 2rem; /* Emphasized display typography layers */
     font-weight: 700;
-    color: #0f172a;
+    color: #121619;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-top: 0.25rem;
 }
 
 .badge-pill {
     font-size: 0.75rem;
     padding: 0.25rem 0.6rem;
-    border-radius: 9999px; /* Fully rounded pill layout */
+    border-radius: 9999px;
     font-weight: 600;
 }
 
-
 .badge-pill.success {
-    background: #f0fdf4; /* Modern light green tint */
-    color: #16a34a; /* Accessible green text */
+    background: #F5F3FF;
+    color: #7C3AED;
 }
-
 
 .badge-pill.danger {
-    background: #fef2f2; /* Light red tint */
-    color: #dc2626; /* Accessible red text */
+    background: #08070E;
+    color: #FFFFFF;
 }
 
-
-/* Quick Actions Grid layout matching Figma width layout specs */
+/* Quick Actions Section Block Layout Elements */
 .actions-grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr); /* Expanded from 4 to 6 inline items */
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); /* Auto adapts cleanly to long layout boxes */
     gap: 1.25rem;
+    width: 100%;
 }
 
-
-/* Centered Square Action Button Cards */
 .action-card-btn {
-    background: #ffffff !important;
-    border: 1px solid #f1f5f9 !important;
+    background: #FFFFFF !important;
+    border: 1px solid #EDE9FE !important;
     border-radius: 16px !important;
-    height: 120px !important;
-    width: 100% !important;
+    height: 130px !important; /* Slightly padded box framework depth */
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
     gap: 0.75rem !important;
-    color: #334155 !important; /* Soft charcoal typography text */
-    font-size: 0.8rem !important;
+    color: #2D2167 !important;
+    font-size: 0.85rem !important;
     font-weight: 600 !important;
     cursor: pointer !important;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important;
 }
-
 
 .action-card-btn:hover {
-    background-color: #f8fafc !important;
-    border-color: #cbd5e1 !important;
-    color: #1e1b4b !important; /* Transitions to brand deep indigo */
-    transform: translateY(-3px); /* Elegant layout hover lift container */
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05) !important;
+    background-color: #F5F3FF !important;
+    border-color: #C1B5FB !important;
+    color: #7C3AED !important;
+    transform: translateY(-4px); /* Interactive visual translation lift */
+    box-shadow: 0 12px 20px -3px rgba(124, 58, 237, 0.08) !important;
 }
 
-
-/* Colored Badge Icons layout container wraps inside button frame */
 .action-icon-wrapper {
-    padding: 0.6rem;
-    background-color: #e0e7ff; /* Lavender background tint layer */
-    color: #4338ca; /* Classic layout icon tint */
+    padding: 0.65rem;
+    background-color: #EDE9FE;
+    color: #7C3AED;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 1.25rem;
 }
 
-
-/* Form Submit Buttons Fallback (For Login/Signup Layout Interfaces) */
-button {
-    width: 100%;
-    padding: 0.85rem;
-    background-color: #4338ca;
-    color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-
-button:hover {
-    background-color: #1e1b4b;
-}
-
-
-.auth-footer {
-    margin-top: 1.5rem;
-    text-align: center;
-    font-size: 0.875rem;
-    color: #64748b;
-}
-
-
-.auth-footer a {
-    color: #4338ca;
-    font-weight: 600;
-    text-decoration: none;
-}
-
-
-.auth-footer a:hover {
-    text-decoration: underline;
-}
-
-
-/* ==========================================================================
-   LANDING PAGE ERP MODULE CARD ANIMATIONS
-   ========================================================================== */
-
-
-.module-card {
-    transition: all 0.3s ease;
-}
-
-
-/* Zoom and scale modules nicely on desktop mouse hover */
-.module-card:hover {
-    transform: scale(1.04) !important;
-    box-shadow: 0 10px 25px rgba(92, 92, 153, 0.15) !important;
-    background-color: #ffffff !important;
-    border-color: #4338ca !important;
-}
-
-
-/* Smooth pop transition profile when clicked and locked active */
-.module-card.is-active {
-    transform: scale(1.02) !important;
-    border-color: #1e1b4b !important;
-    background-color: #f5f3ff !important;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02) !important;
-}
-
-
-/* Dynamic fade effect for the mock data table tracking */
-#mockTableContainer {
-    animation: fadeInTable 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-
-@keyframes fadeInTable {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+/* Standard HTML Card Element fallbacks */
+.card {
+    background: #FFFFFF;
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(45, 33, 103, 0.08);
+    width: 100%; /* Spans layout constraints gracefully */
+    box-sizing: border-box;
 }
