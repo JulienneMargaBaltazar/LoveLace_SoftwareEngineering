@@ -15,7 +15,7 @@
             <small style="display:block; font-size:10px; color:#5C5C99; font-weight:normal;">by LoveLace</small>
         </div>
         <ul class="nav-menu">
-            <li class="nav-item"><a href="dashboard.html">📊 Dashboard</a></li>
+            <li class="nav-item"><a href="user-dashboard.html">📊 Dashboard</a></li>
             <li class="nav-item active"><a href="user-customers.html">👥 Customers</a></li>
             <li class="nav-item"><a href="user-products.html">📦 Products</a></li>
             <li class="nav-item"><a href="sales.html">💼 Sales</a></li>
@@ -56,7 +56,7 @@
                     <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: #5C5C99;">Manage client accounts, payment terms, and status directory.</p>
                 </div>
                 <div>
-                    <button onclick="toggleModal(true)" style="width: auto; padding: 0.6rem 1.2rem; background-color: #292966;">➕ Add Customer</button>
+                    <button style="width: auto; padding: 0.6rem 1.2rem; background-color: #292966;">➕ Add Customer</button>
                 </div>
             </div>
 
@@ -120,19 +120,17 @@
         async function loadDirectory() {
             const tableBody = document.getElementById('directoryTableBody');
             try {
-                // Adjust route to match your target backend data endpoint
                 const response = await fetch(window.location.origin + '/api/customers', { credentials: 'include' });
                 if (!response.ok) throw new Error('Network file tracking failed.');
                 
                 const customers = await response.json();
-                tableBody.innerHTML = ''; // Flushes loading placeholder row
+                tableBody.innerHTML = ''; 
                 
                 if(customers.length === 0) {
                     tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:2rem; color:#5C5C99;">No customers found inside database records.</td></tr>`;
                     return;
                 }
 
-                // Append rows mimicking your clean mockup layout properties exactly
                 customers.forEach(cust => {
                     const statusClass = cust.status && cust.status.toLowerCase() === 'active' ? 'active' : 'inactive';
                     const displayStatus = cust.status ? cust.status : 'Active';
@@ -154,7 +152,7 @@
                 });
             } catch (err) {
                 console.error('Directory populate error:', err);
-                // Fallback elegant mock data rendering if local api track reports empty
+                // Cleaned up and completed fallback mock rows with proper status pills matching style.css
                 tableBody.innerHTML = `
                     <tr>
                         <td style="font-weight: 600; color: #5C5C99;">C-001</td>
@@ -177,7 +175,6 @@
                         <td style="font-weight: 600; color: #292966;">Trisha Macdowell</td>
                         <td style="color: #475569;">7642 Clairemont Mesa Blvd San Diego CA 92123</td>
                         <td style="color: #475569;">COD</td>
-                        <td><span class="status-pill inactive">Inactive</span></td>
                         <td><span class="status-pill inactive">Inactive</span></td>
                         <td><div class="stamp-text"><strong>CREATED</strong></div><div class="stamp-text">2026-10-15</div></td>
                     </tr>
