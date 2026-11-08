@@ -715,35 +715,33 @@ button:hover {
     color: #5C5C99;
     font-size: 0.75rem;
 }
-/* --- OVERRIDE FIXED ALIGNMENT CODES --- */
+/* --- OVERRIDE FIXED ALIGNMENT CODES (GRID VERSION) --- */
 
-/* 1. Forces the metrics row to lay out side-by-side cleanly */
+/* 1. Forces exactly 4 equal columns for your top metrics row */
 .stats-grid {
-  display: flex !important;
-  flex-direction: row !important;
-  justify-content: space-between !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important; /* Explicitly builds 4 equal columns */
   gap: 20px !important; 
   width: 100% !important;
   margin-bottom: 32px !important;
 }
 
-/* Dynamically resizes the 4 top cards so they sit together perfectly */
+/* Ensures each individual metric card adapts to the grid track layout properly */
 .stats-grid .stat-card {
-  flex: 1 !important;
-  min-width: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
-/* 2. Forces the Quick Actions to line up side-by-side cleanly */
+/* 2. Forces exactly 4 equal columns for your quick actions row */
 .actions-grid {
-  display: flex !important;
-  flex-direction: row !important;
-  justify-content: space-between !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important; /* Explicitly builds 4 equal columns */
   gap: 16px !important; 
   width: 100% !important;
 }
 
-/* Dynamically resizes the action buttons to fill the row uniformly */
+/* Ensures the action buttons scale uniformly inside the grid system */
 .actions-grid .action-btn-card {
-  flex: 1 !important;
-  min-width: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
