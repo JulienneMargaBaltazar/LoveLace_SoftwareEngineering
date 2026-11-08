@@ -1,4 +1,4 @@
-<img width="683" height="720" alt="image" src="https://github.com/user-attachments/assets/41496477-d54c-4e36-a447-45c64d4de427" /># Sprint 1 Test Plan and Acceptance Criteria: Authentication & Tokens
+# Sprint 1 Test Plan and Acceptance Criteria: Authentication & Tokens
 
 **Tester:** Julienne Baltazar
 
@@ -50,9 +50,9 @@
 
 | Test ID | Scenario Description | Execution Evidence Screenshot |
 | :--- | :--- | :--- |
-| **TC-01** | Account Registration Success Flow | <img width="822" height="720" alt="Screenshot 2026-11-08 145846" src="https://github.com/user-attachments/assets/cc4113c3-e493-4bd6-982f-442486ca4dd2" /> Test results matched expected output.|
-| **TC-02** | Length Boundary Validation Rejection | !<img width="822" height="720" alt="Screenshot 2026-11-08 151050" src="https://github.com/user-attachments/assets/19a5f4c0-1df2-4d27-80f8-912a7a120cea" /> Test results matched expected output. |
-| **TC-03** | Complexity Pattern Rejection | <img width="683" height="720" alt="image" src="https://github.com/user-attachments/assets/9a2a41e9-ed64-4464-8b19-1e4427e34144" /> Test results matched expected output. |
+| **TC-01** | Account Registration Success Flow | <img width="822" height="720" alt="Screenshot 2026-11-08 145846" src="https://github.com/user-attachments/assets/cc4113c3-e493-4bd6-982f-442486ca4dd2" /> Test results matches expected output.|
+| **TC-02** | Length Boundary Validation Rejection | !<img width="822" height="720" alt="Screenshot 2026-11-08 151050" src="https://github.com/user-attachments/assets/19a5f4c0-1df2-4d27-80f8-912a7a120cea" /> Test results matches expected output. |
+| **TC-03** | Complexity Pattern Rejection | <img width="683" height="720" alt="image" src="https://github.com/user-attachments/assets/9a2a41e9-ed64-4464-8b19-1e4427e34144" /> Test results matched expectesoutput. |
 
 </details>
 
@@ -72,8 +72,8 @@
 
 | Test ID | Scenario Description | Execution Evidence Screenshot |
 | :--- | :--- | :--- |
-| **TC-04** | Secure Dashboard Authentication Flow | <img width="1920" height="1032" alt="Screenshot 2026-11-08 054456" src="https://github.com/user-attachments/assets/2ff45390-deaf-4ff4-8c0b-7d2eb65e9d05" /> Test results matched expected output.|
-| **TC-05** | Server Token Session Invalidation Verification | <img width="683" height="720" alt="Screenshot 2026-11-08 145648" src="https://github.com/user-attachments/assets/ac944cc6-0cf1-4026-b71d-9a79576f9722" /> Test results matched expected output.|
+| **TC-04** | Secure Dashboard Authentication Flow | <img width="1920" height="1032" alt="Screenshot 2026-11-08 054456" src="https://github.com/user-attachments/assets/2ff45390-deaf-4ff4-8c0b-7d2eb65e9d05" /> Test results matches expected output.|
+| **TC-05** | Server Token Session Invalidation Verification | <img width="683" height="720" alt="Screenshot 2026-11-08 145648" src="https://github.com/user-attachments/assets/ac944cc6-0cf1-4026-b71d-9a79576f9722" /> Test results matches expected output.|
 
 </details>
 
