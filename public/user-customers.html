@@ -4,53 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Management - LoveLace Inc. ERP</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Shared Stylesheet -->
+    <!-- Shared Stylesheet links directly to master layout configurations -->
     <link rel="stylesheet" href="style.css">
-    <style>
-        .sidebar-footer {
-            padding: 1.25rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(0, 0, 0, 0.1);
-        }
-        .user-profile-info {
-            font-size: 0.9rem;
-            color: #ffffff;
-            margin-bottom: 0.75rem;
-            font-weight: 600;
-            word-break: break-all;
-        }
-        .sidebar-logout-btn {
-            width: 100%;
-            background-color: #dc2626;
-            color: white;
-            border: none;
-            padding: 0.5rem 0.75rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 0.875rem;
-        }
-        .sidebar-logout-btn:hover {
-            background-color: #b91c1c;
-        }
-    </style>
 </head>
-<body class="bg-[#F4F6F9] text-gray-800 antialiased min-h-screen">
+<body class="admin-layout">
 
-    <!-- Full screen flex layout -->
-    <div class="flex h-screen w-full overflow-hidden">
-        <!-- Sidebar Navigation (User View) -->
-        <aside class="sidebar w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0 h-full">
-            <div>
-                <div class="sidebar-brand px-6 py-5 border-b border-gray-100 font-bold text-gray-900 flex flex-col">
-                    <span>LoveLace Inc. ERP</span>
-                    <span class="text-xs text-gray-400 font-normal">by LoveLace</span>
-                </div>
-                
+    <!-- SIDEBAR Navigation Frame -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span>LoveLace Inc. ERP</span>
+            <small style="display:block; font-size:10px; color:#5C5C99; font-weight:normal;">by LoveLace</small>
+        </div>
+<!-- SELECT AND DELETE THESE EXACT LINES (18 to 27): -->
+<!-- Full screen flex layout -->
+<div class="flex h-screen w-full overflow-hidden">
+    <!-- Sidebar Navigation (User View) -->
+    <aside class="sidebar w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0 h-full">
+        <div>
+            <div class="sidebar-brand px-6 py-5 border-b border-gray-100 font-bold text-gray-900 flex flex-col">
+                <span>LoveLace Inc. ERP</span>
+                <span class="text-xs text-gray-400 font-normal">by LoveLace</span>
+            </div>
                 <ul class="nav-menu px-3 space-y-1 mt-2">
                     <li class="nav-item"><a href="/user-dashboard.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📊 Dashboard</a></li>
                     <li class="border-t border-gray-200 my-2"></li>
