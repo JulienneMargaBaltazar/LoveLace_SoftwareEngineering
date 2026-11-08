@@ -5,9 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
+  "start": "node --env-file=.env index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "db:migrate": "node scripts/migrate.js"
+    "db:migrate": "node scripts/migrate.cjs"
   },
   "repository": {
     "type": "git",
