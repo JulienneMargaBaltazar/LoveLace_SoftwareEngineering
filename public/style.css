@@ -431,7 +431,7 @@ button:hover {
 }
 
 /* ==========================================================================
-   FIGMA ACCURATE DASHBOARD OVERLAYS & COLOR SYSTEM
+   FIGMA ACCURATE DASHBOARD OVERLAYS & COLOR SYSTEM (UNDER THE MOONLIGHT)
    ========================================================================== */
 
 /* Overriding general layout default colors for a crisp canvas */
@@ -442,18 +442,28 @@ button:hover {
 /* Sidebar clean updates without breaking structures */
 .sidebar {
     position: relative;
-    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.02);
+    box-shadow: 2px 0 12px rgba(41, 41, 102, 0.05);
+    background: #FFFFFF !important;
+}
+
+.sidebar-brand {
+    color: #292966 !important;
 }
 
 .sidebar-brand small {
     font-size: 0.7rem;
-    color: #9988F9;
+    color: #5C5C99;
 }
 
-/* Soft Lavender Active State highlight tokens from Figma tokens */
+/* Nav Item States matching "Under the Moonlight" */
+.nav-item a {
+    color: #5C5C99 !important;
+}
+
+/* Sharp Periwinkle background selection with deep navy text */
 .nav-item.active a, .nav-item a:hover {
-    background-color: #EDE9FE !important;
-    color: #7C3AED !important;
+    background-color: #CCCCFF !important;
+    color: #292966 !important;
     font-weight: 600;
 }
 
@@ -464,7 +474,7 @@ button:hover {
     align-items: center;
     justify-content: space-between;
     padding-top: 1rem;
-    border-top: 1px solid #E2E8F0;
+    border-top: 1px solid #A3A3CC;
 }
 
 .profile-info {
@@ -476,8 +486,8 @@ button:hover {
 .sidebar-profile .avatar {
     width: 36px;
     height: 36px;
-    background: #EDE9FE;
-    color: #7C3AED;
+    background: #CCCCFF;
+    color: #292966;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -493,22 +503,22 @@ button:hover {
 .profile-text .username {
     font-size: 0.85rem;
     font-weight: 600;
-    color: #121619;
+    color: #292966;
 }
 
 .profile-text .role {
     font-size: 0.75rem;
-    color: #9988F9;
+    color: #5C5C99;
 }
 
 .logout-link {
-    color: #9988F9;
+    color: #5C5C99;
     font-size: 1.1rem;
     transition: color 0.2s;
 }
 
 .logout-link:hover {
-    color: #ef4444;
+    color: #292966;
 }
 
 /* Mock header layout items matching design wireframe top layer */
@@ -520,7 +530,8 @@ button:hover {
     padding: 0.5rem 1rem;
     border-radius: 20px;
     width: 220px;
-    color: #9988F9;
+    color: #5C5C99;
+    border: 1px solid #A3A3CC;
 }
 
 .search-bar-mock input {
@@ -532,22 +543,22 @@ button:hover {
 }
 
 .user-badge-top {
-    background: #EDE9FE;
-    color: #7C3AED;
+    background: #CCCCFF;
+    color: #292966;
     padding: 0.35rem 1rem;
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: 600;
 }
 
-/* Figma Deep Purple Solid Welcome Section */
+/* Figma Deep Midnight Navy Solid Welcome Section */
 .welcome-banner-purple {
-    background: #7C3AED; /* Main Figma Purple Token */
-    background: linear-gradient(135deg, #7C3AED 0%, #5C5C99 100%);
+    background: #292966 !important; /* Midnight Navy Token Primary */
+    background: linear-gradient(135deg, #292966 0%, #5C5C99 100%) !important;
     border-radius: 16px;
-    padding: 2.5rem 2rem 5rem 2rem; /* Extended bottom padding to allow grid overlap */
+    padding: 2.5rem 2rem 5rem 2rem;
     color: #FFFFFF;
-    margin-bottom: -3.5rem; /* Negative pull grid upward */
+    margin-bottom: -3.5rem;
 }
 
 .welcome-banner-purple h1 {
@@ -575,11 +586,11 @@ button:hover {
     background: #FFFFFF !important;
     border-radius: 14px !important;
     padding: 1.25rem !important;
-    box-shadow: 0 10px 25px rgba(124, 58, 237, 0.06) !important;
+    box-shadow: 0 10px 25px rgba(41, 41, 102, 0.04) !important;
     display: flex;
     align-items: center;
     gap: 1rem;
-    border: 1px solid rgba(241, 239, 242, 0.6);
+    border: 1px solid #A3A3CC !important; /* Muted Lavender Card borders */
 }
 
 .stat-icon-wrapper {
@@ -592,11 +603,11 @@ button:hover {
     font-size: 1.2rem;
 }
 
-/* Color thematic variant icons based on design setup tokens */
+/* Color thematic variant icons matching the moonlight atmosphere */
 .stat-icon-wrapper.blue { background: #E0F2FE; color: #0284C7; }
 .stat-icon-wrapper.orange { background: #FFEDD5; color: #EA580C; }
 .stat-icon-wrapper.teal { background: #CCFBF1; color: #0D9488; }
-.stat-icon-wrapper.purple { background: #F3E8FF; color: #9333EA; }
+.stat-icon-wrapper.purple { background: #EDE9FE; color: #7C3AED; }
 
 .stat-meta {
     flex: 1;
@@ -604,7 +615,7 @@ button:hover {
 
 .stat-card .stat-header {
     font-size: 0.8rem !important;
-    color: #64748B !important;
+    color: #5C5C99 !important; /* Slate Blue metadata labels */
     font-weight: 500;
     display: block;
     margin-bottom: 0.25rem;
@@ -613,7 +624,7 @@ button:hover {
 .stat-card .stat-value {
     font-size: 1.35rem !important;
     font-weight: 700 !important;
-    color: #1E293B !important;
+    color: #292966 !important; /* Deep Navy metric values */
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -633,7 +644,7 @@ button:hover {
     border-radius: 16px;
     padding: 1.5rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
-    border: 1px solid #E2E8F0;
+    border: 1px solid #A3A3CC;
 }
 
 .section-title-row {
@@ -645,18 +656,19 @@ button:hover {
 
 .section-title-row h3 {
     margin: 0;
-    color: #1E293B;
+    color: #292966;
     font-size: 1.1rem;
 }
 
 .view-all-link {
     font-size: 0.85rem;
-    color: #7C3AED;
+    color: #5C5C99;
     text-decoration: none;
     font-weight: 500;
 }
 
 .view-all-link:hover {
+    color: #292966;
     text-decoration: underline;
 }
 
@@ -668,8 +680,8 @@ button:hover {
 }
 
 .action-btn-card {
-    background: #F5F3FF !important; /* Muted palette token backdrop */
-    border: 1px solid #EDE9FE !important;
+    background: #F8FAFC !important; 
+    border: 1px solid #A3A3CC !important; /* Muted Lavender frame borders */
     border-radius: 12px !important;
     padding: 1rem !important;
     display: flex !important;
@@ -677,28 +689,32 @@ button:hover {
     gap: 0.85rem !important;
     text-align: left !important;
     cursor: pointer;
-    transition: all 0.2s ease-block !important;
+    transition: all 0.2s ease !important;
     width: 100%;
     height: auto !important;
 }
 
 .action-btn-card:hover {
-    background: #EDE9FE !important;
-    border-color: #9988F9 !important;
+    background: #CCCCFF !important; /* Periwinkle Hover action focus */
+    border-color: #5C5C99 !important;
     transform: translateY(-2px);
 }
 
 .action-icon {
     width: 40px;
     height: 40px;
-    background: #7C3AED;
+    background: #5C5C99; /* Deep Slate Blue actions background */
     color: #FFFFFF;
     border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     font-size: 1.1rem;
     flex-shrink: 0;
+}
+
+.action-btn-card:hover .action-icon {
+    background: #292966; /* Shift to Navy on hover */
 }
 
 .action-label {
@@ -707,16 +723,17 @@ button:hover {
 }
 
 .action-label strong {
-    color: #1E293B;
+    color: #292966;
     font-size: 0.9rem;
     display: block;
 }
 
 .action-label span {
-    color: #64748B;
+    color: #5C5C99;
     font-size: 0.75rem;
     font-weight: normal;
 }
+
 /* Fix quick action icon centering */
 .action-icon {
     display: inline-flex !important;
