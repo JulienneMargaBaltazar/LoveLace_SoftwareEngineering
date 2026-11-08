@@ -233,10 +233,13 @@ body {
 
 /* Main Workspace */
 .main-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow-x: hidden;
+    background-color: #F8FAFC !important; /* Kept your background color */
 }
+
 
 
 .top-header {
@@ -246,9 +249,10 @@ body {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    width: 100% !important; /* Forces it to fill the whole right side */
+    width: 200% !important;
     box-sizing: border-box !important;
 }
+
 
 
 .top-header h1 {
@@ -259,7 +263,11 @@ body {
 
 
 .dashboard-container {
-    padding: 2rem;
+    padding: 2rem !important;
+    width: 100% !important;
+    max-width: 1200px !important; /* Prevents the dashboard from stretching infinitely when zooming out */
+    margin: 0 auto !important;    /* Centers the entire dashboard content frame on the page */
+    box-sizing: border-box !important;
 }
 
 
@@ -720,14 +728,4 @@ button:hover {
 .action-label span {
     color: #5C5C99;
     font-size: 0.75rem;
-}
-
-/* --- NEW METRICS PANEL CONTAINER --- */
-.dashboard-card-panel {
-    background: #ffffff !important;
-    border-radius: 16px !important;
-    padding: 2rem !important;
-    margin-bottom: 2rem !important;
-    border: 1px solid #A3A3CC !important;
-    box-shadow: 0 4px 20px rgba(41, 41, 102, 0.02) !important;
 }
