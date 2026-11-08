@@ -551,12 +551,15 @@ button:hover {
     font-weight: 600;
 }
 
+/* Find this block around line 362-368 in style.css */
 .welcome-banner-purple {
     background: linear-gradient(135deg, #292966 0%, #5C5C99 100%) !important;
     border-radius: 16px;
-    padding: 2.5rem 2rem 5rem 2rem;
+    padding: 2.5rem 2rem 2.5rem 2rem; /* Optional: Cleaned up the extra bottom padding */
     color: #FFFFFF;
-    margin-bottom: -3.5rem;
+    
+    /* CHANGE THIS LINE FROM -3.5rem TO POSITIVE 1.5rem */
+    margin-bottom: 1.5rem !important; 
 }
 
 .welcome-banner-purple h1 {
