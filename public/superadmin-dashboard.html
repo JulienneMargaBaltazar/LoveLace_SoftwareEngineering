@@ -50,11 +50,12 @@
             <div class="user-badge-top" style="background: #EDE9FE; color: #6D28D9;">Superadmin</div>
         </header>
 
-        <div class="dashboard-container">
+       <div class="dashboard-container">
             <!-- Purple Welcome Banner Component -->
             <div class="welcome-banner-purple">
                 <div class="banner-content">
-                    <h1>Welcome back, Superadmin!</h1>
+                    <!-- ADD THE ID HERE: -->
+                    <h1 id="welcomeHeading">Welcome back, Superadmin!</h1>
                     <p>LoveLace Inc. ERP - System Management & Security Clearances Panel.</p>
                 </div>
             </div>
@@ -150,6 +151,7 @@
         </div>
     </main>
     <!-- Updated script to safely parse and display full user names in both areas -->
+       <!-- Final Corrected Script to Safely Parse and Output Strings -->
     <script>
         async function checkSession() {
             try {
@@ -163,33 +165,32 @@
                 const data = await response.json();
                 const sessionData = data.userSessionData;
                 
-                // Formats fallback name attributes coming out of your backend session database records
+                // 1. Gather names from backend properties
                 let firstName = sessionData.first_name || sessionData.firstName || '';
                 let lastName = sessionData.last_name || sessionData.lastName || '';
                 let fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : '';
 
-                // FALLBACK: If first/last name keys are blank but a combined name string like "Ada Lovelace" is found
+                // Fallback: If separate name fields are empty but a combined "name" field exists
                 if (!fullName && sessionData.name) {
                     fullName = sessionData.name;
                 }
 
-                // If fullName is populated but firstName is blank, extract the first word as the first name
+                // FIX: Correctly extract the first word string out of the full name array match
                 if (fullName && !firstName) {
-                    firstName = fullName.split(' ')[0];
+                    firstName = fullName.split(' ')[0]; // Grabs index 0 ("Ada") as a clean string text word
                 }
 
-                // Default string updates if no names are retrieved
+                // Standard global fallbacks if database details come back blank
                 if (!fullName) fullName = "Superadmin";
                 if (!firstName) firstName = "Superadmin";
                 
-                // 1. Injects the name into the main purple banner header text track
+                // 2. Inject "Welcome back, Ada!" into your h1 header element
                 const welcomeHeading = document.getElementById('welcomeHeading');
                 if (welcomeHeading) {
-                    // Change this to `${fullName}` if you want the full name displayed inside the banner instead of just the first name
                     welcomeHeading.innerText = `Welcome back, ${firstName}!`;
                 }
                 
-                // 2. Injects the Full Name into the bottom-left sidebar text span
+                // 3. Inject "Ada Lovelace" into the bottom profile bar element
                 const profileEl = document.getElementById('userProfileInfo');
                 if (profileEl) {
                     profileEl.innerText = fullName;
@@ -201,7 +202,7 @@
             }
         }
 
-        // Auto execute on layout load
+        // Auto run session checks on app view initialization
         checkSession();
     </script>
 </body>
