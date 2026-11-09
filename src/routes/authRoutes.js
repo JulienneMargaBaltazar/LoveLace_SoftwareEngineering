@@ -26,28 +26,29 @@ const validatePasswordStrength = (password) => {
 // 1. SIGNUP ROUTE
 // ==========================================
 router.post('/signup', async (req, res) => {
+  // 1. Safely parse and normalize body variables into camelCase
   const firstName = typeof req.body.first_name === 'string' ? req.body.first_name.trim() : '';
   const lastName = typeof req.body.last_name === 'string' ? req.body.last_name.trim() : '';
   const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
   const password = typeof req.body.password === 'string' ? req.body.password : '';
 
+  // 2. Enforce presence check for all required credentials
   if (!firstName || !lastName || !email || !password) {
     return res.status(400).json({
-      error: 'First name, last_name, email, and password are required.'
+      error: 'First name, last name, email, and password are required.'
     });
   }
 
-    if (!first_name || !last_name || !email || !password) {
-      return res.status(400).json({ error: 'All fields (first_name, last_name, email, password) are required.' });
-    }
-
+  // 3. Enforce complexity constraints via your helper validator
   const passwordError = validatePasswordStrength(password);
   if (passwordError) {
     return res.status(400).json({ error: passwordError });
   }
 
   try {
+    // 4. Encrypt credential before mutation commit
     const passwordHash = await bcrypt.hash(password, 10);
+    
     const { data: insertData, error } = await supabase
       .from('app_user')
       .insert({
@@ -62,15 +63,22 @@ router.post('/signup', async (req, res) => {
       })
       .select();
 
+    // 5. Handle Supabase database query failures gracefully
     if (error) {
+      // 23505 is the PostgreSQL error code for unique key violation (duplicate email)
       if (error.code === '23505') {
         return res.status(409).json({ error: 'An account with this email already exists.' });
       }
       return res.status(400).json({ error: error.message });
     }
 
+    // 6. Ensure the newly committed object exists before mutating it
+    if (!insertData || insertData.length === 0) {
+      return res.status(500).json({ error: 'Registration failed to write user entry record.' });
+    }
+
     const newUser = insertData[0];
-    delete newUser.password_hash;
+    delete newUser.password_hash; // Strips internal hash details from network context
 
     return res.status(201).json({
       message: 'Registration successful! Your account is currently pending administrative approval.',
@@ -78,6 +86,7 @@ router.post('/signup', async (req, res) => {
     });
 
   } catch (err) {
+    // 7. Standard system crash fallback boundary catcher
     console.error('Unexpected server error during registration:', err.message);
     return res.status(500).json({ error: 'Internal server error. Please try again later.' });
   }

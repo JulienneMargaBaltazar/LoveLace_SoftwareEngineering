@@ -155,43 +155,42 @@
             }
 
             try {
-    const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ first_name, last_name, email, password })
-    });
+                const response = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ first_name, last_name, email, password })
+                });
 
-    // 1. If the server returns a bad status code (400, 409, 500, etc.)
-    if (!response.ok) {
-        let errorMessage = 'Registration failed.';
-        
-        try {
-            // Attempt to read the JSON error message sent by the backend
-            const errorData = await response.json();
-            errorMessage = errorData.error || errorData.message || errorMessage;
-        } catch (jsonParseError) {
-            // Fallback if backend returned text or HTML instead of JSON
-            errorMessage = `Server Error (${response.status}): ${response.statusText}`;
-        }
+                // 1. If the server returns a bad status code (400, 409, 500, etc.)
+                if (!response.ok) {
+                    let errorMessage = 'Registration failed.';
+                    
+                    try {
+                        // Attempt to read the JSON error message sent by the backend
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorData.message || errorMessage;
+                    } catch (jsonParseError) {
+                        // Fallback if backend returned text or HTML instead of JSON
+                        errorMessage = `Server Error (${response.status}): ${response.statusText}`;
+                    }
 
-        throw new Error(errorMessage);
-    }
+                    throw new Error(errorMessage);
+                }
 
-    // 2. Only parse successful data if response.ok is true
-    const data = await response.json();
-    alert(data.message);
-    window.location.href = '/login.html';
+                // 2. Only parse successful data if response.ok is true
+                const data = await response.json();
+                alert(data.message);
+                window.location.href = '/login.html';
 
-} catch (err) {
-    // 3. Your bubble logic now safely receives the correct server message
-    if (err.message.toLowerCase().includes('password')) {
-        pwdText.textContent = err.message;
-        pwdBubble.classList.remove('hidden');
-    } else {
-        alert(err.message);
-    }
-}
-
+            } catch (err) {
+                // 3. Your bubble logic now safely receives the correct server message
+                if (err.message.toLowerCase().includes('password')) {
+                    pwdText.textContent = err.message;
+                    pwdBubble.classList.remove('hidden');
+                } else {
+                    alert(err.message);
+                }
+            }
         });
     </script>
 </body>
