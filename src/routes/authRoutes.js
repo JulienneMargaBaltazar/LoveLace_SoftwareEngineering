@@ -26,20 +26,20 @@ const validatePasswordStrength = (password) => {
 // 1. SIGNUP ROUTE
 // ==========================================
 router.post('/signup', async (req, res) => {
+  // 1. Correctly parse variables using camelCase matching your declaration references
   const firstName = typeof req.body.first_name === 'string' ? req.body.first_name.trim() : '';
   const lastName = typeof req.body.last_name === 'string' ? req.body.last_name.trim() : '';
   const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
   const password = typeof req.body.password === 'string' ? req.body.password : '';
 
+  // 2. Validate empty fields cleanly (Safe version)
   if (!firstName || !lastName || !email || !password) {
     return res.status(400).json({
-      error: 'First name, last_name, email, and password are required.'
+      error: 'First name, last name, email, and password are required.'
     });
   }
 
-    if (!first_name || !last_name || !email || !password) {
-      return res.status(400).json({ error: 'All fields (first_name, last_name, email, password) are required.' });
-    }
+  // NOTE: The duplicate "if (!first_name...)" block has been completely deleted from here to stop the server crash!
 
   const passwordError = validatePasswordStrength(password);
   if (passwordError) {
@@ -48,6 +48,8 @@ router.post('/signup', async (req, res) => {
 
   try {
     const passwordHash = await bcrypt.hash(password, 10);
+    
+    // 3. Send payload to Supabase database instance
     const { data: insertData, error } = await supabase
       .from('app_user')
       .insert({
@@ -62,6 +64,7 @@ router.post('/signup', async (req, res) => {
       })
       .select();
 
+    // 4. Check for database validation/constraint rejections FIRST
     if (error) {
       if (error.code === '23505') {
         return res.status(409).json({ error: 'An account with this email already exists.' });
@@ -69,6 +72,12 @@ router.post('/signup', async (req, res) => {
       return res.status(400).json({ error: error.message });
     }
 
+    // Verify database returned user information cleanly
+    if (!insertData || insertData.length === 0) {
+      return res.status(500).json({ error: 'Failed to retrieve newly created user profile records.' });
+    }
+
+    // 5. Read row dataset down here now that we verified no errors occurred
     const newUser = insertData[0];
     delete newUser.password_hash;
 
@@ -78,10 +87,12 @@ router.post('/signup', async (req, res) => {
     });
 
   } catch (err) {
-    console.error('Unexpected server error during registration:', err.message);
+    // Prevent unhandled logging exceptions if err or err.message is incomplete
+    console.error('Unexpected server error during registration context handling:', err);
     return res.status(500).json({ error: 'Internal server error. Please try again later.' });
   }
 });
+
 
 // ==========================================
 // 2. LOGIN ROUTE

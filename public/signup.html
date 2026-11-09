@@ -7,7 +7,7 @@
     <!-- External Stylesheet -->
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Embedded styling needed to control position without modifying your external style.css structure */
+        /* Embedded styling needed to control position without modifying external style.css structure */
         .input-relative-group {
             position: relative;
             margin-bottom: 25px; /* Adds space for the bubble to sit comfortably between fields */
@@ -161,7 +161,15 @@
                     body: JSON.stringify({ first_name, last_name, email, password })
                 });
 
-                const data = await response.json();
+                // Read as text first to handle 500 HTML response diagnostics safely
+                const rawText = await response.text();
+                let data = {};
+                
+                try {
+                    data = JSON.parse(rawText);
+                } catch (parseError) {
+                    throw new Error("Server Error Trace:\n" + rawText);
+                }
 
                 if (!response.ok) {
                     throw new Error(data.error || 'Registration failed.');
@@ -176,7 +184,7 @@
                     pwdText.textContent = err.message;
                     pwdBubble.classList.remove('hidden');
                 } else {
-                    // Standard system wide alert fallback for non-password database conflicts (such as email duplication)
+                    // Standard system wide alert fallback showing exact traceback
                     alert(err.message);
                 }
             }
