@@ -26,27 +26,25 @@ const validatePasswordStrength = (password) => {
 // 1. SIGNUP ROUTE
 // ==========================================
 router.post('/signup', async (req, res) => {
-  const firstName = typeof req.body.first_name === 'string' ? req.body.first_name.trim() : '';
-  const lastName = typeof req.body.last_name === 'string' ? req.body.last_name.trim() : '';
-  const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
-  const password = typeof req.body.password === 'string' ? req.body.password : '';
+  try {
+    const firstName = typeof req.body.first_name === 'string' ? req.body.first_name.trim() : '';
+    const lastName = typeof req.body.last_name === 'string' ? req.body.last_name.trim() : '';
+    const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+    const password = typeof req.body.password === 'string' ? req.body.password : '';
 
-  if (!firstName || !lastName || !email || !password) {
-    return res.status(400).json({
-      error: 'First name, last_name, email, and password are required.'
-    });
-  }
-
-    if (!first_name || !last_name || !email || !password) {
-      return res.status(400).json({ error: 'All fields (first_name, last_name, email, password) are required.' });
+    // Enforce required fields with uniform casing variables
+    if (!firstName || !lastName || !email || !password) {
+      return res.status(400).json({
+        error: 'First name, last name, email, and password are required.'
+      });
     }
 
-  const passwordError = validatePasswordStrength(password);
-  if (passwordError) {
-    return res.status(400).json({ error: passwordError });
-  }
+    // Enforce strong password complexity rules
+    const passwordError = validatePasswordStrength(password);
+    if (passwordError) {
+      return res.status(400).json({ error: passwordError });
+    }
 
-  try {
     const passwordHash = await bcrypt.hash(password, 10);
     const { data: insertData, error } = await supabase
       .from('app_user')
@@ -70,7 +68,9 @@ router.post('/signup', async (req, res) => {
     }
 
     const newUser = insertData[0];
-    delete newUser.password_hash;
+    if (newUser) {
+      delete newUser.password_hash;
+    }
 
     return res.status(201).json({
       message: 'Registration successful! Your account is currently pending administrative approval.',
@@ -84,7 +84,7 @@ router.post('/signup', async (req, res) => {
 });
 
 // ==========================================
-// 2. LOGIN ROUTE
+// 2. LOGIN ROUTE (Unified Database & GoTrue Session Backing)
 // ==========================================
 router.post('/login', async (req, res) => {
   try {
@@ -94,18 +94,31 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Email and password are required.' });
     }
 
-    // Fetch user from database including role_id and status flags
+    // Try primary application user authentication
     const { data: user, error: fetchError } = await supabase
       .from('app_user')
       .select('*')
-      .eq('email', email)
-      .single();
+      .eq('email', email.trim().toLowerCase())
+      .maybeSingle();
 
+    // Fallback: If local record isn't present, check GoTrue instances
     if (fetchError || !user) {
-      return res.status(401).json({ error: 'Invalid email or password.' });
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error || !data.session) {
+        return res.status(401).json({ error: 'Invalid email or password.' });
+      }
+
+      req.session.userId = data.user.id;
+      req.session.accessToken = data.session.access_token;
+      req.session.roleId = data.user.user_metadata?.roleId || 3;
+
+      return res.status(200).json({ 
+        message: 'Login successful.',
+        user: data.user
+      });
     }
 
-    // Security checks (Blocked or Pending)
+    // Security validation checks
     if (user.is_blocked || user.status === 'blocked') {
       return res.status(403).json({ error: 'Access denied. This account has been blocked.' });
     }
@@ -114,27 +127,25 @@ router.post('/login', async (req, res) => {
       return res.status(403).json({ error: 'Account is pending approval.' });
     }
 
-    // Compare password hash
+    // Hash integrity verification
     const isPasswordValid = await bcrypt.compare(password, user.password_hash);
     if (!isPasswordValid) {
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
-    // Save user details to server-side session
+    // Save mapping structures inside server-side memory layouts
     req.session.userId = user.user_id;
     req.session.email = user.email;
     req.session.roleId = Number(user.role_id);
     req.session.firstName = user.first_name;
     req.session.lastName = user.last_name;
 
-    // Force session to save before replying to the frontend
     req.session.save((err) => {
       if (err) {
         console.error('Session save error:', err);
         return res.status(500).json({ error: 'Internal server error during login.' });
       }
 
-      // Check if it's the user's first login requiring a password reset/update
       if (user.is_first_login) {
         return res.status(200).json({
           requiresPasswordReset: true,
@@ -142,7 +153,6 @@ router.post('/login', async (req, res) => {
         });
       }
 
-      // Determine target dashboard based on role_id
       let redirectUrl = '/user-dashboard.html';
       const roleId = Number(user.role_id);
       if (roleId === 1) {
@@ -213,7 +223,7 @@ router.post('/set-password', async (req, res) => {
 });
 
 // ==========================================
-// S1-DEV-04: REQUEST PASSWORD RESET 
+// 4. REQUEST PASSWORD RESET
 // ==========================================
 router.post('/forgotpassword', async (req, res) => {
   try {
@@ -223,11 +233,10 @@ router.post('/forgotpassword', async (req, res) => {
       return res.status(400).json({ error: 'Email is required.' });
     }
 
-    // Use .maybeSingle() to safely handle emails that are not found without throwing errors
     const { data: user, error } = await supabase
       .from('app_user')
       .select('*')
-      .eq('email', email)
+      .eq('email', email.trim().toLowerCase())
       .maybeSingle();
 
     if (error) {
@@ -235,14 +244,12 @@ router.post('/forgotpassword', async (req, res) => {
       return res.status(500).json({ error: 'Internal server error.' });
     }
 
-    // Security: Always return generic success message to prevent user enumeration
     if (!user) {
       return res.status(200).json({ 
         message: 'If that email address is registered, a password reset link has been dispatched.' 
       });
     }
 
-    // Generate cryptographically secure random token & 15-minute expiration
     const resetToken = crypto.randomBytes(32).toString('hex');
     const tokenExpires = new Date(Date.now() + 15 * 60 * 1000);
 
@@ -259,7 +266,6 @@ router.post('/forgotpassword', async (req, res) => {
       return res.status(500).json({ error: 'Internal server error.' });
     }
 
-    // Simulate email dispatch in the terminal
     const resetLink = `http://localhost:3000/passwordreset.html?token=${resetToken}`;
     console.log(`\n🔗 [SIMULATED EMAIL DISPATCH] ----------------------------------------`);
     console.log(`To: ${email}`);
@@ -275,35 +281,36 @@ router.post('/forgotpassword', async (req, res) => {
     return res.status(500).json({ error: 'Internal server error.' });
   }
 });
-
 // ==========================================
-// RESET PASSWORD WITH TOKEN (Enforces Password Validator)
+// 5. RESET PASSWORD WITH TOKEN
 // ==========================================
 router.post('/passwordreset', async (req, res) => {
   try {
     const { token, newPassword } = req.body;
 
+    // 1. Enforce payload parameter presence
     if (!token || !newPassword) {
       return res.status(400).json({ error: 'Token and new password are required.' });
     }
 
-    // Enforce password strength rules on password reset too
+    // 2. Run password validation check rules
     const passwordError = validatePasswordStrength(newPassword);
     if (passwordError) {
       return res.status(400).json({ error: passwordError });
     }
 
+    // 3. Locate matching user by token signature
     const { data: user, error } = await supabase
       .from('app_user')
       .select('*')
       .eq('reset_token', token)
-      .single();
+      .maybeSingle();
 
     if (error || !user) {
       return res.status(400).json({ error: 'Invalid or already used password reset token.' });
     }
 
-    // Server-side expiration validation
+    // 4. Verify token age expiration validation rules
     const now = new Date();
     const expiresAt = new Date(user.reset_token_expires);
 
@@ -311,10 +318,11 @@ router.post('/passwordreset', async (req, res) => {
       return res.status(400).json({ error: 'Password reset token has expired. Please request a new one.' });
     }
 
+    // 5. Generate secure hash signature mutations
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-    // Commit password change and immediately invalidate the token
+    // 6. Save update mutations and invalidate token signatures instantly
     const { error: mutationError } = await supabase
       .from('app_user')
       .update({
@@ -339,112 +347,3 @@ router.post('/passwordreset', async (req, res) => {
     return res.status(500).json({ error: 'Internal server error.' });
   }
 });
-
-// ==========================================
-// 6. DASHBOARD SESSION VERIFICATION
-// ==========================================
-router.get('/dashboard', authMiddleware, (req, res) => {
-  res.status(200).json({
-    message: 'Welcome to the dashboard',
-    userSessionData: {
-      userId: req.session.userId,
-      email: req.session.email,
-      roleId: req.session.roleId,
-      firstName: req.session.firstName,
-      lastName: req.session.lastName
-    }
-  });
-});
-
-// ==========================================
-// 7. LOGOUT ROUTE
-// ==========================================
-router.post('/logout', (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).json({ error: 'Could not log out, please try again.' });
-    }
-    res.clearCookie('connect.sid');
-    return res.status(200).json({ message: 'Logged out successfully.' });
-  });
-});
-
-router.post('/logout', async (req, res) => {
-  try {
-    // 1. Invalidate token on Supabase's authentication servers
-    await supabase.auth.signOut();
-
-    // 2. Clear local memory session storage
-    if (req.session) {
-      req.session.destroy((err) => {
-        if (err) {
-          return res.status(500).json({ error: 'Could not log out of session.' });
-        }
-        res.clearCookie('connect.sid'); // Clear your session cookie
-        return res.status(200).json({ message: 'Logged out successfully.' });
-      });
-    } else {
-      return res.status(200).json({ message: 'Logged out successfully.' });
-    }
-  } catch (error) {
-    return res.status(500).json({ error: 'Server logout error.' });
-  }
-});
-
-router.post('/update-password', async (req, res) => {
-  const { newPassword, access_token } = req.body;
-
-  if (!access_token) {
-    return res.status(400).json({ error: 'Token missing.' });
-  }
-
-  // 1. Anchor the token to this server instance request context
-  const { error: sessionError } = await supabase.auth.setSession({
-    access_token: access_token,
-    refresh_token: req.body.refresh_token || ''
-  });
-
-  // CRITICAL FIX FOR TC-06 & TC-07: Catch age thresholds and already-consumed tokens
-  if (sessionError) {
-    return res.status(400).json({ 
-      error: "Token expired. Please request a new verification path." 
-    });
-  }
-
-  // 2. Commit the password modification payload
-  const { error: updateError } = await supabase.auth.updateUser({
-    password: newPassword
-  });
-
-  if (updateError) {
-    return res.status(400).json({ error: updateError.message });
-  }
-
-  // CRITICAL FIX FOR TC-07: Globally revoke token instantly so it can never be processed a second time
-  await supabase.auth.signOut();
-
-  return res.status(200).json({ message: "Password updated successfully." });
-});
-
-router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
-  if (error || !data.session) {
-    return res.status(401).json({ error: 'Invalid credentials.' });
-  }
-
-  // CRITICAL FIX FOR TC-03 & TC-04: Secure mapping initialization
-  req.session.userId = data.user.id;
-  req.session.accessToken = data.session.access_token; // Save this for the middleware to read!
-  req.session.roleId = data.user.user_metadata?.roleId || 3; // (or query your DB for role mapping)
-
-  return res.status(200).json({ 
-    message: 'Login successful.',
-    user: data.user
-  });
-});
-
-
-export default router;
