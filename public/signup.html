@@ -155,31 +155,35 @@
             }
 
             try {
-                const response = await fetch('/api/auth/signup', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ first_name, last_name, email, password })
-                });
+    const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ first_name, last_name, email, password })
+    });
 
-                const data = await response.json();
+    // 1. Safely extract the JSON payload response from the server
+    const data = await response.json();
 
-                if (!response.ok) {
-                    throw new Error(data.error || 'Registration failed.');
-                }
+    // 2. CRITICAL STEP: Evaluate if the HTTP status is an error BEFORE treating it as a success!
+    if (!response.ok) {
+        // This will now capture the custom 'details' message you added to your backend catch block
+        throw new Error(data.details || data.error || 'Registration failed.');
+    }
 
-                alert(data.message);
-                window.location.href = '/login.html';
+    // 3. Proceed with successful path navigation rules
+    alert(data.message);
+    window.location.href = '/login.html';
 
-            } catch (err) {
-                // If backend throws an evaluation constraint about password requirements, bind to inline layout bubble
-                if (err.message.toLowerCase().includes('password')) {
-                    pwdText.textContent = err.message;
-                    pwdBubble.classList.remove('hidden');
-                } else {
-                    // Standard system wide alert fallback for non-password database conflicts (such as email duplication)
-                    alert(err.message);
-                }
-            }
+} catch (err) {
+    if (err.message.toLowerCase().includes('password')) {
+        pwdText.textContent = err.message;
+        pwdBubble.classList.remove('hidden');
+    } else {
+        // This will print the exact database or backend column trace text message instead of a generic text loop
+        alert(err.message);
+    }
+}
+
         });
     </script>
 </body>
