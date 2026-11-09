@@ -37,38 +37,62 @@
         .sidebar-logout-btn:hover {
             background-color: #b91c1c;
         }
+        /* HR Segment Pills */
+        .hr-segment-btn {
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #64748b;
+            background: #e2e8f0;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s ease-in-out;
+        }
+        .hr-segment-btn.active {
+            background: #232752;
+            color: #ffffff;
+        }
+        /* Figma Table Header Override */
+        .figma-table thead tr {
+            background-color: #232752 !important;
+            color: white !important;
+        }
+        .figma-table th {
+            color: white !important;
+        }
     </style>
 </head>
-<body class="bg-[#F4F6F9] text-gray-800 antialiased min-h-screen">
+<body class="admin-layout flex h-screen w-full overflow-hidden bg-[#F4F6F9]">
 
-    <!-- Full screen flex layout -->
-    <div class="flex h-screen w-full overflow-hidden">
-        <!-- Sidebar Navigation (User View) -->
-        <aside class="sidebar w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0 h-full">
-            <div>
-                <div class="sidebar-brand px-6 py-5 border-b border-gray-100 font-bold text-gray-900 flex flex-col">
-                    <span>LoveLace Inc. ERP</span>
-                    <span class="text-xs text-gray-400 font-normal">by LoveLace</span>
-                </div>
-                
-                <ul class="nav-menu px-3 space-y-1 mt-2">
-                    <li class="nav-item"><a href="/user-dashboard.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📊 Dashboard</a></li>
-                    <li class="border-t border-gray-200 my-2"></li>
-                    <li class="nav-item"><a href="/user-customers.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">👥 Customers</a></li>
-                    <li class="nav-item"><a href="/user-products.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📦 Products</a></li>
-                    <li class="nav-item"><a href="/user-sales.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">💳 Sales</a></li>
-                    <li class="nav-item active"><a href="/user-human-resources.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg transition border-l-4 border-blue-600">👔 Human Resources</a></li>
-                </ul>
-            </div>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span>LoveLace Inc. ERP</span>
+            <small style="display:block; font-size:10px; color:#5C5C99; font-weight:normal;">by LoveLace</small>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="user-dashboard.html">📊 Dashboard</a></li>
+            <li class="nav-item"><a href="user-customers.html">👥 Customers</a></li>
+            <li class="nav-item"><a href="user-products.html">📦 Products</a></li>
+            <li class="nav-item active"><a href="user-human-resources.html">👔 Human Resources</a></li>
+            <li class="nav-item"><a href="user-sales.html">💼 Sales</a></li>
+            <li class="nav-item"><a href="user-reports.html">📈 Reports</a></li>
+            <li class="nav-item"><a href="settings.html">⚙️ Settings</a></li>
 
-            <!-- Bottom Left User Info & Logout -->
-            <div class="sidebar-footer p-4 border-t border-gray-100 bg-gray-900">
-                <div id="userProfileInfo" class="user-profile-info text-white text-sm font-semibold mb-3">
-                    Loading user...
+            <li class="nav-item logout-menu-item" style="margin-top: 1rem;"><a href="landingpage.html" style="color: #ef4444 !important;" id="logoutBtn">🚪 Logout</a></li>
+        </ul>
+        
+        <div class="sidebar-profile">
+            <div class="profile-info">
+                <div class="avatar">👤</div>
+                <div class="profile-text">
+                    <!-- FIX 1: Added id="userProfileInfo" here -->
+                    <span class="username" id="userProfileInfo">Loading user...</span>
+                    <span class="role">User</span>
                 </div>
-                <button id="logoutBtn" class="sidebar-logout-btn flex items-center justify-center gap-2">Logout</button>
             </div>
-        </aside>
+        </div> <!-- FIXED: Repaired missing closing tags from your original code snippet here -->
+    </aside>
 
         <!-- Main Workspace Area -->
         <main class="flex-1 w-full flex flex-col overflow-y-auto">
@@ -91,11 +115,16 @@
 
                 <!-- EMPLOYEES DIRECTORY SECTION -->
                 <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between w-full gap-4">
-                        <div>
-                            <h3 class="font-bold text-gray-900 text-base">Employee Directory</h3>
-                            <p class="text-xs text-gray-500">View active personnel records and assignments.</p>
+                    
+                    <!-- HR Segment Pills & Toolbar Row -->
+                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between w-full gap-4 flex-wrap">
+                        <!-- HR Segment Pills (Employees, Jobs, Departments) -->
+                        <div class="inline-flex rounded-lg overflow-hidden border border-gray-200">
+                            <button class="hr-segment-btn active" onclick="switchHRSegment('employees', event)">Employees</button>
+                            <button class="hr-segment-btn" onclick="switchHRSegment('jobs', event)">Jobs</button>
+                            <button class="hr-segment-btn" onclick="switchHRSegment('departments', event)">Departments</button>
                         </div>
+
                         <div class="flex items-center gap-3">
                             <input type="text" id="searchEmployeeInput" onkeyup="filterEmployees()" placeholder="Search employees..." class="px-3 py-1.5 border border-gray-300 rounded-md text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 w-48 sm:w-64">
                             <button id="refreshBtn" class="shrink-0 whitespace-nowrap px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-md border border-gray-300 transition flex items-center gap-1.5 w-auto">
@@ -103,12 +132,13 @@
                             </button>
                         </div>
                     </div>
+
                     <div id="errorContainer" class="px-6 pt-3 text-xs font-medium text-red-600"></div>
 
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+                        <table class="w-full text-left border-collapse figma-table">
                             <thead>
-                                <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                <tr id="tableHeaderRow" class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                     <th class="py-3.5 px-6">Emp No</th>
                                     <th class="py-3.5 px-6">Employee Name</th>
                                     <th class="py-3.5 px-6">Job Code</th>
@@ -167,246 +197,226 @@
 
     <!-- Script Logic -->
     <script>
+        function escapeHtml(str) {
+            return (str || '').toString().replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+        }
         let currentUserId = null;
         let currentUserRoleId = null;
         let userRights = [];
         let employeesData = [];
+        let jobsData = [];
+        let departmentsData = [];
+        let currentSegment = 'employees';
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            await checkSession();
-            await fetchEmployeeDirectory();
-            
-            document.getElementById('refreshBtn').addEventListener('click', async () => {
-                const icon = document.getElementById('refreshIcon');
-                icon.classList.add('fa-spin');
-                await fetchEmployeeDirectory();
-                setTimeout(() => icon.classList.remove('fa-spin'), 400);
-            });
-        });
+document.addEventListener('DOMContentLoaded', async () => {
+    await checkSession();
+    await fetchAllHRData();
+    
+    document.getElementById('refreshBtn').addEventListener('click', async () => {
+        const icon = document.getElementById('refreshIcon');
+        icon.classList.add('fa-spin');
+        await fetchAllHRData();
+        setTimeout(() => icon.classList.remove('fa-spin'), 400);
+    });
+});
 
-        async function checkSession() {
-            try {
-                const response = await fetch('/api/dashboard', { credentials: 'include' });
-                if (!response.ok) {
-                    window.location.href = '/login.html';
-                    return;
-                }
-                const data = await response.json();
-                const sessionData = data.userSessionData;
+async function checkSession() {
+    try {
+        const response = await fetch('/api/dashboard', { credentials: 'include' });
+        if (!response.ok) {
+            window.location.href = '/login.html';
+            return;
+        }
+        const data = await response.json();
+        const sessionData = data.userSessionData;
 
-                currentUserId = sessionData?.userId || sessionData?.user_id || sessionData?.id;
-                currentUserRoleId = Number(sessionData?.roleId || sessionData?.role_id || 3);
-                userRights = data.rights || [];
+        currentUserId = sessionData?.userId || sessionData?.user_id || sessionData?.id;
+        currentUserRoleId = Number(sessionData?.roleId || sessionData?.role_id || 3);
+        userRights = data.rights || [];
 
-                const firstName = sessionData?.firstName || sessionData?.first_name || '';
-                const lastName = sessionData?.lastName || sessionData?.last_name || '';
-                const fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'User';
-                
-                document.getElementById('userProfileInfo').innerText = fullName;
+        const firstName = sessionData?.firstName || sessionData?.first_name || '';
+        const lastName = sessionData?.lastName || sessionData?.last_name || '';
+        const fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'User';
+        
+        document.getElementById('userProfileInfo').innerText = fullName;
 
-                // Check if user has add permission to show/hide the Add Employee button
-                const isSuperOrAdmin = (currentUserRoleId === 1 || currentUserRoleId === 2);
-                const canAddEmployee = isSuperOrAdmin || userRights.some(r => 
-                    String(r.module_name || '').toLowerCase() === 'human-resources' && 
-                    String(r.action_key || '').toLowerCase() === 'add-employee' && 
-                    r.is_allowed === true
-                );
+        const isSuperOrAdmin = (currentUserRoleId === 1 || currentUserRoleId === 2);
+        const canAddEmployee = isSuperOrAdmin || userRights.some(r => 
+            String(r.module_name || '').toLowerCase() === 'human-resources' && 
+            String(r.action_key || '').toLowerCase() === 'add-employee' && 
+            r.is_allowed === true
+        );
 
-                if (canAddEmployee) {
-                    document.getElementById('addEmployeeBtn').classList.remove('hidden');
-                    document.getElementById('addEmployeeBtn').classList.add('flex');
-                } else {
-                    document.getElementById('addEmployeeBtn').classList.add('hidden');
-                    document.getElementById('addEmployeeBtn').classList.remove('flex');
-                }
-            } catch (err) {
-                console.error('Session check failed:', err);
-                window.location.href = '/login.html';
-            }
+        const addBtn = document.getElementById('addEmployeeBtn');
+        if (canAddEmployee) {
+            addBtn.classList.remove('hidden');
+            addBtn.classList.add('flex');
+        } else {
+            addBtn.classList.add('hidden');
+            addBtn.classList.remove('flex');
+        }
+    } catch (err) {
+        console.error('Session check failed:', err);
+        window.location.href = '/login.html';
+    }
+}
+
+async function fetchAllHRData() {
+    const errorContainer = document.getElementById('errorContainer');
+    errorContainer.innerText = '';
+
+    try {
+        const [empRes, jobRes, deptRes] = await Promise.all([
+            fetch('/api/admin/employees', { credentials: 'include' }),
+            fetch('/api/admin/jobs', { credentials: 'include' }),
+            fetch('/api/admin/departments', { credentials: 'include' })
+        ]);
+
+        if (empRes.ok) {
+            const data = await empRes.json();
+            employeesData = data.employees || data.data || [];
+        }
+        if (jobRes.ok) {
+            const data = await jobRes.json();
+            jobsData = data.jobs || data.data || [];
+        }
+        if (deptRes.ok) {
+            const data = await deptRes.json();
+            departmentsData = data.departments || data.data || [];
         }
 
-        async function fetchEmployeeDirectory() {
-            const errorContainer = document.getElementById('errorContainer');
-            errorContainer.innerText = '';
+        renderTable();
+    } catch (err) {
+        console.error('Error fetching HR directory:', err);
+        errorContainer.innerText = 'Failed to load records: ' + err.message;
+    }
+}
 
-            try {
-                const response = await fetch('/api/admin/employees', { credentials: 'include' });
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.error || 'Failed to load employee records.');
+function switchHRSegment(segment, event) {
+    currentSegment = segment;
+    document.querySelectorAll('.hr-segment-btn').forEach(b => b.classList.remove('active'));
+    if (event && event.target) event.target.classList.add('active');
 
-                employeesData = data.employees || data.data || (Array.isArray(data) ? data : []);
-                renderEmployeeTable(employeesData);
-            } catch (err) {
-                console.error('Error loading employees:', err);
-                errorContainer.innerText = 'Error loading employee records: ' + err.message;
-            }
+    const addBtn = document.getElementById('addEmployeeBtn');
+    const searchInput = document.getElementById('searchEmployeeInput');
+    searchInput.value = '';
+
+    if (segment === 'employees') {
+        addBtn.innerHTML = `<i class="fa-solid fa-plus"></i> Add Employee`;
+        searchInput.placeholder = 'Search employees...';
+    } else if (segment === 'jobs') {
+        addBtn.innerHTML = `<i class="fa-solid fa-plus"></i> Add Job`;
+        searchInput.placeholder = 'Search jobs...';
+    } else {
+        addBtn.innerHTML = `<i class="fa-solid fa-plus"></i> Add Department`;
+        searchInput.placeholder = 'Search departments...';
+    }
+
+    renderTable();
+}
+
+function renderTable() {
+    const theadRow = document.getElementById('tableHeaderRow');
+    const tbody = document.getElementById('employeeTableBody');
+
+    const isSuperOrAdmin = (currentUserRoleId === 1 || currentUserRoleId === 2);
+    const canEdit = isSuperOrAdmin || userRights.some(r => r.module_name === 'human-resources' && r.is_allowed);
+    const canDelete = isSuperOrAdmin || userRights.some(r => r.module_name === 'human-resources' && r.is_allowed);
+
+    if (currentSegment === 'employees') {
+        theadRow.innerHTML = `
+            <th class="py-3.5 px-6">Emp No</th>
+            <th class="py-3.5 px-6">Employee Name</th>
+            <th class="py-3.5 px-6">Job Code</th>
+            <th class="py-3.5 px-6">Dept Code</th>
+            <th class="py-3.5 px-6 text-right">Actions</th>
+        `;
+
+        if (!Array.isArray(employeesData) || employeesData.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-gray-400">No employee records found.</td></tr>`;
+            return;
         }
 
-        function renderEmployeeTable(employees) {
-            const tbody = document.getElementById('employeeTableBody');
+        tbody.innerHTML = employeesData.map(employee => {
+            const empno = employee.empno || employee.employee_no || employee.id || 'N/A';
+            const empname = employee.empname || employee.name || 'N/A';
+            const jobcode = employee.jobcode || 'N/A';
+            const deptcode = employee.deptcode || 'N/A';
 
-            if (!Array.isArray(employees) || employees.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-gray-400">No employee records found.</td></tr>`;
-                return;
-            }
+            const editBtnHtml = canEdit ? `
+                <button onclick="openEmployeeModal('${escapeHtml(String(empno))}')" class="px-2.5 py-1 text-xs font-semibold rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 transition">
+                    Edit
+                </button>` : '';
 
-            const isSuperOrAdmin = (currentUserRoleId === 1 || currentUserRoleId === 2);
-            const canEditEmployee = isSuperOrAdmin || userRights.some(r => 
-                String(r.module_name || '').toLowerCase() === 'human-resources' && 
-                String(r.action_key || '').toLowerCase() === 'edit-employee' && 
-                r.is_allowed === true
-            );
-            const canDeleteEmployee = isSuperOrAdmin || userRights.some(r => 
-                String(r.module_name || '').toLowerCase() === 'human-resources' && 
-                String(r.action_key || '').toLowerCase() === 'delete-employee' && 
-                r.is_allowed === true
-            );
+            const deleteBtnHtml = canDelete ? `
+                <button onclick="deleteEmployee('${escapeHtml(String(empno))}')" class="px-2.5 py-1 text-xs font-semibold rounded-md border border-red-300 text-red-700 hover:bg-red-50 transition">
+                    Delete
+                </button>` : '';
 
-            tbody.innerHTML = employees.map(employee => {
-                const empno = employee.empno || employee.employee_no || employee.id || 'N/A';
-                const empname = employee.empname || employee.name || 'N/A';
-                const jobcode = employee.jobcode || 'N/A';
-                const deptcode = employee.deptcode || 'N/A';
+            const actionsHtml = (editBtnHtml || deleteBtnHtml) ? `
+                <div class="inline-flex items-center gap-2 justify-end">
+                    ${editBtnHtml}
+                    ${deleteBtnHtml}
+                </div>` : `<span class="text-xs text-gray-400 italic">View Only</span>`;
 
-                const editBtnHtml = canEditEmployee ? `
-                    <button onclick="openEmployeeModal('${escapeHtml(String(empno))}')" class="px-2.5 py-1 text-xs font-semibold rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 transition">
-                        Edit
-                    </button>` : '';
+            return `
+                <tr class="hover:bg-gray-50/80 transition border-b border-gray-100">
+                    <td class="py-4 px-6 font-mono font-semibold text-xs text-blue-600 align-middle">${escapeHtml(String(empno))}</td>
+                    <td class="py-4 px-6 font-medium text-gray-900 align-middle">${escapeHtml(String(empname))}</td>
+                    <td class="py-4 px-6 text-xs text-gray-600 font-mono align-middle">${escapeHtml(String(jobcode))}</td>
+                    <td class="py-4 px-6 text-xs text-gray-600 font-mono align-middle">${escapeHtml(String(deptcode))}</td>
+                    <td class="py-4 px-6 text-right align-middle">
+                        ${actionsHtml}
+                    </td>
+                </tr>
+            `;
+        }).join('');
 
-                const deleteBtnHtml = canDeleteEmployee ? `
-                    <button onclick="deleteEmployee('${escapeHtml(String(empno))}')" class="px-2.5 py-1 text-xs font-semibold rounded-md border border-red-300 text-red-700 hover:bg-red-50 transition">
-                        Delete
-                    </button>` : '';
+    } else if (currentSegment === 'jobs') {
+        theadRow.innerHTML = `
+            <th class="py-3.5 px-6">Job Code</th>
+            <th class="py-3.5 px-6">Description</th>
+            <th class="py-3.5 px-6 text-right">Actions</th>
+        `;
 
-                const actionsHtml = (editBtnHtml || deleteBtnHtml) ? `
-                    <div class="inline-flex items-center gap-2 justify-end">
-                        ${editBtnHtml}
-                        ${deleteBtnHtml}
-                    </div>` : `<span class="text-xs text-gray-400 italic">View Only</span>`;
-
-                return `
-                    <tr class="hover:bg-gray-50/80 transition">
-                        <td class="py-4 px-6 font-mono font-semibold text-xs text-blue-600 align-middle">${escapeHtml(String(empno))}</td>
-                        <td class="py-4 px-6 font-medium text-gray-900 align-middle">${escapeHtml(String(empname))}</td>
-                        <td class="py-4 px-6 text-xs text-gray-600 align-middle">${escapeHtml(String(jobcode))}</td>
-                        <td class="py-4 px-6 text-xs text-gray-600 align-middle">${escapeHtml(String(deptcode))}</td>
-                        <td class="py-4 px-6 text-right align-middle">
-                            ${actionsHtml}
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+        if (!Array.isArray(jobsData) || jobsData.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="3" class="py-6 text-center text-gray-400">No job records found.</td></tr>`;
+            return;
         }
 
-        function filterEmployees() {
-            const query = document.getElementById('searchEmployeeInput').value.toLowerCase();
-            const filtered = employeesData.filter(e => {
-                const empno = String(e.empno || e.employee_no || e.id || '').toLowerCase();
-                const empname = String(e.empname || e.name || '').toLowerCase();
-                return empno.includes(query) || empname.includes(query);
-            });
-            renderEmployeeTable(filtered);
+        tbody.innerHTML = jobsData.map(job => `
+            <tr class="hover:bg-gray-50/80 transition border-b border-gray-100">
+                <td class="py-4 px-6 font-mono font-semibold text-xs text-blue-600 align-middle">${escapeHtml(String(job.jobcode || job.code || 'N/A'))}</td>
+                <td class="py-4 px-6 font-medium text-gray-900 align-middle">${escapeHtml(String(job.description || job.jobname || 'N/A'))}</td>
+                <td class="py-4 px-6 text-right align-middle">
+                    <button onclick="alert('Viewing job ${escapeHtml(String(job.jobcode || job.code))}')" class="px-2.5 py-1 text-xs font-semibold rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 transition">View</button>
+                </td>
+            </tr>
+        `).join('');
+
+    } else {
+        theadRow.innerHTML = `
+            <th class="py-3.5 px-6">Dept Code</th>
+            <th class="py-3.5 px-6">Description</th>
+            <th class="py-3.5 px-6 text-right">Actions</th>
+        `;
+
+        if (!Array.isArray(departmentsData) || departmentsData.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="3" class="py-6 text-center text-gray-400">No department records found.</td></tr>`;
+            return;
         }
 
-        function openEmployeeModal(empno = null) {
-            const modal = document.getElementById('employeeModal');
-            const title = document.getElementById('modalTitle');
-            const errDiv = document.getElementById('modalFormError');
-            errDiv.innerText = '';
-            document.getElementById('employeeForm').reset();
-            document.getElementById('modalOriginalEmpNo').value = '';
-            document.getElementById('empno').removeAttribute('readonly');
-
-            if (empno && empno !== 'N/A') {
-                title.innerText = 'Edit Employee';
-                const employee = employeesData.find(e => String(e.empno || e.employee_no || e.id) === String(empno));
-                if (employee) {
-                    document.getElementById('modalOriginalEmpNo').value = empno;
-                    document.getElementById('empno').value = employee.empno || employee.employee_no || employee.id || '';
-                    document.getElementById('empno').setAttribute('readonly', true);
-                    document.getElementById('empname').value = employee.empname || employee.name || '';
-                    document.getElementById('jobcode').value = employee.jobcode || '';
-                    document.getElementById('deptcode').value = employee.deptcode || '';
-                }
-            } else {
-                title.innerText = 'Add New Employee';
-            }
-
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeEmployeeModal() {
-            document.getElementById('employeeModal').classList.remove('flex');
-            document.getElementById('employeeModal').classList.add('hidden');
-        }
-
-        async function handleFormSubmit(event) {
-            event.preventDefault();
-            const originalEmpNo = document.getElementById('modalOriginalEmpNo').value;
-            const errDiv = document.getElementById('modalFormError');
-            errDiv.innerText = '';
-
-            const payload = {
-                empno: document.getElementById('empno').value.trim(),
-                empname: document.getElementById('empname').value.trim(),
-                jobcode: document.getElementById('jobcode').value.trim(),
-                deptcode: document.getElementById('deptcode').value.trim()
-            };
-
-            const url = originalEmpNo ? `/api/admin/employees/${encodeURIComponent(originalEmpNo)}` : '/api/admin/employees';
-            const method = originalEmpNo ? 'PUT' : 'POST';
-
-            try {
-                const res = await fetch(url, {
-                    method: method,
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify(payload)
-                });
-
-                const resData = await res.json();
-                if (!res.ok) throw new Error(resData.error || 'Failed to save employee record.');
-
-                closeEmployeeModal();
-                await fetchEmployeeDirectory();
-            } catch (err) {
-                errDiv.innerText = err.message;
-            }
-        }
-
-        async function deleteEmployee(empno) {
-            if (!confirm(`Are you sure you want to delete employee #${empno}?`)) {
-                return;
-            }
-
-            try {
-                const res = await fetch(`/api/admin/employees/${encodeURIComponent(empno)}`, {
-                    method: 'DELETE',
-                    credentials: 'include'
-                });
-
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error || 'Failed to delete employee record.');
-
-                await fetchEmployeeDirectory();
-            } catch (err) {
-                alert('Error deleting employee: ' + err.message);
-            }
-        }
-
-        function escapeHtml(str) {
-            return (str || '').toString().replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
-        }
-
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            try {
-                await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
-                window.location.href = '/login.html';
-            } catch (err) {
-                window.location.href = '/login.html';
-            }
-        });
+        tbody.innerHTML = departmentsData.map(dept => `
+            <tr class="hover:bg-gray-50/80 transition border-b border-gray-100">
+                <td class="py-4 px-6 font-mono font-semibold text-xs text-blue-600 align-middle">${escapeHtml(String(dept.deptcode || dept.code || 'N/A'))}</td>
+                <td class="py-4 px-6 font-medium text-gray-900 align-middle">${escapeHtml(String(dept.description || dept.deptname || 'N/A'))}</td>
+                <td class="py-4 px-6 text-right align-middle">
+                    <button onclick="alert('Viewing department ${escapeHtml(String(dept.deptcode || dept.code))}')" class="px-2.5 py-1 text-xs font-semibold rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 transition">View</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+}
     </script>
 </body>
 </html>

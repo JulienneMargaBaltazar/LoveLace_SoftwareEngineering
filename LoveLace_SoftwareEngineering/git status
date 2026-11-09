@@ -1,0 +1,36 @@
+src/routes/adminRoutes.js:246: trailing whitespace.
+[32m+[m[32m            .insert([{[m[41m [m
+src/routes/adminRoutes.js:247: trailing whitespace.
+[32m+[m[32m                custno,[m[41m [m
+src/routes/adminRoutes.js:248: trailing whitespace.
+[32m+[m[32m                custname,[m[41m [m
+src/routes/adminRoutes.js:249: trailing whitespace.
+[32m+[m[32m                address,[m[41m [m
+src/routes/adminRoutes.js:250: trailing whitespace.
+[32m+[m[32m                payterm,[m[41m [m
+src/routes/adminRoutes.js:251: trailing whitespace.
+[32m+[m[32m                stamp: new Date().toISOString(),[m[41m [m
+src/routes/adminRoutes.js:252: trailing whitespace.
+[32m+[m[32m                is_blocked: false[m[41m [m
+src/routes/adminRoutes.js:272: trailing whitespace.
+[32m+[m[32m            .update({[m[41m [m
+src/routes/adminRoutes.js:273: trailing whitespace.
+[32m+[m[32m                custname,[m[41m [m
+src/routes/adminRoutes.js:274: trailing whitespace.
+[32m+[m[32m                address,[m[41m [m
+src/routes/adminRoutes.js:275: trailing whitespace.
+[32m+[m[32m                payterm,[m[41m [m
+src/routes/adminRoutes.js:276: trailing whitespace.
+[32m+[m[32m                stamp: new Date().toISOString()[m[41m [m
+src/routes/adminRoutes.js:297: trailing whitespace.
+[32m+[m[32m            .update({[m[41m [m
+src/routes/adminRoutes.js:298: trailing whitespace.
+[32m+[m[32m                is_blocked: !!is_blocked,[m[41m [m
+src/routes/adminRoutes.js:299: trailing whitespace.
+[32m+[m[32m                stamp: new Date().toISOString()[m[41m [m
+src/routes/adminRoutes.js:437: trailing whitespace.
+[32m+[m[32m        (employeeRes.data || []).forEach(e => {[m[41m [m
+src/routes/adminRoutes.js:438: trailing whitespace.
+[32m+[m[32m            employeeMap[e.empno] = `${e.firstname || ''} ${e.lastname || ''}`.trim();[m[41m [m
+src/routes/adminRoutes.js:476: trailing whitespace.
+[32m+[m[32m    } catch (err) {[m[41m [m

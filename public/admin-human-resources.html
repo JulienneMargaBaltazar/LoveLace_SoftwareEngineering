@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Resources Management - LoveLace Inc. ERP</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Shared Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .sidebar-footer {
+            padding: 1.25rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.1);
+        }
+        .user-profile-info {
+            font-size: 0.9rem;
+            color: #ffffff;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            word-break: break-all;
+        }
+        .sidebar-logout-btn {
+            width: 100%;
+            background-color: #dc2626;
+            color: white;
+            border: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+        .sidebar-logout-btn:hover {
+            background-color: #b91c1c;
+        }
+
+        /* Figma Alignment Overrides */
+        .filter-tabs {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            font-size: 0.85rem;
+            color: #64748b;
+            cursor: pointer;
+            padding-bottom: 0.25rem;
+            font-weight: 500;
+        }
+        .tab-btn.active {
+            color: #4f46e5;
+            font-weight: 600;
+            border-bottom: 2px solid #4f46e5;
+        }
+
+        /* HR Segment Pills */
+        .hr-segment-btn {
+            padding: 0.5rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #64748b;
+            background: #e2e8f0;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s ease-in-out;
+        }
+        .hr-segment-btn.active {
+            background: #232752;
+            color: #ffffff;
+        }
+
+        .figma-table thead tr {
+            background-color: #232752 !important;
+            color: white !important;
+        }
+        .figma-table th {
+            color: white !important;
+            font-size: 0.75rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+        .action-icon-btn {
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0.25rem;
+            font-size: 0.9rem;
+            transition: color 0.15s;
+        }
+        .action-icon-btn:hover {
+            color: #111827;
+        }
+        .restore-btn-pill {
+            background: #232752;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+        }
+        .details-btn-pill {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 0.2rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #334155;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="admin-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span>LoveLace Inc. ERP</span>
+            <small style="display:block; font-size:10px; color:#5C5C99; font-weight:normal;">by LoveLace</small>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="dashboard.html">📊 Dashboard</a></li>
+            <li class="nav-item"><a href="admin-customers.html">👥 Customers</a></li>
+            <li class="nav-item"><a href="admin-products.html">📦 Products</a></li>
+            <li class="nav-item active"><a href="admin-human-resources.html">👔 Human Resources</a></li>
+            <li class="nav-item"><a href="admin-sales.html">💼 Sales</a></li>
+            <li class="nav-item"><a href="admin-reports.html">📈 Reports</a></li>
+            <li class="nav-item"><a href="admin-user-management.html">👤 User Management</a></li>
+            <li class="nav-item"><a href="settings.html">⚙️ Settings</a></li>
+            
+            <li class="nav-item logout-menu-item" style="margin-top: 1rem;">
+                <a href="#" id="logoutBtn" style="color: #ef4444 !important;">🚪 Logout</a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-profile">
+            <div class="profile-info">
+                <div class="avatar">👤</div>
+                <div class="profile-text">
+                    <span class="username" id="userProfileInfo">Loading user...</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Workspace Area -->
+        <main class="flex-1 w-full flex flex-col overflow-y-auto">
+            
+            <!-- Header Bar -->
+            <header class="top-header bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900">Human Resources</h1>
+                    <p id="headerSubtitle" class="text-xs text-gray-500">Hope, Inc. ERP - Employee records & workforce management</p>
+                </div>
+                <div class="flex items-center gap-6">
+                    <!-- Status Filter Tabs -->
+                    <div class="filter-tabs">
+                        <button class="tab-btn active" onclick="switchStatusTab('active', event)">Active</button>
+                        <button class="tab-btn" onclick="switchStatusTab('inactive', event)">Inactive</button>
+                        <button class="tab-btn" onclick="switchStatusTab('all', event)">All</button>
+                    </div>
+
+                    <span id="roleBadge" class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-md border border-blue-200">Admin</span>
+                </div>
+            </header>
+
+            <div class="dashboard-container p-8 space-y-6 max-w-7xl mx-auto w-full">
+
+                <!-- MAIN HR CARD CONTAINER -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    
+                    <!-- Top Action Controls Row -->
+                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between w-full gap-4 flex-wrap">
+                        <!-- HR Segment Pills (Employees, Jobs, Departments) -->
+                        <div class="inline-flex rounded-lg overflow-hidden border border-gray-200">
+                            <button class="hr-segment-btn active" onclick="switchHRSegment('employees', event)">Employees</button>
+                            <button class="hr-segment-btn" onclick="switchHRSegment('jobs', event)">Jobs</button>
+                            <button class="hr-segment-btn" onclick="switchHRSegment('departments', event)">Departments</button>
+                        </div>
+
+                        <!-- Right Control Toolbar -->
+                        <div class="flex items-center gap-3">
+                            <button class="px-3.5 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold text-xs rounded-md shadow-sm transition flex items-center gap-2">
+                                <i class="fa-solid fa-filter"></i> Filter
+                            </button>
+                            <div class="relative">
+                                <input type="text" id="searchInput" onkeyup="renderHRTable()" placeholder="Search employees..." class="px-3 py-2 border border-gray-300 rounded-md text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 w-48 sm:w-64">
+                            </div>
+                            <button id="addHRItemBtn" onclick="openHRModal()" class="hidden px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-md shadow-sm transition items-center gap-2">
+                                <i class="fa-solid fa-plus"></i> <span id="addBtnLabel">Add Employee</span>
+                            </button>
+                            <button id="refreshBtn" class="shrink-0 whitespace-nowrap px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-md border border-gray-300 transition flex items-center gap-1.5 w-auto">
+                                <i id="refreshIcon" class="fa-solid fa-rotate"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="errorContainer" class="px-6 pt-3 text-xs font-medium text-red-600"></div>
+
+                    <!-- DIRECTORY TABLE -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse figma-table">
+                            <thead>
+                                <tr id="tableHeaderRow" class="bg-gray-50 border-b border-gray-200 text-xs font-semibold uppercase tracking-wider">
+                                    <th class="py-3.5 px-6">EMP NO</th>
+                                    <th class="py-3.5 px-6">LAST NAME</th>
+                                    <th class="py-3.5 px-6">FIRST NAME</th>
+                                    <th class="py-3.5 px-6">GENDER</th>
+                                    <th class="py-3.5 px-6">BIRTH DATE</th>
+                                    <th class="py-3.5 px-6">HIRE DATE</th>
+                                    <th class="py-3.5 px-6">SEP DATE</th>
+                                    <th class="py-3.5 px-6">STATUS</th>
+                                    <th class="py-3.5 px-6">STAMP</th>
+                                    <th class="py-3.5 px-6 text-right">ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="hrTableBody" class="divide-y divide-gray-100 text-sm">
+                                <tr>
+                                    <td colspan="10" class="py-6 text-center text-gray-400">Loading directory...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Table Footer Pagination Bar -->
+                    <div class="table-footer-pagination px-6 py-3 bg-gray-50 border-t border-gray-200 flex justify-between items-center text-xs text-gray-500">
+                        <span id="paginationInfo">Showing 1–3 of 3</span>
+                        <div class="pagination-controls flex items-center gap-2">
+                            <button class="page-btn px-2 py-1 bg-white border border-gray-300 rounded hover:bg-gray-100"><i class="fa-solid fa-chevron-left"></i></button>
+                            <span class="font-medium text-gray-700">Page 1 of 10</span>
+                            <button class="page-btn px-2 py-1 bg-white border border-gray-300 rounded hover:bg-gray-100"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        let currentUserId = null;
+        let currentUserRoleId = null;
+        let userRights = [];
+        let currentSegment = 'employees';
+        let currentStatusFilter = 'active';
+
+        // Mock datasets for Employees, Jobs, and Departments matching your Figma wireframes
+        const hrDatasets = {
+            employees: [
+                { empno: 'E-001', lastname: 'Santos', firstname: 'Maria', gender: 'Female', birthdate: '1990-05-12', hiredate: '2020-03-01', sepdate: '—', status: 'Active', stamp: 'CREATED system 2026-10-01 9:00AM' },
+                { empno: 'E-002', lastname: 'Reyes', firstname: 'Juan', gender: 'Male', birthdate: '1988-11-03', hiredate: '2019-07-15', sepdate: '—', status: 'Active', stamp: 'EDITED system 2026-10-01 9:00AM' },
+                { empno: 'E-003', lastname: 'Garcia', firstname: 'Pedro', gender: 'Male', birthdate: '1985-08-30', hiredate: '2018-05-01', sepdate: '2025-12-31', status: 'Inactive', stamp: 'CREATED system 2026-10-01 9:00AM' }
+            ],
+            jobs: [
+                { code: 'J-001', description: 'Software Engineer', status: 'Active', stamp: 'EDITED system 2026-10-01 9:00AM' },
+                { code: 'J-002', description: 'Sales Manager', status: 'Active', stamp: 'CREATED system 2026-10-01 9:00AM' },
+                { code: 'J-003', description: 'Accountant', status: 'Inactive', stamp: 'DELETED user2 2026-10-01 9:00AM' }
+            ],
+            departments: [
+                { code: 'D-001', description: 'Engineering', status: 'Active', stamp: 'EDITED system 2026-10-01 9:00AM' },
+                { code: 'D-002', description: 'Sales', status: 'Active', stamp: 'CREATED system 2026-10-01 9:00AM' },
+                { code: 'D-003', description: 'Finance', status: 'Inactive', stamp: 'DELETED user2 2026-10-01 9:00AM' }
+            ]
+        };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkSession();
+            renderHRTable();
+
+            document.getElementById('refreshBtn').addEventListener('click', async () => {
+                const icon = document.getElementById('refreshIcon');
+                icon.classList.add('fa-spin');
+                renderHRTable();
+                setTimeout(() => icon.classList.remove('fa-spin'), 400);
+            });
+        });
+
+        async function checkSession() {
+            try {
+                const response = await fetch('/api/dashboard', { credentials: 'include' });
+                if (!response.ok) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                const data = await response.json();
+                const sessionData = data.userSessionData;
+
+                currentUserId = sessionData?.userId || sessionData?.user_id || sessionData?.id;
+                currentUserRoleId = Number(sessionData?.roleId || sessionData?.role_id || 3);
+                userRights = data.rights || [];
+
+                const firstName = sessionData?.firstName || sessionData?.first_name || '';
+                const lastName = sessionData?.lastName || sessionData?.last_name || '';
+                const fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'User';
+                
+                document.getElementById('userProfileInfo').innerText = fullName;
+
+                // Check permissions to show/hide the Add button
+                const isSuperOrAdmin = (currentUserRoleId === 1 || currentUserRoleId === 2);
+                const canAdd = isSuperOrAdmin || userRights.some(r => 
+                    String(r.module_name || '').toLowerCase() === 'human-resources' && 
+                    String(r.action_key || '').toLowerCase() === 'add-employee' && 
+                    r.is_allowed === true
+                );
+
+                const addBtn = document.getElementById('addHRItemBtn');
+                if (canAdd) {
+                    addBtn.classList.remove('hidden');
+                    addBtn.classList.add('flex');
+                } else {
+                    addBtn.classList.add('hidden');
+                    addBtn.classList.remove('flex');
+                }
+            } catch (err) {
+                console.error('Session check failed:', err);
+                window.location.href = '/login.html';
+            }
+        }
+
+        function switchHRSegment(segment, event) {
+            currentSegment = segment;
+            document.querySelectorAll('.hr-segment-btn').forEach(b => b.classList.remove('active'));
+            if (event && event.target) event.target.classList.add('active');
+
+            const addLabel = document.getElementById('addBtnLabel');
+            const searchInput = document.getElementById('searchInput');
+            const subtitle = document.getElementById('headerSubtitle');
+
+            if (segment === 'employees') {
+                addLabel.innerText = 'Add Employee';
+                searchInput.placeholder = 'Search employees...';
+                subtitle.innerText = 'Hope, Inc. ERP - Employee records & workforce management';
+            } else if (segment === 'jobs') {
+                addLabel.innerText = 'Add Job';
+                searchInput.placeholder = 'Search jobs...';
+                subtitle.innerText = 'Jobs registry - manage job codes and their lifecycle status';
+            } else {
+                addLabel.innerText = 'Add Department';
+                searchInput.placeholder = 'Search Department...';
+                subtitle.innerText = 'Hope, Inc. ERP - Manage departments, employees, and HR operations.';
+            }
+
+            renderHRTable();
+        }
+
+        function switchStatusTab(status, event) {
+            currentStatusFilter = status;
+            document.querySelectorAll('.filter-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+            if (event && event.target) event.target.classList.add('active');
+            renderHRTable();
+        }
+
+        function renderHRTable() {
+            const theadRow = document.getElementById('tableHeaderRow');
+            const tbody = document.getElementById('hrTableBody');
+            const rawData = hrDatasets[currentSegment] || [];
+
+            let filtered = rawData.filter(item => {
+                const query = document.getElementById('searchInput').value.toLowerCase();
+                const matchQuery = Object.values(item).some(val => String(val).toLowerCase().includes(query));
+                
+                if (currentStatusFilter === 'active') return matchQuery && item.status === 'Active';
+                if (currentStatusFilter === 'inactive') return matchQuery && item.status === 'Inactive';
+                return matchQuery;
+            });
+
+            const isSuperOrAdmin = (currentUserRoleId === 1 || currentUserRoleId === 2);
+            const canEdit = isSuperOrAdmin || userRights.some(r => r.module_name === 'human-resources' && r.action_key === 'edit' && r.is_allowed);
+            const canDelete = isSuperOrAdmin || userRights.some(r => r.module_name === 'human-resources' && r.action_key === 'delete' && r.is_allowed);
+
+            if (currentSegment === 'employees') {
+                theadRow.innerHTML = `
+                    <th class="py-3.5 px-6">EMP NO</th>
+                    <th class="py-3.5 px-6">LAST NAME</th>
+                    <th class="py-3.5 px-6">FIRST NAME</th>
+                    <th class="py-3.5 px-6">GENDER</th>
+                    <th class="py-3.5 px-6">BIRTH DATE</th>
+                    <th class="py-3.5 px-6">HIRE DATE</th>
+                    <th class="py-3.5 px-6">SEP DATE</th>
+                    <th class="py-3.5 px-6">STATUS</th>
+                    <th class="py-3.5 px-6">STAMP</th>
+                    <th class="py-3.5 px-6 text-right">ACTIONS</th>
+                `;
+
+                if (filtered.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="10" class="py-6 text-center text-gray-400">No employee records found.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = filtered.map(item => {
+                    const isInactive = item.status === 'Inactive';
+                    const rowBg = isInactive ? 'bg-red-50/70 hover:bg-red-100/60' : 'hover:bg-gray-50/80';
+
+                    return `
+                        <tr class="${rowBg} transition border-b border-gray-100">
+                            <td class="py-4 px-6 font-mono font-semibold text-xs text-blue-600 align-middle">${escapeHtml(item.empno)}</td>
+                            <td class="py-4 px-6 font-medium text-gray-900 text-xs align-middle">${escapeHtml(item.lastname)}</td>
+                            <td class="py-4 px-6 text-gray-800 text-xs align-middle">${escapeHtml(item.firstname)}</td>
+                            <td class="py-4 px-6 text-gray-600 text-xs align-middle">${escapeHtml(item.gender)}</td>
+                            <td class="py-4 px-6 text-gray-600 text-xs font-mono align-middle">${escapeHtml(item.birthdate)}</td>
+                            <td class="py-4 px-6 text-gray-600 text-xs font-mono align-middle">${escapeHtml(item.hiredate)}</td>
+                            <td class="py-4 px-6 text-gray-600 text-xs font-mono align-middle">${escapeHtml(item.sepdate)}</td>
+                            <td class="py-4 px-6 align-middle">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full ${isInactive ? 'bg-red-200 text-red-700' : 'bg-green-100 text-green-700'}">
+                                    <i class="fa-solid fa-circle" style="font-size: 0.4rem;"></i> ${item.status}
+                                </span>
+                            </td>
+                            <td class="py-4 px-6 text-xs text-gray-500 font-mono align-middle">${escapeHtml(item.stamp)}</td>
+                            <td class="py-4 px-6 text-right align-middle">
+                                <div class="inline-flex items-center gap-2 justify-end">
+                                    ${isInactive ? `
+                                        <button onclick="restoreRecord('${escapeHtml(item.empno)}')" class="restore-btn-pill">Restore</button>
+                                    ` : `
+                                        <button onclick="alert('Viewing details')" class="details-btn-pill">Details</button>
+                                        ${canEdit ? `<button onclick="openEditModal('${escapeHtml(item.empno)}')" class="action-icon-btn" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>` : ''}
+                                        ${canDelete ? `<button onclick="deleteRecord('${escapeHtml(item.empno)}')" class="action-icon-btn" title="Delete"><i class="fa-regular fa-trash-can"></i></button>` : ''}
+                                    `}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+            } else {
+                const codeTitle = currentSegment === 'jobs' ? 'JOB CODE' : 'DEPT CODE';
+                theadRow.innerHTML = `
+                    <th class="py-3.5 px-6">${codeTitle}</th>
+                    <th class="py-3.5 px-6">DESCRIPTION</th>
+                    <th class="py-3.5 px-6">STATUS</th>
+                    <th class="py-3.5 px-6">STAMP</th>
+                    <th class="py-3.5 px-6 text-right">ACTIONS</th>
+                `;
+
+                if (filtered.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-gray-400">No records found.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = filtered.map(item => {
+                    const isInactive = item.status === 'Inactive';
+                    const rowBg = isInactive ? 'bg-red-50/70 hover:bg-red-100/60' : 'hover:bg-gray-50/80';
+
+                    return `
+                        <tr class="${rowBg} transition border-b border-gray-100">
+                            <td class="py-4 px-6 font-mono font-semibold text-xs text-blue-600 align-middle">${escapeHtml(item.code)}</td>
+                            <td class="py-4 px-6 font-medium text-gray-800 text-xs align-middle">${escapeHtml(item.description)}</td>
+                            <td class="py-4 px-6 align-middle">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full ${isInactive ? 'bg-red-200 text-red-700' : 'bg-green-100 text-green-700'}">
+                                    <i class="fa-solid fa-circle" style="font-size: 0.4rem;"></i> ${item.status}
+                                </span>
+                            </td>
+                            <td class="py-4 px-6 text-xs text-gray-500 font-mono align-middle">${escapeHtml(item.stamp)}</td>
+                            <td class="py-4 px-6 text-right align-middle">
+                                <div class="inline-flex items-center gap-2 justify-end">
+                                    ${isInactive ? `
+                                        <button onclick="restoreRecord('${escapeHtml(item.code)}')" class="restore-btn-pill">Restore</button>
+                                    ` : `
+                                        ${canEdit ? `<button onclick="openEditModal('${escapeHtml(item.code)}')" class="action-icon-btn" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>` : ''}
+                                        ${canDelete ? `<button onclick="deleteRecord('${escapeHtml(item.code)}')" class="action-icon-btn" title="Delete"><i class="fa-regular fa-trash-can"></i></button>` : ''}
+                                    `}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        function openHRModal() {
+            alert(`Modal to ${document.getElementById('addBtnLabel').innerText}`);
+        }
+
+        function openEditModal(identifier) {
+            alert(`Edit record for ${identifier}`);
+        }
+
+        function deleteRecord(identifier) {
+            if (!confirm(`Are you sure you want to mark ${identifier} as inactive?`)) return;
+            const dataset = hrDatasets[currentSegment];
+            const item = dataset.find(i => (i.empno === identifier || i.code === identifier));
+            if (item) {
+                item.status = 'Inactive';
+                item.stamp = `DELETED user2 ${new Date().toISOString().slice(0,10)} 9:00AM`;
+            }
+            renderHRTable();
+        }
+
+        function restoreRecord(identifier) {
+            const dataset = hrDatasets[currentSegment];
+            const item = dataset.find(i => (i.empno === identifier || i.code === identifier));
+            if (item) {
+                item.status = 'Active';
+                item.stamp = `EDITED system ${new Date().toISOString().slice(0,10)} 9:00AM`;
+            }
+            renderHRTable();
+        }
+
+        function escapeHtml(str) {
+            return (str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+                window.location.href = './landingpage.html';
+            } catch (err) {
+                window.location.href = './landingpage.html';
+            }
+        });
+    </script>
+</body>
+</html>

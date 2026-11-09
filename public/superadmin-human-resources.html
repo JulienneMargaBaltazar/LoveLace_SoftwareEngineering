@@ -1,54 +1,476 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Human Resources - LoveLace Inc. ERP</title>
-<script src="https://cdn.tailwindcss.com"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="style.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
 <style>
-.sidebar-footer{padding:1.25rem;border-top:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.1)}.user-profile-info{font-size:.9rem;color:#fff;margin-bottom:.75rem;font-weight:600;word-break:break-all}.sidebar-logout-btn{width:100%;background:#dc2626;color:#fff;border:0;padding:.5rem .75rem;border-radius:4px;cursor:pointer;font-weight:500;font-size:.875rem}.sidebar-logout-btn:hover{background:#b91c1c}
+.sidebar-footer{padding:1.25rem;border-top:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.1)}
+.user-profile-info{font-size:.9rem;color:#fff;margin-bottom:.75rem;font-weight:600;word-break:break-all}
+.sidebar-logout-btn{width:100%;background:#dc2626;color:#fff;border:0;padding:.5rem .75rem;border-radius:4px;cursor:pointer;font-weight:500;font-size:.875rem}
+.sidebar-logout-btn:hover{background:#b91c1c}
+
+/* Figma Alignment Overrides */
+.filter-tabs { display: flex; gap: 1.5rem; align-items: center; }
+.tab-btn { background: none; border: none; font-size: 0.85rem; color: #64748b; cursor: pointer; padding-bottom: 0.25rem; font-weight: 500; }
+.tab-btn.active { color: #4f46e5; font-weight: 600; border-bottom: 2px solid #4f46e5; }
+.figma-table thead tr { background-color: #232752 !important; color: white !important; }
+.figma-table th { color: white !important; font-size: 0.75rem; letter-spacing: 0.03em; text-transform: uppercase; }
+.action-icon-btn { background: none; border: none; color: #6b7280; cursor: pointer; padding: 0.25rem; font-size: 0.9rem; transition: color 0.15s; }
+.action-icon-btn:hover { color: #111827; }
 </style>
 </head>
-<body class="bg-[#F4F6F9] text-gray-800 antialiased min-h-screen">
-<div class="flex h-screen w-full overflow-hidden">
-<aside class="sidebar w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0 h-full"><div>
-<div class="sidebar-brand px-6 py-5 border-b border-gray-100 font-bold text-gray-900 flex flex-col"><span>LoveLace Inc. ERP</span><span class="text-xs text-gray-400 font-normal">by LoveLace</span></div>
-<ul class="nav-menu px-3 space-y-1 mt-2">
+<body class="admin-layout flex h-screen w-full overflow-hidden bg-[#F4F6F9]">
 
-<li class="nav-item"><a href="/superadmin-dashboard.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📊 Dashboard</a></li>
-<li class="border-t border-gray-200 my-2"></li>
+    <!-- SIDEBAR (Superadmin Configured Navigation) -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span>LoveLace Inc. ERP</span>
+            <small style="display:block; font-size:10px; color:#5C5C99; font-weight:normal;">by LoveLace</small>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="superadmin-dashboard.html">📊 Dashboard</a></li>
+            <li class="nav-item"><a href="superadmin-customers.html">👥 Customers</a></li>
+            <li class="nav-item"><a href="superadmin-products.html">📦 Products</a></li>
+            <li class="nav-item active"><a href="superadmin-human-resources.html">👔 Human Resources</a></li>
+            <li class="nav-item"><a href="superadmin-sales.html">💼 Sales</a></li>
+            <li class="nav-item"><a href="user-management.html">⚙️ User Management</a></li>
+            <li class="nav-item"><a href="settings.html">🔧 System Settings</a></li>
+            
+            <li class="nav-item logout-menu-item" style="margin-top: 1rem;">
+                <a href="landingpage.html" style="color: #ef4444 !important;" id="logoutBtn">🚪 Logout</a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-profile">
+            <div class="profile-info">
+                <div class="avatar">👑</div>
+                <div class="profile-text">
+                    <span class="username" id="userProfileInfo">Loading user...</span>
+                    <span class="role">Superadmin</span>
+                </div>
+            </div>
+        </div>
+    </aside>
 
-<li class="nav-item"><a href="/superadmin-customers.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">👥 Customers</a></li>
-<li class="nav-item"><a href="/superadmin-products.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📦 Products</a></li>
-<li class="nav-item active"><a href="/superadmin-human-resources.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg transition border-l-4 border-blue-600">👔 Human Resources</a></li>
-<li class="nav-item"><a href="/superadmin-sales.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">💳 Sales</a></li>
-<li class="border-t border-gray-200 my-2"></li>
+    <main class="flex-1 w-full flex flex-col overflow-y-auto">
+        <header class="top-header bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+            <div>
+                <h1 class="text-xl font-bold text-gray-900">Human Resources</h1>
+                <p class="text-xs text-gray-500">Manage employees, organizational jobs, and department structures.</p>
+            </div>
+            <div class="flex items-center gap-6">
+                <!-- Status Filter Tabs -->
+                <div class="filter-tabs">
+                    <button class="tab-btn active" onclick="switchSubTab('active', event)">Active</button>
+                    <button class="tab-btn" onclick="switchSubTab('inactive', event)">Inactive</button>
+                    <button class="tab-btn" onclick="switchSubTab('all', event)">All</button>
+                </div>
+                <span id="roleBadge" class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-md border border-blue-200">Superadmin</span>
+            </div>
+        </header>
 
-<li class="nav-item"><a href="/user-management.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">⚙️ User Management</a></li>
-<li class="nav-item"><a href="/system-settings.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">🔧 System Settings</a></li>
-</ul>
-</div>
-<div class="sidebar-footer p-4 border-t border-gray-100 bg-gray-900"><div id="userProfileInfo" class="user-profile-info text-white text-sm font-semibold mb-3">Loading user...</div><button id="logoutBtn" class="sidebar-logout-btn flex items-center justify-center gap-2">Logout</button></div>
-</aside>
-<main class="flex-1 w-full flex flex-col overflow-y-auto">
-<header class="top-header bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10"><div><h1 class="text-xl font-bold text-gray-900">Human Resources</h1><p class="text-xs text-gray-500">Review employee records, employment status, and job history.</p></div><span id="roleBadge" class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-md border border-blue-200">Superadmin</span></header>
-<div class="dashboard-container p-8 space-y-6 max-w-7xl mx-auto w-full">
-<nav class="bg-white rounded-xl border border-gray-200 shadow-sm px-4 py-3 flex items-center gap-2 overflow-x-auto" aria-label="Human resources views"><button type="button" id="activeTab" onclick="switchDirectory('active-employees')" class="hr-tab px-3.5 py-2 text-xs font-semibold rounded-lg bg-blue-600 text-white whitespace-nowrap">Active Employees</button><button type="button" id="allTab" onclick="switchDirectory('all-employees')" class="hr-tab px-3.5 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg whitespace-nowrap">All Employees</button></nav>
-<section class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-<div class="px-6 py-4 border-b border-gray-100 flex flex-wrap items-center justify-between gap-4"><div><h2 id="directoryTitle" class="font-bold text-gray-900 text-base">Active Employees</h2><p id="directoryDescription" class="text-xs text-gray-500">Employees who currently work at LoveLace Inc.</p></div><div class="flex items-center gap-3"><input id="searchInput" type="search" oninput="filterEmployees()" placeholder="Search employee..." class="px-3 py-1.5 border border-gray-300 rounded-md text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 w-48 sm:w-64"><button id="refreshBtn" type="button" class="shrink-0 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-md border border-gray-300 transition flex items-center gap-1.5"><i id="refreshIcon" class="fa-solid fa-rotate"></i> Refresh</button></div></div>
-<div id="errorContainer" class="px-6 pt-3 text-xs font-medium text-red-600"></div><div class="overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider"><th class="py-3.5 px-6">Emp No</th><th class="py-3.5 px-6">Name</th><th class="py-3.5 px-6">Gender</th><th class="py-3.5 px-6">Hire Date</th><th class="py-3.5 px-6">Separation Date</th><th class="py-3.5 px-6 text-right">History</th></tr></thead><tbody id="employeeTableBody" class="divide-y divide-gray-100 text-sm"><tr><td colspan="6" class="py-6 text-center text-gray-400">Loading employee directory...</td></tr></tbody></table></div>
-</section></div></main></div>
-<div id="historyModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4"><div class="bg-white rounded-xl shadow-lg border border-gray-200 w-full max-w-3xl overflow-hidden"><div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between"><h2 id="historyTitle" class="font-bold text-gray-900">Employee Job History</h2><button type="button" onclick="closeHistory()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button></div><div id="historyError" class="px-6 pt-3 text-xs text-red-600"></div><div class="p-6 overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider"><th class="py-3 px-4">Effective Date</th><th class="py-3 px-4">Job Code</th><th class="py-3 px-4">Department</th><th class="py-3 px-4 text-right">Salary</th></tr></thead><tbody id="historyTableBody"><tr><td colspan="4" class="py-6 text-center text-gray-400">Loading history...</td></tr></tbody></table></div></div></div>
+        <div class="dashboard-container p-8 space-y-6 max-w-7xl mx-auto w-full">
+            <!-- Segment Navigation Bar (Employees / Jobs / Departments) -->
+            <nav class="bg-white rounded-xl border border-gray-200 shadow-sm px-4 py-3 flex items-center gap-2 overflow-x-auto" aria-label="Human resources views">
+                <button type="button" id="empTabBtn" onclick="switchHRSegment('employees')" class="hr-segment-tab px-3.5 py-2 text-xs font-semibold rounded-lg bg-blue-600 text-white whitespace-nowrap">Employees</button>
+                <button type="button" id="jobsTabBtn" onclick="switchHRSegment('jobs')" class="hr-segment-tab px-3.5 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg whitespace-nowrap">Jobs</button>
+                <button type="button" id="deptTabBtn" onclick="switchHRSegment('departments')" class="hr-segment-tab px-3.5 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg whitespace-nowrap">Departments</button>
+            </nav>
+
+            <section class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <h2 id="directoryTitle" class="font-bold text-gray-900 text-base">Employee Directory</h2>
+                        <p id="directoryDescription" class="text-xs text-gray-500">Review employee records, employment status, and job history.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input id="searchInput" type="search" oninput="filterTableData()" placeholder="Search records..." class="px-3 py-1.5 border border-gray-300 rounded-md text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 w-48 sm:w-64">
+                        <button id="addRecordBtn" onclick="openAddModal()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-md shadow-sm transition flex items-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Add Employee
+                        </button>
+                        <button id="refreshBtn" type="button" class="shrink-0 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-md border border-gray-300 transition flex items-center gap-1.5">
+                            <i id="refreshIcon" class="fa-solid fa-rotate"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="errorContainer" class="px-6 pt-3 text-xs font-medium text-red-600"></div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse figma-table">
+                        <thead>
+                            <tr id="tableHeaderRow" class="bg-gray-50 border-b border-gray-200 text-xs font-semibold uppercase tracking-wider">
+                                <!-- Populated dynamically -->
+                            </tr>
+                        </thead>
+                        <tbody id="directoryTableBody" class="divide-y divide-gray-100 text-sm">
+                            <tr><td colspan="7" class="py-6 text-center text-gray-400">Loading records...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Job History Modal -->
+    <div id="historyModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-lg border border-gray-200 w-full max-w-3xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                <h2 id="historyTitle" class="font-bold text-gray-900">Employee Job History</h2>
+                <button type="button" onclick="closeHistory()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div id="historyError" class="px-6 pt-3 text-xs text-red-600"></div>
+            <div class="p-6 overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            <th class="py-3 px-4">Effective Date</th>
+                            <th class="py-3 px-4">Job Code</th>
+                            <th class="py-3 px-4">Department</th>
+                            <th class="py-3 px-4 text-right">Salary</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <tr><td colspan="4" class="py-6 text-center text-gray-400">Loading history...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
 <script>
-let currentDirectory='active-employees',employees=[];
-document.addEventListener('DOMContentLoaded',async()=>{await checkSession();await loadEmployees();document.getElementById('refreshBtn').addEventListener('click',loadEmployees);});
-async function checkSession(){try{const response=await fetch('/api/dashboard',{credentials:'include'});if(!response.ok){window.location.href='/login.html';return}const data=await response.json(),session=data.userSessionData||{},first=session.firstName||session.first_name||'',last=session.lastName||session.last_name||'';document.getElementById('userProfileInfo').innerText=`${first} ${last}`.trim()||'Superadmin';document.getElementById('roleBadge').innerText=Number(session.roleId||session.role_id)===1?'Superadmin':'Admin'}catch(error){console.error('Session check failed:',error);window.location.href='/login.html'}}
-async function loadEmployees(){const icon=document.getElementById('refreshIcon');icon.classList.add('fa-spin');document.getElementById('errorContainer').innerText='';try{const response=await fetch(`/api/admin/reports/${currentDirectory}`,{credentials:'include'}),data=await response.json();if(!response.ok)throw new Error(data.error||'Failed to load employee records.');employees=data.records||[];renderEmployees(employees)}catch(error){console.error('Error loading employees:',error);document.getElementById('errorContainer').innerText=`Error loading employee records: ${error.message}`}finally{icon.classList.remove('fa-spin')}}
-function switchDirectory(directory){currentDirectory=directory;const active=directory==='active-employees';document.getElementById('activeTab').className=`hr-tab px-3.5 py-2 text-xs font-semibold rounded-lg whitespace-nowrap ${active?'bg-blue-600 text-white':'text-gray-600 hover:bg-gray-100'}`;document.getElementById('allTab').className=`hr-tab px-3.5 py-2 text-xs font-semibold rounded-lg whitespace-nowrap ${active?'text-gray-600 hover:bg-gray-100':'bg-blue-600 text-white'}`;document.getElementById('directoryTitle').innerText=active?'Active Employees':'All Employees';document.getElementById('directoryDescription').innerText=active?'Employees who currently work at LoveLace Inc.':'Complete employee roster, including separated employees.';loadEmployees()}
-function filterEmployees(){const query=document.getElementById('searchInput').value.toLowerCase();renderEmployees(employees.filter(employee=>`${employee.empno} ${employee.firstname} ${employee.lastname} ${employee.gender}`.toLowerCase().includes(query)))}
-function renderEmployees(records){const tbody=document.getElementById('employeeTableBody');if(!records.length){tbody.innerHTML='<tr><td colspan="6" class="py-6 text-center text-gray-400">No employee records found.</td></tr>';return}tbody.innerHTML=records.map(employee=>`<tr class="hover:bg-gray-50/80 transition"><td class="py-4 px-6 font-mono font-semibold text-xs text-blue-600">${escapeHtml(employee.empno)}</td><td class="py-4 px-6 font-medium text-gray-900">${escapeHtml(`${employee.firstname||''} ${employee.lastname||''}`.trim())}</td><td class="py-4 px-6 text-gray-600">${escapeHtml(employee.gender||'—')}</td><td class="py-4 px-6 text-gray-600">${escapeHtml(employee.hiredate||'—')}</td><td class="py-4 px-6 text-gray-600">${employee.sepdate?escapeHtml(employee.sepdate):'<span class="text-green-600">Active</span>'}</td><td class="py-4 px-6 text-right"><button type="button" onclick="showHistory('${escapeHtml(employee.empno)}')" class="px-2.5 py-1 text-xs font-semibold rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50">View</button></td></tr>`).join('')}
-async function showHistory(empno){document.getElementById('historyModal').classList.remove('hidden');document.getElementById('historyModal').classList.add('flex');document.getElementById('historyTitle').innerText=`Job History: ${empno}`;document.getElementById('historyError').innerText='';const tbody=document.getElementById('historyTableBody');tbody.innerHTML='<tr><td colspan="4" class="py-6 text-center text-gray-400">Loading history...</td></tr>';try{const response=await fetch(`/api/admin/reports/employee-history?empNo=${encodeURIComponent(empno)}`,{credentials:'include'}),data=await response.json();if(!response.ok)throw new Error(data.error||'Failed to load employee history.');tbody.innerHTML=data.records?.length?data.records.map(row=>`<tr class="border-b border-gray-100 text-sm"><td class="py-3 px-4">${escapeHtml(row.effdate||'—')}</td><td class="py-3 px-4">${escapeHtml(row.jobcode||'—')}</td><td class="py-3 px-4">${escapeHtml(row.deptcode||'—')}</td><td class="py-3 px-4 text-right">${Number(row.salary||0).toFixed(2)}</td></tr>`).join(''):'<tr><td colspan="4" class="py-6 text-center text-gray-400">No job history found.</td></tr>'}catch(error){document.getElementById('historyError').innerText=error.message;tbody.innerHTML=''}}
-function closeHistory(){document.getElementById('historyModal').classList.add('hidden');document.getElementById('historyModal').classList.remove('flex')}
-function escapeHtml(value){return String(value??'').replace(/[&<>'"]/g,tag=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[tag]))}
-document.getElementById('logoutBtn').addEventListener('click',async()=>{try{await fetch('/api/auth/logout',{method:'POST',credentials:'include'})}finally{window.location.href='/login.html'}})
+let currentSegment = 'employees'; // 'employees', 'jobs', 'departments'
+let currentSubTab = 'active';     // 'active', 'inactive', 'all'
+let employeesData = [];
+let jobsData = [];
+let departmentsData = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await checkSession();
+    await fetchAllHRData();
+    document.getElementById('refreshBtn').addEventListener('click', async () => {
+        const icon = document.getElementById('refreshIcon');
+        icon.classList.add('fa-spin');
+        await fetchAllHRData();
+        setTimeout(() => icon.classList.remove('fa-spin'), 400);
+    });
+});
+
+async function checkSession() {
+    try {
+        const response = await fetch('/api/dashboard', { credentials: 'include' });
+        if (!response.ok) {
+            window.location.href = '/login.html';
+            return;
+        }
+        const data = await response.json();
+        const session = data.userSessionData || {};
+        const first = session.firstName || session.first_name || '';
+        const last = session.lastName || session.last_name || '';
+        document.getElementById('userProfileInfo').innerText = `${first} ${last}`.trim() || 'Superadmin';
+        document.getElementById('roleBadge').innerText = Number(session.roleId || session.role_id) === 1 ? 'Superadmin' : 'Admin';
+    } catch (error) {
+        console.error('Session check failed:', error);
+        window.location.href = '/login.html';
+    }
+}
+
+async function fetchAllHRData() {
+    const errorContainer = document.getElementById('errorContainer');
+    errorContainer.innerText = '';
+
+    try {
+        const [empRes, jobRes, deptRes] = await Promise.all([
+            fetch('/api/admin/employees', { credentials: 'include' }),
+            fetch('/api/admin/jobs', { credentials: 'include' }),
+            fetch('/api/admin/departments', { credentials: 'include' })
+        ]);
+
+        if (empRes.ok) {
+            const data = await empRes.json();
+            employeesData = data.employees || data.data || [];
+        }
+        if (jobRes.ok) {
+            const data = await jobRes.json();
+            jobsData = data.jobs || data.data || [];
+        }
+        if (deptRes.ok) {
+            const data = await deptRes.json();
+            departmentsData = data.departments || data.data || [];
+        }
+
+        renderCurrentSegment();
+    } catch (error) {
+        console.error('Error loading HR directory:', error);
+        errorContainer.innerText = `Error loading records: ${error.message}`;
+    }
+}
+
+function switchHRSegment(segment) {
+    currentSegment = segment;
+    ['empTabBtn', 'jobsTabBtn', 'deptTabBtn'].forEach(id => {
+        const btn = document.getElementById(id);
+        btn.classList.remove('bg-blue-600', 'text-white');
+        btn.classList.add('text-gray-600', 'hover:bg-gray-100');
+    });
+
+    const activeBtnId = segment === 'employees' ? 'empTabBtn' : segment === 'jobs' ? 'jobsTabBtn' : 'deptTabBtn';
+    const activeBtn = document.getElementById(activeBtnId);
+    activeBtn.classList.remove('text-gray-600', 'hover:bg-gray-100');
+    activeBtn.classList.add('bg-blue-600', 'text-white');
+
+    const addBtn = document.getElementById('addRecordBtn');
+    if (segment === 'employees') {
+        addBtn.innerHTML = `<i class="fa-solid fa-plus"></i> Add Employee`;
+        document.getElementById('directoryTitle').innerText = 'Employee Directory';
+        document.getElementById('directoryDescription').innerText = 'Review employee records, employment status, and job history.';
+    } else if (segment === 'jobs') {
+        addBtn.innerHTML = `<i class="fa-solid fa-plus"></i> Add Job`;
+        document.getElementById('directoryTitle').innerText = 'Jobs Registry';
+        document.getElementById('directoryDescription').innerText = 'Manage organization job codes, descriptions, and statuses.';
+    } else {
+        addBtn.innerHTML = `<i class="fa-solid fa-plus"></i> Add Department`;
+        document.getElementById('directoryTitle').innerText = 'Department Directory';
+        document.getElementById('directoryDescription').innerText = 'Manage departments and organizational units.';
+    }
+
+    document.getElementById('searchInput').value = '';
+    renderCurrentSegment();
+}
+
+function switchSubTab(subTab, event) {
+    currentSubTab = subTab;
+    document.querySelectorAll('.filter-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+    if (event && event.target) event.target.classList.add('active');
+    renderCurrentSegment();
+}
+
+function filterTableData() {
+    renderCurrentSegment();
+}
+
+function renderCurrentSegment() {
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    
+    if (currentSegment === 'employees') {
+        renderEmployeesTable(query);
+    } else if (currentSegment === 'jobs') {
+        renderJobsTable(query);
+    } else {
+        renderDepartmentsTable(query);
+    }
+}
+
+function renderEmployeesTable(query) {
+    const theadRow = document.getElementById('tableHeaderRow');
+    const tbody = document.getElementById('directoryTableBody');
+
+    theadRow.innerHTML = `
+        <th class="py-3.5 px-6">Emp No</th>
+        <th class="py-3.5 px-6">Name</th>
+        <th class="py-3.5 px-6">Gender</th>
+        <th class="py-3.5 px-6">Hire Date</th>
+        <th class="py-3.5 px-6">Separation Date</th>
+        <th class="py-3.5 px-6">Status</th>
+        <th class="py-3.5 px-6 text-right">Actions</th>
+    `;
+
+    let filtered = employeesData.filter(emp => {
+        const text = `${emp.empno || ''} ${emp.firstname || ''} ${emp.lastname || ''} ${emp.empname || ''} ${emp.gender || ''}`.toLowerCase();
+        return text.includes(query);
+    });
+
+    if (currentSubTab === 'active') {
+        filtered = filtered.filter(emp => !emp.sepdate && !emp.is_deleted && emp.status !== 'Inactive');
+    } else if (currentSubTab === 'inactive') {
+        filtered = filtered.filter(emp => emp.sepdate || emp.is_deleted || emp.status === 'Inactive');
+    }
+
+    if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-gray-400">No employee records found.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = filtered.map(emp => {
+        const isInactive = Boolean(emp.sepdate || emp.is_deleted || emp.status === 'Inactive');
+        const name = `${emp.firstname || ''} ${emp.lastname || ''}`.trim() || emp.empname || 'N/A';
+        return `
+            <tr class="hover:bg-gray-50/80 transition border-b border-gray-100">
+                <td class="py-4 px-6 font-mono font-semibold text-xs text-blue-600">${escapeHtml(emp.empno || emp.id)}</td>
+                <td class="py-4 px-6 font-medium text-gray-900">${escapeHtml(name)}</td>
+                <td class="py-4 px-6 text-gray-600">${escapeHtml(emp.gender || '—')}</td>
+                <td class="py-4 px-6 text-gray-600 font-mono text-xs">${escapeHtml(emp.hiredate || '—')}</td>
+                <td class="py-4 px-6 text-gray-600 font-mono text-xs">${emp.sepdate ? escapeHtml(emp.sepdate) : '—'}</td>
+                <td class="py-4 px-6">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full ${isInactive ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
+                        <i class="fa-solid fa-circle" style="font-size: 0.4rem;"></i> ${isInactive ? 'Inactive' : 'Active'}
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-right">
+                    <div class="inline-flex items-center gap-2 justify-end">
+                        <button type="button" onclick="showHistory('${escapeHtml(emp.empno || emp.id)}')" class="px-2.5 py-1 text-xs font-semibold rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50">History</button>
+                        <button onclick="alert('Editing employee ${escapeHtml(emp.empno)}')" class="action-icon-btn" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
+                    </div>
+                </td>
+            </tr>`;
+    }).join('');
+}
+
+function renderJobsTable(query) {
+    const theadRow = document.getElementById('tableHeaderRow');
+    const tbody = document.getElementById('directoryTableBody');
+
+    theadRow.innerHTML = `
+        <th class="py-3.5 px-6">Job Code</th>
+        <th class="py-3.5 px-6">Description</th>
+        <th class="py-3.5 px-6">Status</th>
+        <th class="py-3.5 px-6">Stamp</th>
+        <th class="py-3.5 px-6 text-right">Actions</th>
+    `;
+
+    let filtered = jobsData.filter(job => {
+        const text = `${job.jobcode || job.code || ''} ${job.description || job.jobname || ''}`.toLowerCase();
+        return text.includes(query);
+    });
+
+    if (currentSubTab === 'active') {
+        filtered = filtered.filter(j => !j.is_deleted && j.status !== 'Inactive');
+    } else if (currentSubTab === 'inactive') {
+        filtered = filtered.filter(j => j.is_deleted || j.status === 'Inactive');
+    }
+
+    if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="py-6 text-center text-gray-400">No job records found.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = filtered.map(job => {
+        const isInactive = Boolean(job.is_deleted || job.status === 'Inactive');
+        const code = job.jobcode || job.code || 'N/A';
+        const desc = job.description || job.jobname || 'N/A';
+        const stamp = job.stamp || job.updated_at || 'CREATED: 2026-10-01';
+        return `
+            <tr class="hover:bg-gray-50/80 transition border-b border-gray-100">
+                <td class="py-4 px-6 font-mono font-semibold text-xs text-blue-600">${escapeHtml(code)}</td>
+                <td class="py-4 px-6 font-medium text-gray-900">${escapeHtml(desc)}</td>
+                <td class="py-4 px-6">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full ${isInactive ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
+                        <i class="fa-solid fa-circle" style="font-size: 0.4rem;"></i> ${isInactive ? 'Inactive' : 'Active'}
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-xs text-gray-500 font-mono">${escapeHtml(stamp)}</td>
+                <td class="py-4 px-6 text-right">
+                    <div class="inline-flex items-center gap-2 justify-end">
+                        <button onclick="alert('Editing job ${escapeHtml(code)}')" class="action-icon-btn" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
+                        <button onclick="alert('Deleting job ${escapeHtml(code)}')" class="action-icon-btn text-red-600 hover:text-red-800" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
+                    </div>
+                </td>
+            </tr>`;
+    }).join('');
+}
+
+function renderDepartmentsTable(query) {
+    const theadRow = document.getElementById('tableHeaderRow');
+    const tbody = document.getElementById('directoryTableBody');
+
+    theadRow.innerHTML = `
+        <th class="py-3.5 px-6">Dept Code</th>
+        <th class="py-3.5 px-6">Description</th>
+        <th class="py-3.5 px-6">Status</th>
+        <th class="py-3.5 px-6">Stamp</th>
+        <th class="py-3.5 px-6 text-right">Actions</th>
+    `;
+
+    let filtered = departmentsData.filter(dept => {
+        const text = `${dept.deptcode || dept.code || ''} ${dept.description || dept.deptname || ''}`.toLowerCase();
+        return text.includes(query);
+    });
+
+    if (currentSubTab === 'active') {
+        filtered = filtered.filter(d => !d.is_deleted && d.status !== 'Inactive');
+    } else if (currentSubTab === 'inactive') {
+        filtered = filtered.filter(d => d.is_deleted || d.status === 'Inactive');
+    }
+
+    if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="py-6 text-center text-gray-400">No department records found.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = filtered.map(dept => {
+        const isInactive = Boolean(dept.is_deleted || dept.status === 'Inactive');
+        const code = dept.deptcode || dept.code || 'N/A';
+        const desc = dept.description || dept.deptname || 'N/A';
+        const stamp = dept.stamp || dept.updated_at || 'CREATED: 2026-10-01';
+        return `
+            <tr class="hover:bg-gray-50/80 transition border-b border-gray-100">
+                <td class="py-4 px-6 font-mono font-semibold text-xs text-blue-600">${escapeHtml(code)}</td>
+                <td class="py-4 px-6 font-medium text-gray-900">${escapeHtml(desc)}</td>
+                <td class="py-4 px-6">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full ${isInactive ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
+                        <i class="fa-solid fa-circle" style="font-size: 0.4rem;"></i> ${isInactive ? 'Inactive' : 'Active'}
+                    </span>
+                </td>
+                <td class="py-4 px-6 text-xs text-gray-500 font-mono">${escapeHtml(stamp)}</td>
+                <td class="py-4 px-6 text-right">
+                    <div class="inline-flex items-center gap-2 justify-end">
+                        <button onclick="alert('Editing department ${escapeHtml(code)}')" class="action-icon-btn" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
+                        <button onclick="alert('Deleting department ${escapeHtml(code)}')" class="action-icon-btn text-red-600 hover:text-red-800" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
+                    </div>
+                </td>
+            </tr>`;
+    }).join('');
+}
+
+async function showHistory(empno) {
+    document.getElementById('historyModal').classList.remove('hidden');
+    document.getElementById('historyModal').classList.add('flex');
+    document.getElementById('historyTitle').innerText = `Job History: ${empno}`;
+    document.getElementById('historyError').innerText = '';
+    const tbody = document.getElementById('historyTableBody');
+    tbody.innerHTML = '<tr><td colspan="4" class="py-6 text-center text-gray-400">Loading history...</td></tr>';
+    try {
+        const response = await fetch(`/api/admin/reports/employee-history?empNo=${encodeURIComponent(empno)}`, {credentials:'include'});
+        const data = await response.json();
+        if(!response.ok) throw new Error(data.error || 'Failed to load employee history.');
+        tbody.innerHTML = data.records?.length ? data.records.map(row => `
+            <tr class="border-b border-gray-100 text-sm">
+                <td class="py-3 px-4">${escapeHtml(row.effdate || '—')}</td>
+                <td class="py-3 px-4">${escapeHtml(row.jobcode || '—')}</td>
+                <td class="py-3 px-4">${escapeHtml(row.deptcode || '—')}</td>
+                <td class="py-3 px-4 text-right">$${Number(row.salary || 0).toFixed(2)}</td>
+            </tr>`).join('') : '<tr><td colspan="4" class="py-6 text-center text-gray-400">No job history found.</td></tr>';
+    } catch(error) {
+        document.getElementById('historyError').innerText = error.message;
+        tbody.innerHTML = '';
+    }
+}
+
+function closeHistory() {
+    document.getElementById('historyModal').classList.add('hidden');
+    document.getElementById('historyModal').classList.remove('flex');
+}
+
+function openAddModal() {
+    alert(`Opening modal to add new ${currentSegment.slice(0, -1)}...`);
+}
+
+function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>'"]/g, tag => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[tag]));
+}
+
+document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+    e.preventDefault();
+    try {
+        await fetch('/api/auth/logout', {method:'POST', credentials:'include'});
+    } finally {
+        window.location.href = '/login.html';
+    }
+});
 </script>
-</body></html>
+</body>
+</html>

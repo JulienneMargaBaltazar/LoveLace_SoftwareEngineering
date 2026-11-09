@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Management - LoveLace Inc. ERP</title>
+    <title>Customer Management (User) - LoveLace Inc. ERP</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -37,37 +37,89 @@
         .sidebar-logout-btn:hover {
             background-color: #b91c1c;
         }
+
+        /* Figma Alignment Overrides */
+        .filter-tabs {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            font-size: 0.85rem;
+            color: #64748b;
+            cursor: pointer;
+            padding-bottom: 0.25rem;
+            font-weight: 500;
+        }
+        .tab-btn.active {
+            color: #4f46e5;
+            font-weight: 600;
+            border-bottom: 2px solid #4f46e5;
+        }
+        .count-badge {
+            background: #ef4444;
+            color: white;
+            font-size: 0.65rem;
+            padding: 0.1rem 0.4rem;
+            border-radius: 9999px;
+            margin-left: 0.25rem;
+        }
+        .figma-table thead tr {
+            background-color: #232752 !important;
+            color: white !important;
+        }
+        .figma-table th {
+            color: white !important;
+            font-size: 0.75rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+        .action-icon-btn {
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0.25rem;
+            font-size: 0.9rem;
+            transition: color 0.15s;
+        }
+        .action-icon-btn:hover {
+            color: #111827;
+        }
     </style>
 </head>
-<body class="bg-[#F4F6F9] text-gray-800 antialiased min-h-screen">
+<body class="admin-layout">
 
-    <!-- Full screen flex layout -->
-    <div class="flex h-screen w-full overflow-hidden">
-        <!-- Sidebar Navigation (User View) -->
-        <aside class="sidebar w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0 h-full">
-            <div>
-                <div class="sidebar-brand px-6 py-5 border-b border-gray-100 font-bold text-gray-900 flex flex-col">
-                    <span>LoveLace Inc. ERP</span>
-                    <span class="text-xs text-gray-400 font-normal">by LoveLace</span>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span>LoveLace Inc. ERP</span>
+            <small style="display:block; font-size:10px; color:#5C5C99; font-weight:normal;">by LoveLace</small>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="user-dashboard.html">📊 Dashboard</a></li>
+            <li class="nav-item active"><a href="user-customers.html">👥 Customers</a></li>
+            <li class="nav-item"><a href="user-products.html">📦 Products</a></li>
+            <li class="nav-item"><a href="user-human-resources.html">👔 Human Resources</a></li>
+            <li class="nav-item"><a href="user-sales.html">💼 Sales</a></li>
+            <li class="nav-item"><a href="user-reports.html">📈 Reports</a></li>
+            <li class="nav-item"><a href="settings.html">⚙️ Settings</a></li>
+            <li class="nav-item logout-menu-item" style="margin-top: 1rem;"><a href="landingpage.html" style="color: #ef4444 !important;">🚪 Logout</a></li>
+        </ul>
+        
+        <div class="sidebar-profile">
+            <div class="profile-info">
+                <div class="avatar">👤</div>
+                <div class="profile-text">
+                    <!-- FIX 1: Added id="userProfileInfo" here -->
+                    <span class="username" id="userProfileInfo">Loading user...</span>
+                    <span class="role">User</span>
                 </div>
-                
-                <ul class="nav-menu px-3 space-y-1 mt-2">
-                    <li class="nav-item"><a href="/user-dashboard.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📊 Dashboard</a></li>
-                    <li class="border-t border-gray-200 my-2"></li>
-                    <li class="nav-item active"><a href="/user-customers.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg transition border-l-4 border-blue-600">👥 Customers</a></li>
-                    <li class="nav-item"><a href="/user-products.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📦 Products</a></li>
-                    <li class="nav-item"><a href="/user-sales.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">💳 Sales</a></li>
-                </ul>
             </div>
-
-            <!-- Bottom Left User Info & Logout -->
-            <div class="sidebar-footer p-4 border-t border-gray-100 bg-gray-900">
-                <div id="userProfileInfo" class="user-profile-info text-white text-sm font-semibold mb-3">
-                    Loading user...
-                </div>
-                <button id="logoutBtn" class="sidebar-logout-btn flex items-center justify-center gap-2">Logout</button>
-            </div>
-        </aside>
+        </div> <!-- FIXED: Repaired missing closing tags from your original code snippet here -->
+    </aside>
 
         <!-- Main Workspace Area -->
         <main class="flex-1 w-full flex flex-col overflow-y-auto">
@@ -76,51 +128,74 @@
             <header class="top-header bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
                 <div>
                     <h1 class="text-xl font-bold text-gray-900">Customer Management</h1>
-                    <p class="text-xs text-gray-500">Manage client accounts and payment terms directory.</p>
+                    <p class="text-xs text-gray-500">LoveLace, Inc. ERP - Manage your customer accounts, contacts, and billing terms.</p>
                 </div>
-                <div class="flex items-center gap-3">
-                    <button id="addCustomerBtn" onclick="openCustomerModal()" class="hidden px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-md shadow-sm transition flex items-center gap-2">
-                        <i class="fa-solid fa-plus"></i> Add Customer
-                    </button>
+                <div class="flex items-center gap-6">
+                    <!-- Status Filter Tabs -->
+                    <div class="filter-tabs">
+                        <button class="tab-btn active" onclick="switchTab('all', event)">All customers</button>
+                        <button class="tab-btn" onclick="switchTab('active', event)">Active <span class="count-badge" id="activeCount">0</span></button>
+                        <button class="tab-btn" onclick="switchTab('inactive', event)">Inactive <span class="count-badge" id="inactiveCount">0</span></button>
+                    </div>
+
                     <span id="roleBadge" class="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-semibold rounded-md border border-amber-200">USER</span>
                 </div>
             </header>
 
             <div class="dashboard-container p-8 space-y-6 max-w-7xl mx-auto w-full">
 
+                <!-- Table Controls Toolbar -->
+                <div class="flex justify-between items-center gap-3">
+                    <button class="px-3.5 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold text-xs rounded-md shadow-sm transition flex items-center gap-2">
+                        <i class="fa-solid fa-filter"></i> Filter
+                    </button>
+                    
+                    <div class="flex items-center gap-3">
+                        <div class="relative">
+                            <input type="text" id="searchInput" onkeyup="filterCustomers()" placeholder="Search customers..." class="px-3 py-2 border border-gray-300 rounded-md text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 w-48 sm:w-64">
+                        </div>
+                        <button id="addCustomerBtn" onclick="openCustomerModal()" class="hidden px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-md shadow-sm transition items-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Add customer
+                        </button>
+                        <button id="refreshBtn" class="shrink-0 whitespace-nowrap px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-md border border-gray-300 transition flex items-center gap-1.5 w-auto">
+                            <i id="refreshIcon" class="fa-solid fa-rotate"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="errorContainer" class="text-xs font-medium text-red-600"></div>
+
                 <!-- MAIN CUSTOMER DIRECTORY SECTION -->
                 <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between w-full gap-4">
-                        <div>
-                            <h3 class="font-bold text-gray-900 text-base">Customer Directory</h3>
-                            <p class="text-xs text-gray-500">View active client profiles and payment terms.</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <input type="text" id="searchInput" onkeyup="filterCustomers()" placeholder="Search customers..." class="px-3 py-1.5 border border-gray-300 rounded-md text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 w-48 sm:w-64">
-                            <button id="refreshBtn" class="shrink-0 whitespace-nowrap px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-md border border-gray-300 transition flex items-center gap-1.5 w-auto">
-                                <i id="refreshIcon" class="fa-solid fa-rotate"></i> Refresh List
-                            </button>
-                        </div>
-                    </div>
-                    <div id="errorContainer" class="px-6 pt-3 text-xs font-medium text-red-600"></div>
-
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+                        <table class="w-full text-left border-collapse figma-table">
                             <thead>
-                                <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                    <th class="py-3.5 px-6">Cust No</th>
+                                <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold uppercase tracking-wider">
+                                    <th class="py-3.5 px-6">Customer No.</th>
                                     <th class="py-3.5 px-6">Customer Name</th>
                                     <th class="py-3.5 px-6">Address</th>
                                     <th class="py-3.5 px-6">Pay Terms</th>
+                                    <th class="py-3.5 px-6">Status</th>
+                                    <th class="py-3.5 px-6">Stamp</th>
                                     <th class="py-3.5 px-6 text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="customerTableBody" class="divide-y divide-gray-100 text-sm">
                                 <tr>
-                                    <td colspan="5" class="py-6 text-center text-gray-400">Loading directory...</td>
+                                    <td colspan="7" class="py-6 text-center text-gray-400">Loading directory...</td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Table Footer Pagination Bar -->
+                    <div class="table-footer-pagination px-6 py-3 bg-gray-50 border-t border-gray-200 flex justify-between items-center text-xs text-gray-500">
+                        <span id="paginationInfo">Showing 1–8 of 1,248</span>
+                        <div class="pagination-controls flex items-center gap-2">
+                            <button class="page-btn px-2 py-1 bg-white border border-gray-300 rounded hover:bg-gray-100"><i class="fa-solid fa-chevron-left"></i></button>
+                            <span class="font-medium text-gray-700">Page 1 of 10</span>
+                            <button class="page-btn px-2 py-1 bg-white border border-gray-300 rounded hover:bg-gray-100"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
                     </div>
                 </div>
 
@@ -140,24 +215,23 @@
             <form id="customerForm" onsubmit="handleFormSubmit(event)" class="p-6 space-y-4">
                 <input type="hidden" id="modalOriginalCustNo">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">custno *</label>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Customer No *</label>
                     <input type="text" id="custno" required class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">custname *</label>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Customer Name *</label>
                     <input type="text" id="custname" required class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">address *</label>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Address *</label>
                     <textarea id="address" rows="2" required class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"></textarea>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">payterm *</label>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Pay Terms *</label>
                     <select id="payterm" required class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white">
+                        <option value="Net 30">Net 30</option>
                         <option value="COD">COD</option>
                         <option value="Net 15">Net 15</option>
-                        <option value="Net 30">Net 30</option>
-                        <option value="Net 45">Net 45</option>
                         <option value="Net 60">Net 60</option>
                     </select>
                 </div>
@@ -176,6 +250,7 @@
         let currentUserRoleId = null;
         let userRights = [];
         let customersData = [];
+        let currentFilterTab = 'all';
 
         document.addEventListener('DOMContentLoaded', async () => {
             await checkSession();
@@ -209,7 +284,6 @@
                 
                 document.getElementById('userProfileInfo').innerText = fullName;
 
-                // Check if user has add permission to show/hide the Add Customer button
                 const isSuperOrAdmin = (currentUserRoleId === 1 || currentUserRoleId === 2);
                 const canAddCustomer = isSuperOrAdmin || userRights.some(r => 
                     String(r.module_name || '').toLowerCase() === 'customer' && 
@@ -217,10 +291,13 @@
                     r.is_allowed === true
                 );
 
+                const addBtn = document.getElementById('addCustomerBtn');
                 if (canAddCustomer) {
-                    document.getElementById('addCustomerBtn').classList.remove('hidden');
+                    addBtn.classList.remove('hidden');
+                    addBtn.classList.add('flex');
                 } else {
-                    document.getElementById('addCustomerBtn').classList.add('hidden');
+                    addBtn.classList.add('hidden');
+                    addBtn.classList.remove('flex');
                 }
             } catch (err) {
                 console.error('Session check failed:', err);
@@ -238,18 +315,29 @@
                 if (!response.ok) throw new Error(data.error || 'Failed to load customer records.');
 
                 customersData = data.customers || data.data || (Array.isArray(data) ? data : []);
-                renderCustomerTable(customersData);
+                updateTabCounts();
+                filterCustomers();
             } catch (err) {
                 console.error('Error loading customers:', err);
                 errorContainer.innerText = 'Error loading customer records: ' + err.message;
             }
         }
 
+        function updateTabCounts() {
+            const activeCount = customersData.filter(c => !c.is_blocked && c.status !== 'blocked' && c.status !== 'Inactive').length;
+            const inactiveCount = customersData.filter(c => c.is_blocked || c.status === 'blocked' || c.status === 'Inactive').length;
+            
+            const activeEl = document.getElementById('activeCount');
+            const inactiveEl = document.getElementById('inactiveCount');
+            if (activeEl) activeEl.innerText = activeCount;
+            if (inactiveEl) inactiveEl.innerText = inactiveCount;
+        }
+
         function renderCustomerTable(customers) {
             const tbody = document.getElementById('customerTableBody');
 
             if (!Array.isArray(customers) || customers.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-gray-400">No customer records found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-gray-400">No customer records found.</td></tr>`;
                 return;
             }
 
@@ -269,16 +357,18 @@
                 const custno = customer.custno || customer.customer_no || customer.id || 'N/A';
                 const custname = customer.custname || customer.name || 'N/A';
                 const address = customer.address || 'N/A';
-                const payterm = customer.payterm || customer.payterms || customer.payment_terms || 'COD';
+                const payterm = customer.payterm || customer.payterms || customer.payment_terms || 'Net 30';
+                const isBlocked = !!(customer.is_blocked || customer.status === 'blocked' || customer.status === 'Inactive');
+                const stamp = customer.stamp || customer.updated_at || customer.created_at || 'CREATED system 2026-10-01 9:00AM';
 
                 const editBtnHtml = canEditCustomer ? `
-                    <button onclick="openCustomerModal('${escapeHtml(String(custno))}')" class="px-2.5 py-1 text-xs font-semibold rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 transition">
-                        Edit
+                    <button onclick="openCustomerModal('${escapeHtml(String(custno))}')" class="action-icon-btn" title="Edit">
+                        <i class="fa-regular fa-pen-to-square"></i>
                     </button>` : '';
 
                 const deleteBtnHtml = canDeleteCustomer ? `
-                    <button onclick="deleteCustomer('${escapeHtml(String(custno))}')" class="px-2.5 py-1 text-xs font-semibold rounded-md border border-red-300 text-red-700 hover:bg-red-50 transition">
-                        Delete
+                    <button onclick="deleteCustomer('${escapeHtml(String(custno))}')" class="action-icon-btn" title="Delete">
+                        <i class="fa-regular fa-trash-can"></i>
                     </button>` : '';
 
                 const actionsHtml = (editBtnHtml || deleteBtnHtml) ? `
@@ -292,9 +382,13 @@
                         <td class="py-4 px-6 font-mono font-semibold text-xs text-blue-600 align-middle">${escapeHtml(String(custno))}</td>
                         <td class="py-4 px-6 font-medium text-gray-900 align-middle">${escapeHtml(String(custname))}</td>
                         <td class="py-4 px-6 text-xs text-gray-600 max-w-xs truncate align-middle" title="${escapeHtml(String(address))}">${escapeHtml(String(address))}</td>
+                        <td class="py-4 px-6 text-xs text-gray-600 align-middle">${escapeHtml(String(payterm))}</td>
                         <td class="py-4 px-6 align-middle">
-                            <span class="px-2.5 py-1 text-xs font-medium rounded bg-gray-100 text-gray-800">${escapeHtml(String(payterm))}</span>
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full ${isBlocked ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
+                                <i class="fa-solid fa-circle" style="font-size: 0.4rem;"></i> ${isBlocked ? 'Inactive' : 'Active'}
+                            </span>
                         </td>
+                        <td class="py-4 px-6 text-xs text-gray-500 font-mono align-middle">${escapeHtml(String(stamp))}</td>
                         <td class="py-4 px-6 text-right align-middle">
                             ${actionsHtml}
                         </td>
@@ -305,12 +399,28 @@
 
         function filterCustomers() {
             const query = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = customersData.filter(c => {
+            let filtered = customersData.filter(c => {
                 const custno = String(c.custno || c.customer_no || c.id || '').toLowerCase();
                 const custname = String(c.custname || c.name || '').toLowerCase();
                 return custno.includes(query) || custname.includes(query);
             });
+
+            if (currentFilterTab === 'active') {
+                filtered = filtered.filter(c => !c.is_blocked && c.status !== 'blocked' && c.status !== 'Inactive');
+            } else if (currentFilterTab === 'inactive') {
+                filtered = filtered.filter(c => c.is_blocked || c.status === 'blocked' || c.status === 'Inactive');
+            }
+
             renderCustomerTable(filtered);
+        }
+
+        function switchTab(tab, event) {
+            currentFilterTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            filterCustomers();
         }
 
         function openCustomerModal(custno = null) {
@@ -331,16 +441,18 @@
                     document.getElementById('custno').setAttribute('readonly', true);
                     document.getElementById('custname').value = customer.custname || customer.name || '';
                     document.getElementById('address').value = customer.address || '';
-                    document.getElementById('payterm').value = customer.payterm || customer.payterms || customer.payment_terms || 'COD';
+                    document.getElementById('payterm').value = customer.payterm || customer.payterms || customer.payment_terms || 'Net 30';
                 }
             } else {
                 title.innerText = 'Add New Customer';
             }
 
             modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
 
         function closeCustomerModal() {
+            document.getElementById('customerModal').classList.remove('flex');
             document.getElementById('customerModal').classList.add('hidden');
         }
 
@@ -378,19 +490,6 @@
             }
         }
 
-        function escapeHtml(str) {
-            return (str || '').toString().replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
-        }
-
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            try {
-                await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
-                window.location.href = '/login.html';
-            } catch (err) {
-                window.location.href = '/login.html';
-            }
-        });
-
         async function deleteCustomer(custno) {
             if (!confirm(`Are you sure you want to delete customer #${custno}?`)) {
                 return;
@@ -410,6 +509,19 @@
                 alert('Error deleting customer: ' + err.message);
             }
         }
+
+        function escapeHtml(str) {
+            return (str || '').toString().replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+                window.location.href = './landingpage.html';
+            } catch (err) {
+                window.location.href = './landingpage.html';
+            }
+        });
     </script>
 </body>
 </html>

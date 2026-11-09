@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - LoveLace Inc. ERP</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Shared Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .sidebar-footer {
+            padding: 1.25rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.1);
+        }
+        .user-profile-info {
+            font-size: 0.9rem;
+            color: #ffffff;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            word-break: break-all;
+        }
+        .sidebar-logout-btn {
+            width: 100%;
+            background-color: #dc2626;
+            color: white;
+            border: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+        .sidebar-logout-btn:hover {
+            background-color: #b91c1c;
+        }
+    </style>
+</head>
+<body class="bg-[#F4F6F9] text-gray-800 antialiased min-h-screen">
+
+    <!-- Explicit full screen flex layout -->
+    <div class="flex h-screen w-full overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0 h-full">
+            <div>
+                <div class="sidebar-brand px-6 py-5 border-b border-gray-100 font-bold text-gray-900 flex flex-col">
+                    <span>LoveLace Inc. ERP</span>
+                    <span class="text-xs text-gray-400 font-normal">by LoveLace</span>
+                </div>
+                
+                <ul class="nav-menu px-3 space-y-1 mt-2">
+                    <li class="nav-item active"><a href="/superadmin-dashboard.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg transition border-l-4 border-blue-600">📊 Dashboard</a></li>
+                    <li class="border-t border-gray-200 my-2"></li>
+
+                    <li class="nav-item"><a href="/superadmin-customers.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">👥 Customers</a></li>
+                    <li class="nav-item"><a href="/superadmin-products.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📦 Products</a></li>
+                     <li class="nav-item"><a href="/superadmin-human-resources.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">👔 Human Resources</a></li>
+                    <li class="nav-item"><a href="/superadmin-sales.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">💳 Sales</a></li>
+                    <li class="nav-item"><a href="/superadmin-reports.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📈 Reports</a></li>
+
+                    <!-- Separator Line -->
+                    <li class="border-t border-gray-200 my-2"></li>
+
+                    <!-- Separated User Management Menu Item -->
+                    <li class="nav-item"><a href="/user-management.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">⚙️ User Management</a></li>
+                    <li class="nav-item"><a href="/system-settings.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">🔧 System Settings</a></li>
+                </ul>
+            </div>
+
+            <!-- Bottom Left User Info & Logout -->
+            <div class="sidebar-footer p-4 border-t border-gray-100 bg-gray-900">
+                <div id="userProfileInfo" class="user-profile-info text-white text-sm font-semibold mb-3">
+                    Loading user...
+                </div>
+                <button id="logoutBtn" class="sidebar-logout-btn flex items-center justify-center gap-2">Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace Area -->
+        <main class="flex-1 w-full flex flex-col overflow-y-auto">
+            
+            <!-- Header Bar -->
+            <header class="top-header bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900">User Management</h1>
+                    <p class="text-xs text-gray-500">Manage user accounts and directory permissions.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span id="roleBadge" class="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded-md border border-gray-200">Loading Role...</span>
+                </div>
+            </header>
+
+            <div class="dashboard-container p-8 space-y-6 max-w-6xl mx-auto w-full">
+                
+                <!-- 1. PENDING REGISTRATIONS SECTION (Superadmin Only) -->
+                <div id="pendingSection" class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                        <div>
+                            <h3 class="font-bold text-gray-900 text-base">Pending Registrations</h3>
+                            <p class="text-xs text-gray-500">Review and approve new user account requests.</p>
+                        </div>
+                        <span class="text-xs font-medium bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full border border-amber-200" id="pendingCountSummary">Loading...</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    <th class="py-3 px-6">Email</th>
+                                    <th class="py-3 px-6 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pendingTableBody" class="divide-y divide-gray-100 text-sm">
+                                <tr>
+                                    <td colspan="2" class="py-6 text-center text-gray-400">Loading pending accounts...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 2. MAIN USER DIRECTORY SECTION -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between w-full gap-4">
+                        <div>
+                            <h3 class="font-bold text-gray-900 text-base">User Directory</h3>
+                            <p class="text-xs text-gray-500">View active accounts and modify user permissions.</p>
+                        </div>
+                        <button id="refreshBtn" class="shrink-0 whitespace-nowrap px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-md border border-gray-300 transition flex items-center gap-1.5 w-auto">
+                            <i id="refreshIcon" class="fa-solid fa-rotate"></i> Refresh List
+                        </button>
+                    </div>
+                    <div id="errorContainer" class="px-6 pt-3 text-xs font-medium text-red-600"></div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    <th class="py-3.5 px-6">User</th>
+                                    <th class="py-3.5 px-6">Role</th>
+                                    <th class="py-3.5 px-6">Status</th>
+                                    <th class="py-3.5 px-6 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTableBody" class="divide-y divide-gray-100 text-sm">
+                                <tr>
+                                    <td colspan="4" class="py-6 text-center text-gray-400">Loading directory...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <div id="rightsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-[#fffef0] rounded-xl shadow-lg border border-gray-300 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                <div><h2 class="font-bold text-gray-900">Rights — <span id="rightsTitleName"></span></h2><p id="rightsUserLabel" class="text-xs text-gray-500"></p></div>
+                <button type="button" onclick="closeRightsDialog()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div id="rightsError" class="px-6 pt-3 text-xs font-medium text-red-600"></div>
+            <div id="rightsModules" class="p-6 space-y-4"></div>
+            <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+                <button type="button" onclick="closeRightsDialog()" class="px-4 py-2 border border-gray-300 text-gray-700 text-xs font-semibold rounded-md hover:bg-gray-50">Cancel</button>
+                <button type="button" onclick="closeRightsDialog()" class="px-4 py-2 bg-blue-700 text-white text-xs font-semibold rounded-md hover:bg-blue-800">Save Rights</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        let currentUserId = null;       // Stores logged-in user's ID
+        let currentUserRoleId = null;   // Stores logged-in user's role ID (1: Superadmin, 2: Admin)
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkSession();
+            
+            // Only fetch pending registrations if user is a Superadmin (role_id === 1)
+            if (currentUserRoleId === 1) {
+                document.getElementById('pendingSection').classList.remove('hidden');
+                fetchPendingUsers();
+            }
+
+            fetchUserDirectory();
+            
+            // Refresh Button with Spin Animation
+            document.getElementById('refreshBtn').addEventListener('click', async () => {
+                const icon = document.getElementById('refreshIcon');
+                icon.classList.add('fa-spin');
+                
+                const promises = [fetchUserDirectory()];
+                if (currentUserRoleId === 1) {
+                    promises.push(fetchPendingUsers());
+                }
+
+                await Promise.all(promises);
+
+                setTimeout(() => {
+                    icon.classList.remove('fa-spin');
+                }, 400);
+            });
+        });
+
+        // Verify Active Session & Capture User ID & Role ID
+        async function checkSession() {
+            try {
+                const response = await fetch('/api/dashboard', { credentials: 'include' });
+                if (!response.ok) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                const data = await response.json();
+                const sessionData = data.userSessionData;
+
+                currentUserId = sessionData?.userId || sessionData?.user_id || sessionData?.id;
+                currentUserRoleId = Number(sessionData?.roleId || sessionData?.role_id || 3);
+
+                const firstName = sessionData?.firstName || sessionData?.first_name || '';
+                const lastName = sessionData?.lastName || sessionData?.last_name || '';
+                const fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'User';
+                
+                document.getElementById('userProfileInfo').innerText = fullName;
+
+                // Render role badge in header
+                const roleBadge = document.getElementById('roleBadge');
+                if (currentUserRoleId === 1) {
+                    roleBadge.textContent = 'Superadmin';
+                    roleBadge.className = 'px-3 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-md border border-purple-200';
+                } else {
+                    roleBadge.textContent = 'Admin';
+                    roleBadge.className = 'px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-md border border-blue-200';
+                }
+            } catch (err) {
+                console.error('Session check failed:', err);
+                window.location.href = '/login.html';
+            }
+        }
+
+        // Fetch Pending Registrations (Superadmin only)
+        async function fetchPendingUsers() {
+            const section = document.getElementById('pendingSection');
+            const tbody = document.getElementById('pendingTableBody');
+            try {
+                const res = await fetch('/api/admin/pending-users', { credentials: 'include' });
+                if (!res.ok) {
+                    section.classList.add('hidden');
+                    return;
+                }
+                const data = await readJsonResponse(res);
+                const pendingUsers = data.users || [];
+                document.getElementById('pendingCountSummary').textContent = `${pendingUsers.length} pending`;
+
+                if (pendingUsers.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="2" class="py-6 text-center text-gray-400">No pending registrations found.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = pendingUsers.map(u => `
+                    <tr class="hover:bg-gray-50/80 transition">
+                        <td class="py-4 px-6 font-medium text-gray-900 align-middle">${escapeHtml(u.email)}</td>
+                        <td class="py-4 px-6 text-right align-middle">
+                            <button onclick="approveUser('${u.user_id}')" class="px-3 py-1.5 text-xs font-semibold bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+                                Approve
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error('Error loading pending users:', err);
+                section.classList.add('hidden');
+            }
+        }
+
+        // Approve Pending Account
+        async function approveUser(userId) {
+            try {
+                const res = await fetch(`/api/admin/users/${encodeURIComponent(userId)}/approve`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ role_id: 3 })
+                });
+                const data = await readJsonResponse(res);
+                if (!res.ok) {
+                    alert(data.error || 'Approval failed.');
+                    return;
+                }
+                fetchPendingUsers();
+                fetchUserDirectory();
+            } catch (err) {
+                alert('Server error during approval.');
+            }
+        }
+
+        // Fetch Main User Directory
+        async function fetchUserDirectory() {
+            const errorContainer = document.getElementById('errorContainer');
+            const tbody = document.getElementById('userTableBody');
+            errorContainer.innerText = '';
+
+            function getRoleLabel(roleId) {
+                switch (Number(roleId)) {
+                    case 1: return 'Superadmin';
+                    case 2: return 'Admin';
+                    case 3: return 'User';
+                    default: return 'Unknown';
+                }
+            }
+
+            try {
+                const response = await fetch('/api/admin/users', { credentials: 'include' });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Failed to load user records.');
+
+                const users = data.users || data;
+                if (!Array.isArray(users) || users.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-gray-400">No user records found.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = users.map(user => {
+                    const roleId = Number(user.role_id ?? user.role);
+                    const roleLabel = getRoleLabel(roleId);
+                    const isSuper = roleId === 1;
+                    const isAdmin = roleId === 2;
+                    const userId = user.user_id || user.id;
+
+                    const isSelf = (currentUserId && userId === currentUserId);
+                    const isSuperadminViewer = (currentUserRoleId === 1);
+
+                    // Block button logic: prevent regular admins from blocking other admins/superadmins if restricted
+                    const blockActionHtml = isSelf
+                        ? `<span class="text-xs text-gray-400 italic px-2">Current User</span>`
+                        : `<button onclick="toggleUserStatus('${userId}', ${!user.is_blocked})" class="px-2.5 py-1 text-xs font-semibold rounded-md border transition ${user.is_blocked ? 'border-green-300 text-green-700 hover:bg-green-50' : 'border-red-300 text-red-700 hover:bg-red-50'}">
+                                ${user.is_blocked ? 'Unblock' : 'Block'}
+                           </button>`;
+
+                    // Edit role button is strictly reserved for Superadmins
+                    const editButtonHtml = isSuperadminViewer
+                        ? `<button onclick="editUser('${userId}')" class="px-2.5 py-1 text-xs font-semibold rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 transition">Edit</button>`
+                        : '';
+                    const rightsButtonHtml = isSelf
+                        ? ''
+                        : `<button type="button" class="rights-button px-2.5 py-1 text-xs font-semibold rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 transition" data-user-id="${escapeHtml(String(userId))}" data-user-email="${escapeHtml(String(user.email || ''))}">Rights</button>`;
+
+                    return `
+                        <tr class="hover:bg-gray-50/80 transition">
+                            <td class="py-4 px-6 font-medium text-gray-900 align-middle">${escapeHtml(user.email || '')} ${isSelf ? '<span class="text-xs font-normal text-blue-600 bg-blue-50 px-2 py-0.5 rounded ml-1">You</span>' : ''}</td>
+                            <td class="py-4 px-6 align-middle">
+                                <span class="px-2.5 py-1 text-xs font-semibold rounded-full ${isSuper ? 'bg-purple-100 text-purple-700' : isAdmin ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}">
+                                    ${roleLabel}
+                                </span>
+                            </td>
+                            <td class="py-4 px-6 align-middle">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full ${user.is_blocked ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
+                                    ${user.is_blocked ? 'Blocked' : 'Active'}
+                                </span>
+                            </td>
+                            <td class="py-4 px-6 text-right align-middle">
+                                <div class="inline-flex items-center gap-1.5 justify-end">
+                                    ${rightsButtonHtml}
+                                    ${editButtonHtml}
+                                    ${blockActionHtml}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+                tbody.querySelectorAll('.rights-button').forEach(button => {
+                    button.addEventListener('click', () => openRightsDialog(button.dataset.userId, button.dataset.userEmail));
+                });
+            } catch (err) {
+                console.error('Error loading users:', err);
+                errorContainer.innerText = 'Error loading user records: ' + err.message;
+            }
+        }
+
+        async function openRightsDialog(userId, userEmail) {
+    document.getElementById('rightsModal').classList.remove('hidden');
+    document.getElementById('rightsModal').classList.add('flex');
+    document.getElementById('rightsTitleName').innerText = userEmail.split('@')[0];
+    document.getElementById('rightsUserLabel').innerText = userEmail;
+    document.getElementById('rightsError').innerText = '';
+    const container = document.getElementById('rightsModules');
+    container.innerHTML = '<p class="text-sm text-gray-500">Loading rights...</p>';
+    
+    try {
+        const response = await fetch(getRightsUrl(userId), { credentials: 'include' });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Failed to load rights.');
+        renderRightsDialog(userId, data.modules, data.rights);
+    } catch (error) {
+        document.getElementById('rightsError').innerText = error.message;
+        container.innerHTML = '';
+    }
+}
+
+function renderRightsDialog(userId, modules, rights) {
+    const granted = new Set(rights.map(right => `${right.module_name}:${right.action_key}`));
+    document.getElementById('rightsModules').innerHTML = Object.entries(modules).map(([module, actions]) => `
+        <section class="border border-yellow-200 rounded-lg p-4 bg-[#fffef0]" data-module="${module}">
+            <div class="flex items-center justify-between border-b border-yellow-100 pb-3 mb-3">
+                <label class="flex items-center gap-2 text-sm font-bold text-gray-900">
+                    <input type="checkbox" class="module-checkbox accent-blue-600" onchange="setModuleRights('${userId}', '${module}', this.checked)">
+                    ${formatModuleName(module)}
+                </label>
+                <div class="flex gap-2">
+                    <button type="button" class="text-xs font-semibold text-blue-600 hover:underline" onclick="setModuleRights('${userId}', '${module}', true)">All</button>
+                    <button type="button" class="text-xs font-semibold text-gray-500 hover:underline" onclick="setModuleRights('${userId}', '${module}', false)">None</button>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2">
+                ${actions.map(action => `<label class="flex items-center gap-2 text-xs text-gray-700"><input type="checkbox" class="action-checkbox accent-blue-600" data-action="${action}" ${granted.has(`${module}:${action}`) ? 'checked' : ''} onchange="updateRight('${userId}', '${module}', '${action}', this.checked)">${formatActionName(action)}</label>`).join('')}
+            </div>
+        </section>
+    `).join('');
+    document.querySelectorAll('[data-module]').forEach(updateModuleCheckbox);
+}
+
+async function updateRight(userId, module, action, granted) {
+    try {
+        const response = await fetch(getRightsUrl(userId), {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ module, action, granted })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || 'Failed to save right.');
+        updateModuleCheckbox(document.querySelector(`[data-module="${module}"]`));
+    } catch (error) {
+        document.getElementById('rightsError').innerText = error.message;
+        const checkbox = document.querySelector(`[data-module="${module}"] [data-action="${action}"]`);
+        if (checkbox) checkbox.checked = !granted;
+    }
+}
+
+async function setModuleRights(userId, module, granted) {
+    const section = document.querySelector(`[data-module="${module}"]`);
+    for (const checkbox of [...section.querySelectorAll('.action-checkbox')]) {
+        if (checkbox.checked !== granted) {
+            checkbox.checked = granted;
+            await updateRight(userId, module, checkbox.dataset.action, granted);
+        }
+    }
+    updateModuleCheckbox(section);
+}
+
+function updateModuleCheckbox(section) {
+    const actions = [...section.querySelectorAll('.action-checkbox')];
+    const moduleCheckbox = section.querySelector('.module-checkbox');
+    moduleCheckbox.checked = actions.length > 0 && actions.every(action => action.checked);
+    moduleCheckbox.indeterminate = actions.some(action => action.checked) && !moduleCheckbox.checked;
+}
+
+function closeRightsDialog() {
+    document.getElementById('rightsModal').classList.add('hidden');
+    document.getElementById('rightsModal').classList.remove('flex');
+}
+
+function getRightsUrl(userId) {
+    const normalizedUserId = String(userId ?? '').trim();
+    if (!normalizedUserId || normalizedUserId === 'undefined' || normalizedUserId === 'null') {
+        throw new Error('Unable to manage rights: the selected user has no valid ID.');
+    }
+    return `/api/admin/users/${encodeURIComponent(normalizedUserId)}/rights`;
+}
+        const RIGHT_LABELS = {
+            'add-customer': 'Add Customer', 'edit-customer': 'Edit Customer', 'delete-customer': 'Delete Customer',
+            'add-product': 'Add Product', 'edit-product': 'Edit Product', 'delete-product': 'Delete Product', 'add-price': 'Add Price', 'edit-price': 'Edit Price', 'delete-price': 'Delete Price',
+            'add-job': 'Add Job', 'edit-job': 'Edit Job', 'delete-job': 'Delete Job', 'add-department': 'Add Department', 'edit-department': 'Edit Department', 'delete-department': 'Delete Department', 'add-employee': 'Add Employee', 'edit-employee': 'Edit Employee', 'delete-employee': 'Delete Employee', 'view-job-history': 'View Job History', 'add-job-history': 'Add Job History', 'edit-job-history': 'Edit Job History', 'delete-job-history': 'Delete Job History',
+            'add-sale': 'Add Sale', 'edit-sale': 'Edit Sale', 'delete-sale': 'Delete Sale', 'add-sale-detail': 'Add Sale Detail', 'view-sale-details': 'View Sale Details', 'edit-sale-detail': 'Edit Sale Detail', 'delete-sale-detail': 'Delete Sale Detail',
+            'top-customers': 'Top Customers', 'product-master-list': 'Product Master List', 'top-products': 'Top Products', 'active-employees': 'Active Employees', 'all-employees': 'All Employees', 'employee-job-history': 'Employee Job History', 'top-sales': 'Top Sales'
+        };
+        function formatModuleName(module) { return { customer: 'Customer Management', product: 'Product Management', 'human-resources': 'Human Resources', sales: 'Sales', reports: 'Reports' }[module] || module; }
+        function formatActionName(action) { return RIGHT_LABELS[action] || action; }
+
+        async function toggleUserStatus(userId, shouldBlock) {
+            try {
+                const res = await fetch(`/api/admin/users/${encodeURIComponent(userId)}/status`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ is_blocked: shouldBlock })
+                });
+                if (!res.ok) {
+                    const errData = await readJsonResponse(res);
+                    alert(errData.error || 'Action failed');
+                    return;
+                }
+                fetchUserDirectory();
+            } catch (err) {
+                alert('Server error updating status.');
+            }
+        }
+
+        function escapeHtml(str) {
+            return (str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+        }
+
+        async function readJsonResponse(response) {
+            const text = await response.text();
+            if (!text) return {};
+            try {
+                return JSON.parse(text);
+            } catch (error) {
+                throw new Error(`Unexpected server response (${response.status}).`);
+            }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+                window.location.href = '/login.html';
+            } catch (err) {
+                window.location.href = '/login.html';
+            }
+        });
+
+        // Open Edit Role Prompt for a User (Superadmin Only)
+        async function editUser(userId) {
+            if (currentUserId && userId === currentUserId) {
+                alert("Security restriction: You cannot modify your own role from the user directory.");
+                return;
+            }
+
+            const newRoleInput = prompt(
+                "Enter new role assignment for this user:\n\n" +
+                "1 - Superadmin\n" +
+                "2 - Admin\n" +
+                "3 - User"
+            );
+
+            if (newRoleInput === null) return;
+
+            const target_role_id = Number(newRoleInput.trim());
+            if (![1, 2, 3].includes(target_role_id)) {
+                alert("Invalid role ID entered. Please enter 1, 2, or 3.");
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/admin/users/${encodeURIComponent(userId)}/role`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ target_role_id })
+                });
+
+                const data = await readJsonResponse(res);
+                if (!res.ok) {
+                    alert(data.error || 'Failed to update user role.');
+                    return;
+                }
+
+                alert('User role updated successfully!');
+                fetchUserDirectory();
+            } catch (err) {
+                console.error('Error updating user role:', err);
+                alert('Server error during role modification.');
+            }
+        }
+    </script>
+</body>
+</html>

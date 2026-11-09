@@ -37,127 +37,200 @@
         .sidebar-logout-btn:hover {
             background-color: #b91c1c;
         }
+
+        /* Figma Alignment Overrides */
+        .filter-tabs {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            font-size: 0.85rem;
+            color: #64748b;
+            cursor: pointer;
+            padding-bottom: 0.25rem;
+            font-weight: 500;
+        }
+        .tab-btn.active {
+            color: #4f46e5;
+            font-weight: 600;
+            border-bottom: 2px solid #4f46e5;
+        }
+        .figma-table thead tr {
+            background-color: #232752 !important;
+            color: white !important;
+        }
+        .figma-table th {
+            color: white !important;
+            font-size: 0.75rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+        .action-icon-btn {
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0.25rem;
+            font-size: 0.9rem;
+            transition: color 0.15s;
+        }
+        .action-icon-btn:hover {
+            color: #111827;
+        }
+        .pill-btn {
+            padding: 0.2rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 4px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            color: #334155;
+            cursor: pointer;
+        }
+        .pill-btn:hover {
+            background: #f1f5f9;
+        }
     </style>
 </head>
-<body class="bg-[#F4F6F9] text-gray-800 antialiased min-h-screen">
+<body class="admin-layout flex h-screen w-full overflow-hidden bg-[#F4F6F9]">
 
-    <!-- Explicit full screen flex layout -->
-    <div class="flex h-screen w-full overflow-hidden">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0 h-full">
-            <div>
-                <div class="sidebar-brand px-6 py-5 border-b border-gray-100 font-bold text-gray-900 flex flex-col">
-                    <span>LoveLace Inc. ERP</span>
-                    <span class="text-xs text-gray-400 font-normal">by LoveLace</span>
-                </div>
-                
-                <ul class="nav-menu px-3 space-y-1 mt-2">
-                    <li class="nav-item active"><a href="/superadmin-dashboard.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg transition border-l-4 border-blue-600">📊 Dashboard</a></li>
-                    <li class="border-t border-gray-200 my-2"></li>
-
-                    <li class="nav-item"><a href="/superadmin-customers.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">👥 Customers</a></li>
-                    <li class="nav-item"><a href="/superadmin-products.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📦 Products</a></li>
-                     <li class="nav-item"><a href="/superadmin-human-resources.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">👔 Human Resources</a></li>
-                    <li class="nav-item"><a href="/superadmin-sales.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">💳 Sales</a></li>
-                    <li class="nav-item"><a href="/superadmin-reports.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📈 Reports</a></li>
-
-                    <!-- Separator Line -->
-                    <li class="border-t border-gray-200 my-2"></li>
-
-                    <!-- Separated User Management Menu Item -->
-                    <li class="nav-item"><a href="/user-management.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">⚙️ User Management</a></li>
-                    <li class="nav-item"><a href="/system-settings.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">🔧 System Settings</a></li>
-                </ul>
-            </div>
-
-            <!-- Bottom Left User Info & Logout -->
-            <div class="sidebar-footer p-4 border-t border-gray-100 bg-gray-900">
-                <div id="userProfileInfo" class="user-profile-info text-white text-sm font-semibold mb-3">
-                    Loading user...
-                </div>
-                <button id="logoutBtn" class="sidebar-logout-btn flex items-center justify-center gap-2">Logout</button>
-            </div>
-        </aside>
-
-        <!-- Main Workspace Area -->
-        <main class="flex-1 w-full flex flex-col overflow-y-auto">
+    <!-- SIDEBAR (Superadmin Configured Navigation) -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span>LoveLace Inc. ERP</span>
+            <small style="display:block; font-size:10px; color:#5C5C99; font-weight:normal;">by LoveLace</small>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="superadmin-dashboard.html">📊 Dashboard</a></li>
+            <li class="nav-item"><a href="superadmin-customers.html">👥 Customers</a></li>
+            <li class="nav-item"><a href="superadmin-products.html">📦 Products</a></li>
+            <li class="nav-item"><a href="superadmin-human-resources.html">👔 Human Resources</a></li>
+            <li class="nav-item"><a href="superadmin-sales.html">💼 Sales</a></li>
+            <li class="nav-item active"><a href="user-management.html">⚙️ User Management</a></li>
+            <li class="nav-item"><a href="settings.html">🔧 System Settings</a></li>
             
-            <!-- Header Bar -->
-            <header class="top-header bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
-                <div>
-                    <h1 class="text-xl font-bold text-gray-900">User Management</h1>
-                    <p class="text-xs text-gray-500">Manage user accounts and directory permissions.</p>
+            <li class="nav-item logout-menu-item" style="margin-top: 1rem;">
+                <a href="landingpage.html" style="color: #ef4444 !important;" id="logoutBtn">🚪 Logout</a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-profile">
+            <div class="profile-info">
+                <div class="avatar">👑</div>
+                <div class="profile-text">
+                    <span class="username" id="userProfileInfo">Loading user...</span>
+                    <span class="role">Superadmin</span>
                 </div>
-                <div class="flex items-center gap-3">
-                    <span id="roleBadge" class="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded-md border border-gray-200">Loading Role...</span>
-                </div>
-            </header>
-
-            <div class="dashboard-container p-8 space-y-6 max-w-6xl mx-auto w-full">
-                
-                <!-- 1. PENDING REGISTRATIONS SECTION (Superadmin Only) -->
-                <div id="pendingSection" class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hidden">
-                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-                        <div>
-                            <h3 class="font-bold text-gray-900 text-base">Pending Registrations</h3>
-                            <p class="text-xs text-gray-500">Review and approve new user account requests.</p>
-                        </div>
-                        <span class="text-xs font-medium bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full border border-amber-200" id="pendingCountSummary">Loading...</span>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                    <th class="py-3 px-6">Email</th>
-                                    <th class="py-3 px-6 text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="pendingTableBody" class="divide-y divide-gray-100 text-sm">
-                                <tr>
-                                    <td colspan="2" class="py-6 text-center text-gray-400">Loading pending accounts...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- 2. MAIN USER DIRECTORY SECTION -->
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between w-full gap-4">
-                        <div>
-                            <h3 class="font-bold text-gray-900 text-base">User Directory</h3>
-                            <p class="text-xs text-gray-500">View active accounts and modify user permissions.</p>
-                        </div>
-                        <button id="refreshBtn" class="shrink-0 whitespace-nowrap px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-md border border-gray-300 transition flex items-center gap-1.5 w-auto">
-                            <i id="refreshIcon" class="fa-solid fa-rotate"></i> Refresh List
-                        </button>
-                    </div>
-                    <div id="errorContainer" class="px-6 pt-3 text-xs font-medium text-red-600"></div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                    <th class="py-3.5 px-6">User</th>
-                                    <th class="py-3.5 px-6">Role</th>
-                                    <th class="py-3.5 px-6">Status</th>
-                                    <th class="py-3.5 px-6 text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="userTableBody" class="divide-y divide-gray-100 text-sm">
-                                <tr>
-                                    <td colspan="4" class="py-6 text-center text-gray-400">Loading directory...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
             </div>
-        </main>
-    </div>
+        </div>
+    </aside>
 
+    <!-- Main Workspace Area -->
+    <main class="flex-1 w-full flex flex-col overflow-y-auto">
+        
+        <!-- Header Bar -->
+        <header class="top-header bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+            <div>
+                <h1 class="text-xl font-bold text-gray-900">User Management</h1>
+                <p class="text-xs text-gray-500">Manage user accounts and directory permissions.</p>
+            </div>
+            <div class="flex items-center gap-6">
+                <!-- Status Filter Tabs -->
+                <div class="filter-tabs">
+                    <button class="tab-btn active" onclick="switchUserTab('all', event)">All</button>
+                    <button class="tab-btn" onclick="switchUserTab('active', event)">Active</button>
+                    <button class="tab-btn" onclick="switchUserTab('blocked', event)">Blocked</button>
+                </div>
+                <span id="roleBadge" class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-md border border-blue-200">Superadmin</span>
+            </div>
+        </header>
+
+        <div class="dashboard-container p-8 space-y-6 max-w-7xl mx-auto w-full">
+            
+            <!-- 1. PENDING REGISTRATIONS SECTION (Superadmin Only) -->
+            <div id="pendingSection" class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hidden">
+                <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-base">Pending Registrations</h3>
+                        <p class="text-xs text-gray-500">Review and approve new user account requests.</p>
+                    </div>
+                    <span class="text-xs font-medium bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full border border-amber-200" id="pendingCountSummary">Loading...</span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                <th class="py-3 px-6">Email</th>
+                                <th class="py-3 px-6 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pendingTableBody" class="divide-y divide-gray-100 text-sm">
+                            <tr>
+                                <td colspan="2" class="py-6 text-center text-gray-400">Loading pending accounts...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Table Controls Toolbar -->
+            <div class="flex justify-between items-center gap-3">
+                <button class="px-3.5 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold text-xs rounded-md shadow-sm transition flex items-center gap-2">
+                    <i class="fa-solid fa-filter"></i> Filter
+                </button>
+                
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <input type="text" id="searchInput" onkeyup="filterUsers()" placeholder="Search users..." class="px-3 py-2 border border-gray-300 rounded-md text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 w-48 sm:w-64">
+                    </div>
+                    <button id="refreshBtn" class="shrink-0 whitespace-nowrap px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-md border border-gray-300 transition flex items-center gap-1.5 w-auto">
+                        <i id="refreshIcon" class="fa-solid fa-rotate"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="errorContainer" class="text-xs font-medium text-red-600"></div>
+
+            <!-- 2. MAIN USER DIRECTORY SECTION -->
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse figma-table">
+                        <thead>
+                            <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold uppercase tracking-wider">
+                                <th class="py-3.5 px-6">Name</th>
+                                <th class="py-3.5 px-6">Email</th>
+                                <th class="py-3.5 px-6">Role</th>
+                                <th class="py-3.5 px-6">Status</th>
+                                <th class="py-3.5 px-6 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTableBody" class="divide-y divide-gray-100 text-sm">
+                            <tr>
+                                <td colspan="5" class="py-6 text-center text-gray-400">Loading directory...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Table Footer Pagination Bar -->
+                <div class="table-footer-pagination px-6 py-3 bg-gray-50 border-t border-gray-200 flex justify-between items-center text-xs text-gray-500">
+                    <span id="paginationInfo">Showing 1–5 of 5</span>
+                    <div class="pagination-controls flex items-center gap-2">
+                        <button class="page-btn px-2 py-1 bg-white border border-gray-300 rounded hover:bg-gray-100"><i class="fa-solid fa-chevron-left"></i></button>
+                        <span class="font-medium text-gray-700">Page 1 of 1</span>
+                        <button class="page-btn px-2 py-1 bg-white border border-gray-300 rounded hover:bg-gray-100"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Rights Management Modal -->
     <div id="rightsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
         <div class="bg-[#fffef0] rounded-xl shadow-lg border border-gray-300 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
             <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
@@ -175,21 +248,21 @@
 
     <!-- Script Logic -->
     <script>
-        let currentUserId = null;       // Stores logged-in user's ID
-        let currentUserRoleId = null;   // Stores logged-in user's role ID (1: Superadmin, 2: Admin)
+        let currentUserId = null;       
+        let currentUserRoleId = null;   
+        let usersData = [];
+        let currentTab = 'all';
 
         document.addEventListener('DOMContentLoaded', async () => {
             await checkSession();
             
-            // Only fetch pending registrations if user is a Superadmin (role_id === 1)
             if (currentUserRoleId === 1) {
                 document.getElementById('pendingSection').classList.remove('hidden');
                 fetchPendingUsers();
             }
 
-            fetchUserDirectory();
+            await fetchUserDirectory();
             
-            // Refresh Button with Spin Animation
             document.getElementById('refreshBtn').addEventListener('click', async () => {
                 const icon = document.getElementById('refreshIcon');
                 icon.classList.add('fa-spin');
@@ -207,7 +280,6 @@
             });
         });
 
-        // Verify Active Session & Capture User ID & Role ID
         async function checkSession() {
             try {
                 const response = await fetch('/api/dashboard', { credentials: 'include' });
@@ -223,15 +295,14 @@
 
                 const firstName = sessionData?.firstName || sessionData?.first_name || '';
                 const lastName = sessionData?.lastName || sessionData?.last_name || '';
-                const fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'User';
+                const fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'Superadmin';
                 
                 document.getElementById('userProfileInfo').innerText = fullName;
 
-                // Render role badge in header
                 const roleBadge = document.getElementById('roleBadge');
                 if (currentUserRoleId === 1) {
                     roleBadge.textContent = 'Superadmin';
-                    roleBadge.className = 'px-3 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-md border border-purple-200';
+                    roleBadge.className = 'px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-md border border-blue-200';
                 } else {
                     roleBadge.textContent = 'Admin';
                     roleBadge.className = 'px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-md border border-blue-200';
@@ -242,7 +313,6 @@
             }
         }
 
-        // Fetch Pending Registrations (Superadmin only)
         async function fetchPendingUsers() {
             const section = document.getElementById('pendingSection');
             const tbody = document.getElementById('pendingTableBody');
@@ -277,7 +347,6 @@
             }
         }
 
-        // Approve Pending Account
         async function approveUser(userId) {
             try {
                 const res = await fetch(`/api/admin/users/${encodeURIComponent(userId)}/approve`, {
@@ -298,11 +367,25 @@
             }
         }
 
-        // Fetch Main User Directory
         async function fetchUserDirectory() {
             const errorContainer = document.getElementById('errorContainer');
-            const tbody = document.getElementById('userTableBody');
             errorContainer.innerText = '';
+
+            try {
+                const response = await fetch('/api/admin/users', { credentials: 'include' });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Failed to load user records.');
+
+                usersData = data.users || data || [];
+                filterUsers();
+            } catch (err) {
+                console.error('Error loading users:', err);
+                errorContainer.innerText = 'Error loading user records: ' + err.message;
+            }
+        }
+
+        function renderUserTable(users) {
+            const tbody = document.getElementById('userTableBody');
 
             function getRoleLabel(roleId) {
                 switch (Number(roleId)) {
@@ -313,164 +396,181 @@
                 }
             }
 
-            try {
-                const response = await fetch('/api/admin/users', { credentials: 'include' });
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.error || 'Failed to load user records.');
-
-                const users = data.users || data;
-                if (!Array.isArray(users) || users.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-gray-400">No user records found.</td></tr>`;
-                    return;
-                }
-
-                tbody.innerHTML = users.map(user => {
-                    const roleId = Number(user.role_id ?? user.role);
-                    const roleLabel = getRoleLabel(roleId);
-                    const isSuper = roleId === 1;
-                    const isAdmin = roleId === 2;
-                    const userId = user.user_id || user.id;
-
-                    const isSelf = (currentUserId && userId === currentUserId);
-                    const isSuperadminViewer = (currentUserRoleId === 1);
-
-                    // Block button logic: prevent regular admins from blocking other admins/superadmins if restricted
-                    const blockActionHtml = isSelf
-                        ? `<span class="text-xs text-gray-400 italic px-2">Current User</span>`
-                        : `<button onclick="toggleUserStatus('${userId}', ${!user.is_blocked})" class="px-2.5 py-1 text-xs font-semibold rounded-md border transition ${user.is_blocked ? 'border-green-300 text-green-700 hover:bg-green-50' : 'border-red-300 text-red-700 hover:bg-red-50'}">
-                                ${user.is_blocked ? 'Unblock' : 'Block'}
-                           </button>`;
-
-                    // Edit role button is strictly reserved for Superadmins
-                    const editButtonHtml = isSuperadminViewer
-                        ? `<button onclick="editUser('${userId}')" class="px-2.5 py-1 text-xs font-semibold rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 transition">Edit</button>`
-                        : '';
-                    const rightsButtonHtml = isSelf
-                        ? ''
-                        : `<button type="button" class="rights-button px-2.5 py-1 text-xs font-semibold rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 transition" data-user-id="${escapeHtml(String(userId))}" data-user-email="${escapeHtml(String(user.email || ''))}">Rights</button>`;
-
-                    return `
-                        <tr class="hover:bg-gray-50/80 transition">
-                            <td class="py-4 px-6 font-medium text-gray-900 align-middle">${escapeHtml(user.email || '')} ${isSelf ? '<span class="text-xs font-normal text-blue-600 bg-blue-50 px-2 py-0.5 rounded ml-1">You</span>' : ''}</td>
-                            <td class="py-4 px-6 align-middle">
-                                <span class="px-2.5 py-1 text-xs font-semibold rounded-full ${isSuper ? 'bg-purple-100 text-purple-700' : isAdmin ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}">
-                                    ${roleLabel}
-                                </span>
-                            </td>
-                            <td class="py-4 px-6 align-middle">
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full ${user.is_blocked ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
-                                    ${user.is_blocked ? 'Blocked' : 'Active'}
-                                </span>
-                            </td>
-                            <td class="py-4 px-6 text-right align-middle">
-                                <div class="inline-flex items-center gap-1.5 justify-end">
-                                    ${rightsButtonHtml}
-                                    ${editButtonHtml}
-                                    ${blockActionHtml}
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-                tbody.querySelectorAll('.rights-button').forEach(button => {
-                    button.addEventListener('click', () => openRightsDialog(button.dataset.userId, button.dataset.userEmail));
-                });
-            } catch (err) {
-                console.error('Error loading users:', err);
-                errorContainer.innerText = 'Error loading user records: ' + err.message;
+            if (!Array.isArray(users) || users.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-gray-400">No user records found.</td></tr>`;
+                return;
             }
+
+            tbody.innerHTML = users.map(user => {
+                const roleId = Number(user.role_id ?? user.role);
+                const roleLabel = getRoleLabel(roleId);
+                const isSuper = roleId === 1;
+                const isAdmin = roleId === 2;
+                const userId = user.user_id || user.id;
+                const isSelf = (currentUserId && userId === currentUserId);
+                const isSuperadminViewer = (currentUserRoleId === 1);
+                
+                // Show full name if available (combining first/last or using name fields), fallback to email prefix
+                const fullName = user.fullName || user.name || (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : '') || (user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : '') || (user.email ? user.email.split('@')[0] : 'User');
+
+                const blockActionHtml = isSelf
+                    ? `<span class="text-xs text-gray-400 italic px-2">Current User</span>`
+                    : `<button onclick="toggleUserStatus('${userId}', ${!user.is_blocked})" class="pill-btn ${user.is_blocked ? 'text-green-700 border-green-300' : 'text-red-700 border-red-300'}">
+                            ${user.is_blocked ? 'Unblock' : 'Block'}
+                       </button>`;
+
+                const editButtonHtml = isSuperadminViewer
+                    ? `<button onclick="editUser('${userId}')" class="pill-btn">Edit</button>`
+                    : '';
+                const rightsButtonHtml = isSelf
+                    ? ''
+                    : `<button type="button" class="rights-button pill-btn" data-user-id="${escapeHtml(String(userId))}" data-user-email="${escapeHtml(String(user.email || ''))}">Rights</button>`;
+
+                return `
+                    <tr class="hover:bg-gray-50/80 transition border-b border-gray-100">
+                        <td class="py-4 px-6 font-medium text-gray-900 align-middle">${escapeHtml(fullName)} ${isSelf ? '<span class="text-xs font-normal text-blue-600 bg-blue-50 px-2 py-0.5 rounded ml-1">You</span>' : ''}</td>
+                        <td class="py-4 px-6 text-xs text-gray-600 align-middle">${escapeHtml(user.email || '')}</td>
+                        <td class="py-4 px-6 align-middle">
+                            <span class="px-2.5 py-1 text-xs font-semibold rounded-full ${isSuper ? 'bg-purple-100 text-purple-700' : isAdmin ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}">
+                                ${roleLabel}
+                            </span>
+                        </td>
+                        <td class="py-4 px-6 align-middle">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full ${user.is_blocked ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
+                                <i class="fa-solid fa-circle" style="font-size: 0.4rem;"></i> ${user.is_blocked ? 'Blocked' : 'Active'}
+                            </span>
+                        </td>
+                        <td class="py-4 px-6 text-right align-middle">
+                            <div class="inline-flex items-center gap-1.5 justify-end">
+                                ${rightsButtonHtml}
+                                ${editButtonHtml}
+                                ${blockActionHtml}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            tbody.querySelectorAll('.rights-button').forEach(button => {
+                button.addEventListener('click', () => openRightsDialog(button.dataset.userId, button.dataset.userEmail));
+            });
+        }
+
+        function filterUsers() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            let filtered = usersData.filter(u => {
+                const email = String(u.email || '').toLowerCase();
+                const name = String(u.fullName || u.name || '').toLowerCase();
+                return email.includes(query) || name.includes(query);
+            });
+
+            if (currentTab === 'active') {
+                filtered = filtered.filter(u => !u.is_blocked);
+            } else if (currentTab === 'blocked') {
+                filtered = filtered.filter(u => u.is_blocked);
+            }
+
+            renderUserTable(filtered);
+        }
+
+        function switchUserTab(tab, event) {
+            currentTab = tab;
+            document.querySelectorAll('.filter-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+            if (event && event.target) event.target.classList.add('active');
+            filterUsers();
         }
 
         async function openRightsDialog(userId, userEmail) {
-    document.getElementById('rightsModal').classList.remove('hidden');
-    document.getElementById('rightsModal').classList.add('flex');
-    document.getElementById('rightsTitleName').innerText = userEmail.split('@')[0];
-    document.getElementById('rightsUserLabel').innerText = userEmail;
-    document.getElementById('rightsError').innerText = '';
-    const container = document.getElementById('rightsModules');
-    container.innerHTML = '<p class="text-sm text-gray-500">Loading rights...</p>';
-    
-    try {
-        const response = await fetch(getRightsUrl(userId), { credentials: 'include' });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Failed to load rights.');
-        renderRightsDialog(userId, data.modules, data.rights);
-    } catch (error) {
-        document.getElementById('rightsError').innerText = error.message;
-        container.innerHTML = '';
-    }
-}
-
-function renderRightsDialog(userId, modules, rights) {
-    const granted = new Set(rights.map(right => `${right.module_name}:${right.action_key}`));
-    document.getElementById('rightsModules').innerHTML = Object.entries(modules).map(([module, actions]) => `
-        <section class="border border-yellow-200 rounded-lg p-4 bg-[#fffef0]" data-module="${module}">
-            <div class="flex items-center justify-between border-b border-yellow-100 pb-3 mb-3">
-                <label class="flex items-center gap-2 text-sm font-bold text-gray-900">
-                    <input type="checkbox" class="module-checkbox accent-blue-600" onchange="setModuleRights('${userId}', '${module}', this.checked)">
-                    ${formatModuleName(module)}
-                </label>
-                <div class="flex gap-2">
-                    <button type="button" class="text-xs font-semibold text-blue-600 hover:underline" onclick="setModuleRights('${userId}', '${module}', true)">All</button>
-                    <button type="button" class="text-xs font-semibold text-gray-500 hover:underline" onclick="setModuleRights('${userId}', '${module}', false)">None</button>
-                </div>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2">
-                ${actions.map(action => `<label class="flex items-center gap-2 text-xs text-gray-700"><input type="checkbox" class="action-checkbox accent-blue-600" data-action="${action}" ${granted.has(`${module}:${action}`) ? 'checked' : ''} onchange="updateRight('${userId}', '${module}', '${action}', this.checked)">${formatActionName(action)}</label>`).join('')}
-            </div>
-        </section>
-    `).join('');
-    document.querySelectorAll('[data-module]').forEach(updateModuleCheckbox);
-}
-
-async function updateRight(userId, module, action, granted) {
-    try {
-        const response = await fetch(getRightsUrl(userId), {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ module, action, granted })
-        });
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok) throw new Error(data.error || 'Failed to save right.');
-        updateModuleCheckbox(document.querySelector(`[data-module="${module}"]`));
-    } catch (error) {
-        document.getElementById('rightsError').innerText = error.message;
-        const checkbox = document.querySelector(`[data-module="${module}"] [data-action="${action}"]`);
-        if (checkbox) checkbox.checked = !granted;
-    }
-}
-
-async function setModuleRights(userId, module, granted) {
-    const section = document.querySelector(`[data-module="${module}"]`);
-    for (const checkbox of [...section.querySelectorAll('.action-checkbox')]) {
-        if (checkbox.checked !== granted) {
-            checkbox.checked = granted;
-            await updateRight(userId, module, checkbox.dataset.action, granted);
+            document.getElementById('rightsModal').classList.remove('hidden');
+            document.getElementById('rightsModal').classList.add('flex');
+            document.getElementById('rightsTitleName').innerText = userEmail.split('@')[0];
+            document.getElementById('rightsUserLabel').innerText = userEmail;
+            document.getElementById('rightsError').innerText = '';
+            const container = document.getElementById('rightsModules');
+            container.innerHTML = '<p class="text-sm text-gray-500">Loading rights...</p>';
+            
+            try {
+                const response = await fetch(getRightsUrl(userId), { credentials: 'include' });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Failed to load rights.');
+                renderRightsDialog(userId, data.modules, data.rights);
+            } catch (error) {
+                document.getElementById('rightsError').innerText = error.message;
+                container.innerHTML = '';
+            }
         }
-    }
-    updateModuleCheckbox(section);
-}
 
-function updateModuleCheckbox(section) {
-    const actions = [...section.querySelectorAll('.action-checkbox')];
-    const moduleCheckbox = section.querySelector('.module-checkbox');
-    moduleCheckbox.checked = actions.length > 0 && actions.every(action => action.checked);
-    moduleCheckbox.indeterminate = actions.some(action => action.checked) && !moduleCheckbox.checked;
-}
+        function renderRightsDialog(userId, modules, rights) {
+            const granted = new Set(rights.map(right => `${right.module_name}:${right.action_key}`));
+            document.getElementById('rightsModules').innerHTML = Object.entries(modules).map(([module, actions]) => `
+                <section class="border border-yellow-200 rounded-lg p-4 bg-[#fffef0]" data-module="${module}">
+                    <div class="flex items-center justify-between border-b border-yellow-100 pb-3 mb-3">
+                        <label class="flex items-center gap-2 text-sm font-bold text-gray-900">
+                            <input type="checkbox" class="module-checkbox accent-blue-600" onchange="setModuleRights('${userId}', '${module}', this.checked)">
+                            ${formatModuleName(module)}
+                        </label>
+                        <div class="flex gap-2">
+                            <button type="button" class="text-xs font-semibold text-blue-600 hover:underline" onclick="setModuleRights('${userId}', '${module}', true)">All</button>
+                            <button type="button" class="text-xs font-semibold text-gray-500 hover:underline" onclick="setModuleRights('${userId}', '${module}', false)">None</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2">
+                        ${actions.map(action => `<label class="flex items-center gap-2 text-xs text-gray-700"><input type="checkbox" class="action-checkbox accent-blue-600" data-action="${action}" ${granted.has(`${module}:${action}`) ? 'checked' : ''} onchange="updateRight('${userId}', '${module}', '${action}', this.checked)">${formatActionName(action)}</label>`).join('')}
+                    </div>
+                </section>
+            `).join('');
+            document.querySelectorAll('[data-module]').forEach(updateModuleCheckbox);
+        }
 
-function closeRightsDialog() {
-    document.getElementById('rightsModal').classList.add('hidden');
-    document.getElementById('rightsModal').classList.remove('flex');
-}
+        async function updateRight(userId, module, action, granted) {
+            try {
+                const response = await fetch(getRightsUrl(userId), {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ module, action, granted })
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.error || 'Failed to save right.');
+                updateModuleCheckbox(document.querySelector(`[data-module="${module}"]`));
+            } catch (error) {
+                document.getElementById('rightsError').innerText = error.message;
+                const checkbox = document.querySelector(`[data-module="${module}"] [data-action="${action}"]`);
+                if (checkbox) checkbox.checked = !granted;
+            }
+        }
 
-function getRightsUrl(userId) {
-    const normalizedUserId = String(userId ?? '').trim();
-    if (!normalizedUserId || normalizedUserId === 'undefined' || normalizedUserId === 'null') {
-        throw new Error('Unable to manage rights: the selected user has no valid ID.');
-    }
-    return `/api/admin/users/${encodeURIComponent(normalizedUserId)}/rights`;
-}
+        async function setModuleRights(userId, module, granted) {
+            const section = document.querySelector(`[data-module="${module}"]`);
+            for (const checkbox of [...section.querySelectorAll('.action-checkbox')]) {
+                if (checkbox.checked !== granted) {
+                    checkbox.checked = granted;
+                    await updateRight(userId, module, checkbox.dataset.action, granted);
+                }
+            }
+            updateModuleCheckbox(section);
+        }
+
+        function updateModuleCheckbox(section) {
+            const actions = [...section.querySelectorAll('.action-checkbox')];
+            const moduleCheckbox = section.querySelector('.module-checkbox');
+            moduleCheckbox.checked = actions.length > 0 && actions.every(action => action.checked);
+            moduleCheckbox.indeterminate = actions.some(action => action.checked) && !moduleCheckbox.checked;
+        }
+
+        function closeRightsDialog() {
+            document.getElementById('rightsModal').classList.add('hidden');
+            document.getElementById('rightsModal').classList.remove('flex');
+        }
+
+        function getRightsUrl(userId) {
+            const normalizedUserId = String(userId ?? '').trim();
+            if (!normalizedUserId || normalizedUserId === 'undefined' || normalizedUserId === 'null') {
+                throw new Error('Unable to manage rights: the selected user has no valid ID.');
+            }
+            return `/api/admin/users/${encodeURIComponent(normalizedUserId)}/rights`;
+        }
+
         const RIGHT_LABELS = {
             'add-customer': 'Add Customer', 'edit-customer': 'Edit Customer', 'delete-customer': 'Delete Customer',
             'add-product': 'Add Product', 'edit-product': 'Edit Product', 'delete-product': 'Delete Product', 'add-price': 'Add Price', 'edit-price': 'Edit Price', 'delete-price': 'Delete Price',
@@ -478,6 +578,7 @@ function getRightsUrl(userId) {
             'add-sale': 'Add Sale', 'edit-sale': 'Edit Sale', 'delete-sale': 'Delete Sale', 'add-sale-detail': 'Add Sale Detail', 'view-sale-details': 'View Sale Details', 'edit-sale-detail': 'Edit Sale Detail', 'delete-sale-detail': 'Delete Sale Detail',
             'top-customers': 'Top Customers', 'product-master-list': 'Product Master List', 'top-products': 'Top Products', 'active-employees': 'Active Employees', 'all-employees': 'All Employees', 'employee-job-history': 'Employee Job History', 'top-sales': 'Top Sales'
         };
+
         function formatModuleName(module) { return { customer: 'Customer Management', product: 'Product Management', 'human-resources': 'Human Resources', sales: 'Sales', reports: 'Reports' }[module] || module; }
         function formatActionName(action) { return RIGHT_LABELS[action] || action; }
 
@@ -514,16 +615,16 @@ function getRightsUrl(userId) {
             }
         }
 
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
             try {
                 await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
-                window.location.href = '/login.html';
+                window.location.href = './landingpage.html';
             } catch (err) {
-                window.location.href = '/login.html';
+                window.location.href = './landingpage.html';
             }
         });
 
-        // Open Edit Role Prompt for a User (Superadmin Only)
         async function editUser(userId) {
             if (currentUserId && userId === currentUserId) {
                 alert("Security restriction: You cannot modify your own role from the user directory.");
