@@ -27,26 +27,20 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false, // <-- MUST be false on HTTP localhost so the browser accepts the cookie!
+      secure: false, // MUST be false on HTTP localhost so the browser accepts the cookie!
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 // 1 day
     }
   })
 );
 
-// Protect the reports page before falling through to static file handling.
-app.get('/user-reports.html', requireAnyRight('reports'), (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'user-reports.html'));
-});
-
-app.use(express.static(path.join(__dirname, 'public')));
-
-// 3. API Routes
+// ==========================================
+// 3. API Routes (MOVED ABOVE STATIC CONTENT)
+// ==========================================
 app.use('/api/auth', authRoutes);
-app.use('/api/admin/reports', requireAnyRight('reports'));
 app.use('/api/admin', adminRoutes);
 
-// 4. Protected Route Example
+// Protected Route Example
 app.get('/api/dashboard', requireAuth, (req, res) => {
   supabase
     .from('user_rights')
@@ -78,12 +72,26 @@ app.get('/api/dashboard', requireAuth, (req, res) => {
     });
 });
 
-// 5. Root Redirect (Ensure this matches your actual filename: signup.html vs signUp.html)
+// ==========================================
+// 4. Static Files & Asset Handlers
+// ==========================================
+
+// Protect the specific reports webpage route before static serving drops back
+app.get('/user-reports.html', requireAnyRight('reports'), (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'user-reports.html'));
+});
+
+// Fallthrough route for standard static folders
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Root Redirect 
 app.get('/', (req, res) => {
   res.redirect('/landingpage.html');
 });
 
-// 6. Database Connection Test & Server Startup
+// ==========================================
+// 5. Database Connection Test & Server Startup
+// ==========================================
 async function testConnection() {
   console.log('🔄 Pinging Supabase database instance...');
   const { data, error } = await supabase.from('app_user').select('*').limit(1);
