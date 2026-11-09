@@ -37,6 +37,9 @@ router.post('/signup', async (req, res) => {
     });
   }
 
+    if (!first_name || !last_name || !email || !password) {
+      return res.status(400).json({ error: 'All fields (first_name, last_name, email, password) are required.' });
+    }
 
   const passwordError = validatePasswordStrength(password);
   if (passwordError) {
