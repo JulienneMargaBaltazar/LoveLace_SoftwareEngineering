@@ -52,7 +52,17 @@ Welcome to the central repository for the **HOPE, Inc. Enterprise Resource Plann
    ```
 
 ---
+### 🔑 Test Accounts & Credentials
 
+Use the credentials below to log in and test the different user roles in the application:
+
+| User Role | Email / Username | Password |
+| :--- | :--- | :--- |
+| **Admin** | `lacusclyne@hope.com` | `12345678910` |
+| **Superadmin** | `lovelace@hope.com` | `adalovelace` |
+| **User** | `test@hope.com` | `12345678!` |
+
+---
 ## 🌿 Contribution & Pull Request Guidelines
 
 To protect target branches and verify codebase consistency, the team follows strict development protocols:
