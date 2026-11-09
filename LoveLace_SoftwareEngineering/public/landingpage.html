@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoveLace, Inc. ERP - Welcome</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom CSS Link -->
+    <link rel="stylesheet" href="style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            light: '#CCCCFF',
+                            muted: '#A3A3CC',
+                            primary: '#5C5C99',
+                            dark: '#292966',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#CCCCFF]/20 text-[#292966] min-h-screen flex flex-col justify-between selection:bg-[#CCCCFF]">
+
+    <!-- Navigation Header -->
+    <header class="bg-white border-b border-[#A3A3CC]/40 sticky top-0 z-50 w-full">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between w-full">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-[#292966] rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-sm">L</div>
+                <span class="text-xl font-bold tracking-tight text-[#292966]">LoveLace, Inc. <span class="text-[#5C5C99] font-normal">ERP</span></span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="/login.html" class="text-[#5C5C99] hover:text-[#292966] font-medium transition text-sm">Sign In</a>
+                <a href="/signup.html" class="bg-[#292966] hover:bg-[#5C5C99] text-white px-5 py-2.5 rounded-lg font-medium shadow-sm transition text-sm">Register</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <main class="flex-grow">
+        <section class="max-w-7xl mx-auto px-6 py-16 lg:py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="space-y-6">
+                <!-- Updated Tagline -->
+                <h1 class="text-4xl lg:text-6xl font-extrabold tracking-tight text-[#292966] leading-[1.15]">
+                    Streamline your operations.<br><span class="text-[#5C5C99]">Scale your business.</span>
+                </h1>
+                <!-- Updated Subtext -->
+                <p class="text-base lg:text-lg text-[#5C5C99] max-w-xl leading-relaxed">
+                    LoveLace ERP brings your customers, products, sales, and human resources together into one intuitive platform. Empower your team with real-time insights and automated workflows designed to accelerate growth.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 pt-2">
+                    <a href="/login.html" class="bg-[#292966] hover:bg-[#5C5C99] text-white text-center px-8 py-3.5 rounded-xl font-semibold shadow-md shadow-[#292966]/20 transition">Sign In to Dashboard</a>
+                    <a href="/signup.html" class="bg-white hover:bg-[#CCCCFF]/30 text-[#292966] border border-[#A3A3CC] text-center px-8 py-3.5 rounded-xl font-semibold shadow-sm transition">Register</a>
+                </div>
+            </div>
+
+            <!-- UI Preview Graphic Mockup Box (Interactive Container) -->
+            <div class="bg-white border border-[#A3A3CC]/50 rounded-2xl p-6 shadow-xl shadow-[#5C5C99]/10 flex flex-col gap-3">
+                <div class="bg-[#292966] text-white px-4 py-2.5 rounded-t-xl flex items-center space-x-2 text-xs font-medium">
+                    <div class="flex space-x-1.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-green-400"></div>
+                    </div>
+                    <span class="pl-2 text-[#CCCCFF]">LoveLace, Inc. ERP Dashboard</span>
+                </div>
+                
+                <!-- Grid Modules Matrix -->
+                <div class="bg-[#CCCCFF]/20 p-4 border border-t-0 border-[#A3A3CC]/30 grid grid-cols-2 gap-3">
+                    <div class="module-card bg-white p-3.5 rounded-xl border border-[#A3A3CC]/40 shadow-xs cursor-pointer transition-all duration-300 transform hover:scale-105 active:scale-95 group" 
+                         data-title="Customer Management" 
+                         data-desc="Log comprehensive user files, tracking client communication history, sales pipelines, account interactions, and custom user profiles securely inside your server table.">
+                        <div class="text-lg mb-1 transition-transform group-hover:scale-110 duration-200">👥</div>
+                        <h4 class="font-bold text-xs text-[#292966]">Customers</h4>
+                        <p class="text-[10px] text-[#5C5C99]">Manage contacts & accounts</p>
+                    </div>
+                    
+                    <div class="module-card bg-white p-3.5 rounded-xl border border-[#A3A3CC]/40 shadow-xs cursor-pointer transition-all duration-300 transform hover:scale-105 active:scale-95 group"
+                         data-title="Products & Inventory" 
+                         data-desc="Track product stock values in real-time, generate system price records, handle warehouse allocation shifts, and configure administrative catalogs smoothly.">
+                        <div class="text-lg mb-1 transition-transform group-hover:scale-110 duration-200">📦</div>
+                        <h4 class="font-bold text-xs text-[#292966]">Products</h4>
+                        <p class="text-[10px] text-[#5C5C99]">Catalog & inventory</p>
+                    </div>
+                    
+                    <div class="module-card bg-white p-3.5 rounded-xl border border-[#A3A3CC]/40 shadow-xs cursor-pointer transition-all duration-300 transform hover:scale-105 active:scale-95 group"
+                         data-title="Human Resources & Onboarding" 
+                         data-desc="Onboard employee accounts, track profile role parameters, review pending validation listings, and coordinate staff payroll frameworks dynamically.">
+                        <div class="text-lg mb-1 transition-transform group-hover:scale-110 duration-200">👔</div>
+                        <h4 class="font-bold text-xs text-[#292966]">Human Resources</h4>
+                        <p class="text-[10px] text-slate-500">Employees & payroll</p>
+                    </div>
+                    
+                    <div class="module-card bg-white p-3.5 rounded-xl border border-[#A3A3CC]/40 shadow-xs cursor-pointer transition-all duration-300 transform hover:scale-105 active:scale-95 group"
+                         data-title="Sales Analysis Ledger" 
+                         data-desc="Evaluate historical transaction volumes, chart active revenue channels, process billing statements, and export custom sales analytics spreadsheets.">
+                        <div class="text-lg mb-1 transition-transform group-hover:scale-110 duration-200">📈</div>
+                        <h4 class="font-bold text-xs text-[#292966]">Sales</h4>
+                        <p class="text-[10px] text-[#5C5C99]">Orders & revenue</p>
+                    </div>
+                </div>
+
+                <!-- Shared Module Context Sub-panel Dashboard -->
+            <div id="displayDescriptionPanel" class="bg-[#292966]/5 border-l-4 border-[#5C5C99] p-4 rounded-r-xl transition-all duration-300 ease-in-out min-h-[90px]">
+                    <h5 id="displayTitle" class="font-bold text-xs text-[#292966] uppercase tracking-wider mb-1">Select a module</h5>
+                    <p id="displayBody" class="text-xs text-[#5C5C99] leading-relaxed">Hover or click on any of the core application modules above to preview detailed system insight explanations.</p>
+                    
+                    <!-- Dynamic Mock Table Container (Initially Hidden) -->
+                    <div id="mockTableContainer" class="hidden border border-[#A3A3CC]/30 rounded-lg bg-white overflow-hidden mt-4 transition-all duration-300 shadow-sm max-w-full">
+                        <div class="bg-[#292966] text-white px-3 py-2 text-[10px] font-semibold flex justify-between items-center">
+                            <span>Customer Directory Preview</span>
+                            <span class="text-[#CCCCFF] opacity-80">Active Records</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-[10px]">
+                                <thead>
+                                    <tr class="bg-slate-100/80 text-[#292966] border-b border-[#A3A3CC]/30 font-bold">
+                                        <th class="p-2">CUST NO</th>
+                                        <th class="p-2">CUSTOMER NAME</th>
+                                        <th class="p-2">PAY TERM</th>
+                                        <th class="p-2">STATUS</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-[#5C5C99] divide-y divide-[#A3A3CC]/10">
+                                    <tr class="hover:bg-[#CCCCFF]/10 transition-colors">
+                                        <td class="p-2 font-mono text-[#292966] font-semibold">C0001</td>
+                                        <td class="p-2 text-[#292966] font-medium">Globus Medical, Inc</td>
+                                        <td class="p-2">30D</td>
+                                        <td class="p-2"><span class="text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded font-semibold text-[9px]">Active</span></td>
+                                    </tr>
+                                    <tr class="hover:bg-[#CCCCFF]/10 transition-colors">
+                                        <td class="p-2 font-mono text-[#292966] font-semibold">C0002</td>
+                                        <td class="p-2 text-[#292966] font-medium">RF Industries, Inc</td>
+                                        <td class="p-2">45D</td>
+                                        <td class="p-2"><span class="text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded font-semibold text-[9px]">Active</span></td>
+                                    </tr>
+                                    <tr class="hover:bg-[#CCCCFF]/10 transition-colors">
+                                        <td class="p-2 font-mono text-[#292966] font-semibold">C0003</td>
+                                        <td class="p-2 text-[#292966] font-medium">Trisha Macdowell</td>
+                                        <td class="p-2">COD</td>
+                                        <td class="p-2"><span class="text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded font-semibold text-[9px]">Active</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Subheader strip -->
+        <section class="border-t border-[#A3A3CC]/30 py-12 text-center bg-white/60">
+            <h3 class="text-sm font-bold uppercase tracking-widest text-[#5C5C99] mb-2">Everything you need to grow</h3>
+            <p class="text-[#292966] text-sm font-medium">Four core modules. Three user roles. One unified system.</p>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-[#A3A3CC]/30 py-8 text-center text-xs text-[#5C5C99]">
+        <p>&copy; 2026 LoveLace, Inc. ERP. All rights reserved. Secure Supabase Backed Workspace.</p>
+    </footer>
+
+    <!-- Interactivity Controller Logic JavaScript Handler -->
+    <script>
+        const cards = document.querySelectorAll('.module-card');
+        const displayTitle = document.getElementById('displayTitle');
+        const displayBody = document.getElementById('displayBody');
+        const displayPanel = document.getElementById('displayDescriptionPanel');
+        const mockTableContainer = document.getElementById('mockTableContainer');
+
+        // Initial default placeholder state configurations
+        const defaultTitle = "Select a module";
+        const defaultBody = "Hover or click on any of the core application modules above to preview detailed system insight explanations.";
+
+        function updateTableVisibility(title) {
+            if (title === "Customer Management") {
+                mockTableContainer.classList.remove('hidden');
+            } else {
+                mockTableContainer.classList.add('hidden');
+            }
+        }
+
+        cards.forEach(card => {
+            // 1. Mouse Enter Actions (Hover Effect)
+            card.addEventListener('mouseenter', () => {
+                const title = card.getAttribute('data-title');
+                displayTitle.textContent = title;
+                displayBody.textContent = card.getAttribute('data-desc');
+                card.classList.add('border-[#5C5C99]', 'shadow-md');
+                updateTableVisibility(title);
+            });
+
+            // 2. Mouse Leave Actions (Restore State if none locked)
+            card.addEventListener('mouseleave', () => {
+                const currentSelected = document.querySelector('.module-card.is-active');
+                if (currentSelected) {
+                    const activeTitle = currentSelected.getAttribute('data-title');
+                    displayTitle.textContent = activeTitle;
+                    displayBody.textContent = currentSelected.getAttribute('data-desc');
+                    updateTableVisibility(activeTitle);
+                } else {
+                    displayTitle.textContent = defaultTitle;
+                    displayBody.textContent = defaultBody;
+                    updateTableVisibility(null);
+                }
+                
+                if (!card.classList.contains('is-active')) {
+                    card.classList.remove('border-[#5C5C99]', 'shadow-md');
+                }
+            });
+
+            // 3. Click Actions (Persistent Selection Lock)
+            card.addEventListener('click', () => {
+                // Clear active layouts on competing objects
+                cards.forEach(c => {
+                    c.classList.remove('is-active', 'border-[#292966]', 'bg-[#CCCCFF]/10', 'shadow-md');
+                    c.classList.add('bg-white', 'border-[#A3A3CC]/40');
+                });
+
+                // Lock settings into selected component target
+                card.classList.add('is-active', 'border-[#292966]', 'bg-[#CCCCFF]/10');
+                card.classList.remove('bg-white', 'border-[#A3A3CC]/40');
+                
+                const lockedTitle = card.getAttribute('data-title');
+                displayTitle.textContent = lockedTitle;
+                displayBody.textContent = card.getAttribute('data-desc');
+                updateTableVisibility(lockedTitle);
+            });
+        });
+    </script>

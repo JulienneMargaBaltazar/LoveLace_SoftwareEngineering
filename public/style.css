@@ -1,15 +1,50 @@
-body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background-color: #f1eff2;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    color: #e9e7e9;
+/* ==========================================================================
+   1. RE-CENTERED APPLICATION LAYOUT ENGINE
+   ========================================================================== */
+html {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
 }
 
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #F8FAFC;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+    color: #292966;
+    box-sizing: border-box;
 
+    /* --- THE FIX: This centers your login card perfectly when outside the app layout --- */
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+/* ==========================================================================
+   2. APP CONTAINER CONFIG (BLOCKS CENTER OVERRIDE FOR DASHBOARD VIEWS)
+   ========================================================================== */
+/* When .admin-layout is present on the body, it breaks out of login center rules */
+body.admin-layout {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-start !important; /* Forces layout tracking to start left-aligned */
+    align-items: stretch !important;       /* Forces columns to stay full height top to bottom */
+    width: 100% !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+}
+
+/* ==========================================================================
+   2. REUSABLE CARD & LOGIN COMPONENTS
+   ========================================================================== */
 .card {
     background: #FFFFFF;
     padding: 2.5rem;
@@ -18,8 +53,6 @@ body {
     width: 100%;
     max-width: 480px;
 }
-
-
 .card h2 {
     margin-top: 0;
     margin-bottom: 0.25rem;
@@ -27,8 +60,6 @@ body {
     font-size: 1.75rem;
     text-align: left;
 }
-
-
 .card h4 {
     margin-top: 0;
     margin-bottom: 1.5rem;
@@ -37,43 +68,22 @@ body {
     text-align: left;
     font-weight: normal;
 }
-
-
 .card-subtitle {
     margin-top: 0;
     margin-bottom: 1.5rem;
-    color: #5C5C99; /* Deep Slate */
+    color: #5C5C99;
     font-size: 0.9rem;
     font-weight: normal;
     text-align: left;
     line-height: 1.4;
 }
+.msg-success { color: #292966; }
+.msg-error { color: #ef4444; }
 
-
-.msg-success {
-    color: #292966;
-}
-
-
-.msg-error {
-    color: #ef4444;
-}
-.name-row {
-    display: flex;
-    gap: 1rem;
-}
-
-
-.name-row .input-group {
-    flex: 1;
-}
-
-
-.input-group {
-    margin-bottom: 1.25rem;
-}
-
-
+/* Input Fields */
+.name-row { display: flex; gap: 1rem; }
+.name-row .input-group { flex: 1; }
+.input-group { margin-bottom: 1.25rem; }
 .input-group label {
     display: block;
     font-size: 0.875rem;
@@ -81,45 +91,30 @@ body {
     margin-bottom: 0.5rem;
     color: #292966;
 }
-
-
 .input-group input {
     width: 100%;
     padding: 0.75rem 0.85rem;
     border: 2px solid #A3A3CC;
     border-radius: 8px;
     font-size: 1rem;
-    box-sizing: border-box;
     transition: all 0.2s ease;
 }
-
-
 .input-group input:focus {
     outline: none;
     border-color: #5C5C99;
     box-shadow: 0 0 0 3px rgba(92, 92, 153, 0.25);
 }
 
-
-/* ==========================================================================
-   PASSWORD VIEW/HIDE ALIGNMENT FIX
-   ========================================================================== */
+/* Password View Toggles */
 .password-wrapper {
     position: relative !important;
     width: 100% !important;
     display: block !important;
 }
-
-
-/* Extra padding-right keeps long passwords from text-overlapping your button */
 .password-wrapper input {
     padding-right: 70px !important;
     width: 100% !important;
-    box-sizing: border-box !important;
 }
-
-
-/* Pins your text-toggles perfectly on the right-hand margin */
 .password-toggle {
     position: absolute !important;
     right: 16px !important;
@@ -131,19 +126,12 @@ body {
     padding: 0 !important;
     font-family: inherit !important;
     width: auto !important;
-   
-    /* ADD THESE TWO LINES TO FIX THE COLOR AND TEXT STYLE: */
-    color: #5C5C99 !important; /* Matches your main purple button theme */
-    text-transform: uppercase !important; /* Keeps it looking clean and uniform */
-}
-/* ========================================================================== */
-
-
-.terms-group {
-    margin-bottom: 1.25rem;
+    color: #5C5C99 !important;
+    text-transform: uppercase !important;
 }
 
-
+/* Terms Checks */
+.terms-group { margin-bottom: 1.25rem; }
 .checkbox-label {
     display: flex;
     align-items: center;
@@ -152,8 +140,6 @@ body {
     color: #292966;
     cursor: pointer;
 }
-
-
 .checkbox-label input[type="checkbox"] {
     width: 1.1rem;
     height: 1.1rem;
@@ -161,186 +147,15 @@ body {
     accent-color: #5C5C99;
     cursor: pointer;
 }
-
-
 .checkbox-label a {
     color: #5C5C99;
     font-weight: 600;
     text-decoration: none;
     margin-left: 0.25rem;
 }
+.checkbox-label a:hover { text-decoration: underline; }
 
-
-.checkbox-label a:hover {
-    text-decoration: underline;
-}
-.admin-layout {
-    display: flex;
-    min-height: 100vh;
-    background-color: #f4f6f9;
-}
-
-
-/* Sidebar */
-.sidebar {
-    width: 240px;
-    background: #ffffff;
-    border-right: 1px solid #e2e8f0;
-    padding: 1.5rem 1rem;
-    display: flex;
-    flex-direction: column;
-}
-
-
-.sidebar-brand {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #292966;
-    margin-bottom: 2rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-
-.nav-menu {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-
-.nav-item a {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.65rem 0.85rem;
-    color: #5C5C99;
-    text-decoration: none;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    margin-bottom: 0.25rem;
-    transition: all 0.2s ease;
-}
-
-
-.nav-item.active a, .nav-item a:hover {
-    background-color: #CCCCFF;
-    color: #292966;
-    font-weight: 600;
-}
-
-
-/* Main Workspace */
-.main-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-
-.top-header {
-    background: #ffffff;
-    padding: 1rem 2rem;
-    border-bottom: 1px solid #e2e8f0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-
-.top-header h1 {
-    font-size: 1.25rem;
-    margin: 0;
-    color: #292966;
-}
-
-
-.dashboard-container {
-    padding: 2rem;
-}
-
-
-/* Welcome Banner */
-.welcome-banner {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 2px 4px rgba(41, 41, 102, 0.05);
-}
-
-
-.welcome-banner h2 {
-    margin: 0 0 0.25rem 0;
-    font-size: 1.25rem;
-    color: #292966;
-}
-
-
-/* Grid Layouts */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.25rem;
-    margin-bottom: 2rem;
-}
-
-
-.stat-card {
-    background: #ffffff;
-    padding: 1.25rem;
-    border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(41, 41, 102, 0.05);
-}
-
-
-.stat-header {
-    font-size: 0.8rem;
-    color: #5C5C99;
-    margin-bottom: 0.5rem;
-}
-
-
-.stat-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #292966;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-
-.badge-pill {
-    font-size: 0.75rem;
-    padding: 0.2rem 0.5rem;
-    border-radius: 12px;
-    font-weight: 500;
-}
-
-
-.badge-pill.success {
-    background: #dcfce7;
-    color: #166534;
-}
-
-
-.actions-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.25rem;
-}
-
-
-.action-card {
-    background: #ffffff;
-    border-radius: 12px;
-    height: 90px;
-    box-shadow: 0 2px 4px rgba(41, 41, 102, 0.05);
-}
-
-
+/* Buttons & Footers */
 button {
     width: 100%;
     padding: 0.85rem;
@@ -353,79 +168,332 @@ button {
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
+button:hover { background-color: #292966; }
+.auth-footer { margin-top: 1.5rem; text-align: center; font-size: 0.875rem; color: #5C5C99; }
+.auth-footer a { color: #292966; font-weight: 600; text-decoration: none; }
+.auth-footer a:hover { text-decoration: underline; }
 
-
-button:hover {
-    background-color: #292966;
+/* ==========================================================================
+   3. DEFINITIVE FIXED MASTER FRAMEWORK DESKTOP ENGINE
+   ========================================================================== */
+.admin-layout {
+    background-color: #F8FAFC !important;
+    display: flex !important;
+    flex-direction: row !important;
+    width: 100% !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    overflow: hidden !important; /* Locks layout down securely */
 }
 
-
-.auth-footer {
-    margin-top: 1.5rem;
-    text-align: center;
-    font-size: 0.875rem;
-    color: #5C5C99;
+/* Sidebar - Anchored Full Top-to-Bottom Screen View */
+.sidebar {
+    width: 240px !important;
+    min-width: 240px !important;
+    max-width: 240px !important;
+    height: 100vh !important;
+    background: #FFFFFF !important;
+    border-right: 1px solid #E2E8F0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 1.5rem 1rem !important;
+    box-shadow: 2px 0 12px rgba(41, 41, 102, 0.03) !important;
+    position: relative !important;
 }
-
-
-.auth-footer a {
-    color: #292966;
-    font-weight: 600;
+.sidebar-brand {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #292966 !important;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.sidebar-brand small { font-size: 0.7rem; color: #5C5C99; }
+.nav-menu { list-style: none; padding: 0; margin: 0; }
+.nav-item a {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    padding: 0.65rem 0.85rem;
+    color: #5C5C99 !important;
     text-decoration: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+    transition: all 0.2s ease;
+}
+.nav-item.active a, .nav-item a:hover {
+    background-color: #CCCCFF !important;
+    color: #292966 !important;
+    font-weight: 600;
+}
+.sidebar-profile {
+    margin-top: auto !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid #A3A3CC;
+}
+.profile-info { display: flex; align-items: center; gap: 0.75rem; }
+.sidebar-profile .avatar {
+    width: 36px;
+    height: 36px;
+    background: #CCCCFF;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.profile-text { display: flex; flex-direction: column; }
+.profile-text .username { font-size: 0.85rem; font-weight: 600; color: #292966; }
+.profile-text .role { font-size: 0.75rem; color: #5C5C99; }
+.logout-link { text-decoration: none; }
+
+/* Main Dynamic Viewport Workspace Grid Panel */
+.main-content {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100vh !important;
+    width: calc(100% - 240px) !important;
+    overflow-y: auto !important; /* Standard native vertical scrolling */
+    overflow-x: hidden !important;
+    background-color: #F8FAFC !important;
 }
 
-
-.auth-footer a:hover {
-    text-decoration: underline;
+/* Pinned Full Width Top Header Bar */
+.top-header {
+    background: #ffffff !important;
+    padding: 1rem 2rem !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important; /* Elements scroll beneath */
 }
-
-/* Zoom and scale modules nicely on desktop mouse hover */
-.module-card:hover {
-    transform: scale(1.06);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    background-color: #fcfbfe !important;
+.top-header h1 { font-size: 1.25rem; margin: 0; color: #292966; }
+.search-bar-mock {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #F1F5F9;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    width: 220px;
+    border: 1px solid #A3A3CC;
 }
-
-/* Accent active lock highlight when clicked */
-.module-card.is-active {
-    transform: scale(1.04);
-    border-color: #292966 !important; /* Adjusted to match your primary dark brand color */
-    background-color: #f4f4ff !important;
-    box-shadow: 0 0 0 4px rgba(92, 92, 153, 0.2);
+.search-bar-mock input { border: none; background: transparent; outline: none; font-size: 0.85rem; }
+.user-badge-top {
+    background: #CCCCFF;
+    color: #292966;
+    padding: 0.35rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
 }
 
 /* ==========================================================================
-   LANDING PAGE ERP MODULE CARD ANIMATIONS
+   4. CONTENT LAYOUT FRAME CLAMP (PREVENTS GAPS ON ZOOM OUT)
    ========================================================================== */
+.dashboard-container {
+    padding: 2rem !important;
+    width: 100% !important;
+    max-width: 1280px !important; /* Locked standard structural desktop grid scale */
+    margin: 0 auto !important;    /* Centers cleanly on zoom out layout frames */
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2rem !important;
+}
 
-/* Zoom and scale modules nicely on desktop mouse hover */
-.module-card:hover {
-    transform: scale(1.04) !important;
-    box-shadow: 0 10px 25px rgba(92, 92, 153, 0.15) !important;
-    background-color: #ffffff !important;
+/* Purple Welcome Header Banner */
+.welcome-banner-purple {
+    background: linear-gradient(135deg, #292966 0%, #5C5C99 100%) !important;
+    border-radius: 16px;
+    padding: 2.5rem 2rem !important;
+    color: #FFFFFF;
+    margin-bottom: 0 !important; /* Clean grid separation */
+}
+.welcome-banner-purple h1 { margin: 0 0 0.5rem 0; font-size: 1.75rem; font-weight: 700; }
+.welcome-banner-purple p { margin: 0; opacity: 0.9; font-size: 0.95rem; }
+
+/* Grid Alignments */
+.stats-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 1.25rem !important;
+    width: 100% !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.stat-card {
+    background: #FFFFFF !important;
+    border-radius: 14px !important;
+    padding: 1.25rem !important;
+    box-shadow: 0 10px 25px rgba(41, 41, 102, 0.04) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    border: 1px solid #A3A3CC !important;
+    width: 100% !important;
+}
+
+.stat-icon-wrapper {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border-radius: 10px;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.2rem;
+}
+
+.stat-icon-wrapper.blue { background: #E0F2FE; }
+.stat-icon-wrapper.orange { background: #FFEDD5; }
+.stat-icon-wrapper.teal { background: #CCFBF1; }
+.stat-icon-wrapper.purple { background: #EDE9FE; }
+
+.stat-meta { 
+    flex: 1 !important; 
+}
+
+.stat-card .stat-header {
+    font-size: 0.8rem !important;
+    color: #5C5C99 !important;
+    font-weight: 500 !important;
+    display: block !important;
+    margin-bottom: 0.25rem !important;
+}
+
+.stat-card .stat-value {
+    font-size: 1.35rem !important;
+    font-weight: 700 !important;
+    color: #292966 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+
+.stat-card .badge-pill.success {
+    background: #DCFCE7 !important;
+    color: #15803D !important;
+    font-size: 0.75rem !important;
+    padding: 0.15rem 0.4rem !important;
+    border-radius: 6px !important;
+}
+
+/* Quick Actions Block Panel */
+.quick-actions-section {
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
+    border: 1px solid #A3A3CC;
+    width: 100% !important;
+}
+
+.section-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.section-title-row h3 { margin: 0; color: #292966; font-size: 1.1rem; }
+.view-all-link { font-size: 0.85rem; color: #5C5C99; text-decoration: none; font-weight: 500; }
+
+.actions-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 1.25rem !important;
+    width: 100% !important;
+}
+
+.action-btn-card {
+    background: #F8FAFC !important; 
+    border: 1px solid #A3A3CC !important;
+    border-radius: 12px !important;
+    padding: 1rem !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 0.85rem !important;
+    text-align: left !important;
+    cursor: pointer;
+    width: 100% !important;
+    height: auto !important;
+}
+
+.action-btn-card:hover {
+    background: #CCCCFF !important;
     border-color: #5C5C99 !important;
 }
 
-/* Smooth pop transition profile when clicked and locked active */
-.module-card.is-active {
-    transform: scale(1.02) !important;
-    border-color: #292966 !important;
-    background-color: rgba(204, 204, 255, 0.15) !important;
-    box-shadow: inset 0 2px 4px rgba(41, 41, 102, 0.05) !important;
+.action-icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    background: #5C5C99;
+    color: #FFFFFF;
+    border-radius: 10px;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.1rem;
 }
 
-/* Dynamic fade effect for the mock data table tracking */
-#mockTableContainer {
-    animation: fadeInTable 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+.action-label { display: flex !important; flex-direction: column !important; }
+.action-label strong { color: #292966; font-size: 0.9rem; }
+.action-label span { color: #5C5C99; font-size: 0.75rem; }
+
+/* ==========================================================================
+   FIGMA LAYOUT CARD WRAPPER & COMPACT DATA TABLE 
+   ========================================================================== */
+
+/* This container acts as the solid white frame panel card surrounding the table grid */
+.table-container-panel {
+    background: #FFFFFF !important;
+    border-radius: 8px !important;
+    padding: 1.5rem !important;
+    border: 1px solid #E2E8F0 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    width: 100% !important;
+    margin-top: 1.5rem !important;
+    box-sizing: border-box !important;
 }
 
-@keyframes fadeInTable {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+/* Forces table canvas boundaries to expand inside the card panel flawlessly */
+.customer-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    background-color: #FFFFFF !important;
+    margin: 0 !important;
+}
+
+/* Figma-accurate Dark corporate header layout track definitions */
+.customer-table th {
+    background-color: #292966 !important; /* Signature dark purple wireframe banner fill */
+    color: #FFFFFF !important;            /* Crisp white text typography */
+    font-weight: 600 !important;
+    padding: 0.75rem 1rem !important;
+    text-align: left !important;
+    font-size: 0.85rem !important;
+    border: none !important;
+}
+
+/* Clean row tracks divider configuration values */
+.customer-table td {
+    padding: 0.85rem 1rem !important;
+    border-bottom: 1px solid #F1F5F9 !important;
+    color: #334155 !important;
+    font-size: 0.875rem !important;
+    background-color: #FFFFFF !important; /* Locks background fields to pure white */
 }

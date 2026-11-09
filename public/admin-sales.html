@@ -37,43 +37,92 @@
         .sidebar-logout-btn:hover {
             background-color: #b91c1c;
         }
+        
+        /* Figma Design Alignment Overrides */
+        .filter-tabs {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            font-size: 0.85rem;
+            color: #64748b;
+            cursor: pointer;
+            padding-bottom: 0.25rem;
+            font-weight: 500;
+        }
+        .tab-btn.active {
+            color: #4f46e5;
+            font-weight: 600;
+            border-bottom: 2px solid #4f46e5;
+        }
+        .figma-table thead tr {
+            background-color: #232752 !important;
+            color: white !important;
+        }
+        .figma-table th {
+            color: white !important;
+            font-size: 0.75rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+        .action-icon-btn {
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0.25rem;
+            font-size: 0.9rem;
+            transition: color 0.15s;
+        }
+        .action-icon-btn:hover {
+            color: #111827;
+        }
+        .details-btn-pill {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 0.2rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #334155;
+            border-radius: 4px;
+            cursor: pointer;
+        }
     </style>
 </head>
-<body class="bg-[#F4F6F9] text-gray-800 antialiased min-h-screen">
+<body class="admin-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span>LoveLace Inc. ERP</span>
+            <small style="display:block; font-size:10px; color:#5C5C99; font-weight:normal;">by LoveLace</small>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="dashboard.html">📊 Dashboard</a></li>
+            <li class="nav-item"><a href="admin-customers.html">👥 Customers</a></li>
+            <li class="nav-item"><a href="admin-products.html">📦 Products</a></li>
+            <li class="nav-item"><a href="admin-human-resources.html">👔 Human Resources</a></li>
+            <li class="nav-item active"><a href="admin-sales.html">💼 Sales</a></li>
+            <li class="nav-item"><a href="admin-reports.html">📈 Reports</a></li>
+            <li class="nav-item"><a href="admin-user-management.html">👤 User Management</a></li>
+            <li class="nav-item"><a href="settings.html">⚙️ Settings</a></li>
+            
+            <li class="nav-item logout-menu-item" style="margin-top: 1rem;">
+                <a href="#" id="logoutBtn" style="color: #ef4444 !important;">🚪 Logout</a>
+            </li>
+        </ul>
 
-    <!-- Full screen flex layout -->
-    <div class="flex h-screen w-full overflow-hidden">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0 h-full">
-            <div>
-                <div class="sidebar-brand px-6 py-5 border-b border-gray-100 font-bold text-gray-900 flex flex-col">
-                    <span>LoveLace Inc. ERP</span>
-                    <span class="text-xs text-gray-400 font-normal">by LoveLace</span>
+                <div class="sidebar-profile">
+            <div class="profile-info">
+                <div class="avatar">👤</div>
+                <div class="profile-text">
+                    <span class="username" id="userProfileInfo">Loading user...</span>
                 </div>
-                
-                <ul class="nav-menu px-3 space-y-1 mt-2">
-                    <li class="nav-item"><a href="/dashboard.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📊 Dashboard</a></li>
-                    <li class="nav-item"><a href="/admin-customers.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">👥 Customers</a></li>
-                    <li class="nav-item"><a href="/admin-products.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📦 Products</a></li>
-                    <li class="nav-item active"><a href="/admin-sales.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg transition border-l-4 border-blue-600">💳 Sales</a></li>
-                    <li class="nav-item"><a href="/admin-reports.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📈 Reports</a></li>
-                    
-                    <!-- Separator Line -->
-                    <li class="border-t border-gray-200 my-2"></li>
-
-                    <li class="nav-item"><a href="/admin-user-management.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">⚙️ User Management</a></li>
-                    <li class="nav-item"><a href="/system-settings.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">🔧 System Settings</a></li>
-                </ul>
             </div>
-
-            <!-- Bottom Left User Info & Logout -->
-            <div class="sidebar-footer p-4 border-t border-gray-100 bg-gray-900">
-                <div id="userProfileInfo" class="user-profile-info text-white text-sm font-semibold mb-3">
-                    Loading user...
-                </div>
-                <button id="logoutBtn" class="sidebar-logout-btn flex items-center justify-center gap-2">Logout</button>
-            </div>
-        </aside>
+        </div>
+    </aside>
 
         <!-- Main Workspace Area -->
         <main class="flex-1 w-full flex flex-col overflow-y-auto">
@@ -81,13 +130,17 @@
             <!-- Header Bar -->
             <header class="top-header bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
                 <div>
-                    <h1 class="text-xl font-bold text-gray-900">Sales Transactions</h1>
-                    <p class="text-xs text-gray-500">Manage orders, dynamic pricing totals, and record new sales.</p>
+                    <h1 class="text-xl font-bold text-gray-900">Sales Management</h1>
+                    <p class="text-xs text-gray-500">Hope, Inc. ERP - Sales transactions, customers and revenue activity</p>
                 </div>
-                <div class="flex items-center gap-3">
-                    <button onclick="openNewSaleModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-lg shadow-sm transition flex items-center gap-2">
-                        <i class="fa-solid fa-plus"></i> New Sale
-                    </button>
+                <div class="flex items-center gap-6">
+                    <!-- Figma Filter Tabs -->
+                    <div class="filter-tabs">
+                        <button class="tab-btn active" onclick="switchTab('active', event)">Active</button>
+                        <button class="tab-btn" onclick="switchTab('inactive', event)">Inactive</button>
+                        <button class="tab-btn" onclick="switchTab('all', event)">All</button>
+                    </div>
+                    <span class="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-md border border-purple-200">Admin</span>
                 </div>
             </header>
 
@@ -100,30 +153,51 @@
                             <h3 class="font-bold text-gray-900 text-base">Sales Records</h3>
                             <p class="text-xs text-gray-500">Showing all transactions with dynamic pricing computed totals.</p>
                         </div>
-                        <button id="refreshBtn" class="shrink-0 whitespace-nowrap px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-md border border-gray-300 transition flex items-center gap-1.5 w-auto">
-                            <i id="refreshIcon" class="fa-solid fa-rotate"></i> Refresh List
-                        </button>
+                        <div class="flex items-center gap-3">
+                            <button class="px-3.5 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold text-xs rounded-md shadow-sm transition flex items-center gap-2">
+                                <i class="fa-solid fa-filter"></i> Filter
+                            </button>
+                            <input type="text" id="searchInput" onkeyup="filterSales()" placeholder="Search sales..." class="px-3 py-2 border border-gray-300 rounded-md text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 w-48 sm:w-64">
+                            <button onclick="openNewSaleModal()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-md shadow-sm transition flex items-center gap-2">
+                                <i class="fa-solid fa-plus"></i> Add Sale
+                            </button>
+                            <button id="refreshBtn" class="shrink-0 whitespace-nowrap px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-md border border-gray-300 transition flex items-center gap-1.5 w-auto">
+                                <i id="refreshIcon" class="fa-solid fa-rotate"></i>
+                            </button>
+                        </div>
                     </div>
                     <div id="errorContainer" class="px-6 pt-3 text-xs font-medium text-red-600"></div>
 
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+                        <table class="w-full text-left border-collapse figma-table">
                             <thead>
-                                <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold uppercase tracking-wider">
                                     <th class="py-3.5 px-6">Trans No</th>
-                                    <th class="py-3.5 px-6">Date</th>
+                                    <th class="py-3.5 px-6">Sales Date</th>
                                     <th class="py-3.5 px-6">Customer</th>
                                     <th class="py-3.5 px-6">Employee</th>
+                                    <th class="py-3.5 px-6">Total</th>
                                     <th class="py-3.5 px-6">Status</th>
-                                    <th class="py-3.5 px-6 text-right">Total Sales</th>
+                                    <th class="py-3.5 px-6">Stamp</th>
+                                    <th class="py-3.5 px-6 text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="salesTableBody" class="divide-y divide-gray-100 text-sm">
                                 <tr>
-                                    <td colspan="6" class="py-6 text-center text-gray-400">Loading sales records...</td>
+                                    <td colspan="8" class="py-6 text-center text-gray-400">Loading sales records...</td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Table Footer Pagination Bar -->
+                    <div class="table-footer-pagination px-6 py-3 bg-gray-50 border-t border-gray-200 flex justify-between items-center text-xs text-gray-500">
+                        <span id="paginationInfo">Showing 1–3 of 3</span>
+                        <div class="pagination-controls flex items-center gap-2">
+                            <button class="page-btn px-2 py-1 bg-white border border-gray-300 rounded hover:bg-gray-100"><i class="fa-solid fa-chevron-left"></i></button>
+                            <span class="font-medium text-gray-700">Page 1 of 1</span>
+                            <button class="page-btn px-2 py-1 bg-white border border-gray-300 rounded hover:bg-gray-100"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
                     </div>
                 </div>
 
@@ -172,6 +246,9 @@
 
     <!-- Script Logic -->
     <script>
+        let salesData = [];
+        let currentFilterTab = 'active';
+
         document.addEventListener('DOMContentLoaded', async () => {
             await checkSession();
             await fetchSalesRecords();
@@ -195,7 +272,8 @@
                 const sessionData = data.userSessionData;
                 const firstName = sessionData?.firstName || sessionData?.first_name || '';
                 const lastName = sessionData?.lastName || sessionData?.last_name || '';
-                document.getElementById('userProfileInfo').innerText = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'Admin User';
+                const fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'Admin User';
+                document.getElementById('userProfileInfo').innerText = fullName;
             } catch (err) {
                 console.error('Session check failed:', err);
                 window.location.href = '/login.html';
@@ -204,7 +282,6 @@
 
         async function fetchSalesRecords() {
             const errorContainer = document.getElementById('errorContainer');
-            const tbody = document.getElementById('salesTableBody');
             errorContainer.innerText = '';
 
             try {
@@ -212,32 +289,83 @@
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.error || 'Failed to load sales records.');
 
-                const sales = data.sales || [];
-                if (sales.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-gray-400">No sales transactions found.</td></tr>`;
-                    return;
-                }
-
-                tbody.innerHTML = sales.map(sale => `
-                    <tr class="hover:bg-gray-50/80 transition">
-                        <td class="py-4 px-6 font-medium text-gray-900 align-middle">${escapeHtml(sale.transno)}</td>
-                        <td class="py-4 px-6 text-gray-600 align-middle">${escapeHtml(sale.salesdate || '')}</td>
-                        <td class="py-4 px-6 text-gray-900 align-middle">${escapeHtml(sale.customerName)} <span class="text-xs text-gray-400">(${escapeHtml(sale.custno)})</span></td>
-                        <td class="py-4 px-6 text-gray-900 align-middle">${escapeHtml(sale.employeeName)} <span class="text-xs text-gray-400">(${escapeHtml(sale.empno)})</span></td>
-                        <td class="py-4 px-6 align-middle">
-                            <span class="px-2.5 py-1 text-xs font-semibold rounded-full ${sale.status === 'Deleted' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
-                                ${escapeHtml(sale.status || 'Completed')}
-                            </span>
-                        </td>
-                        <td class="py-4 px-6 text-right font-semibold text-gray-900 align-middle">
-                            $${Number(sale.totalSales || 0).toFixed(2)}
-                        </td>
-                    </tr>
-                `).join('');
+                salesData = data.sales || data.data || [];
+                filterSales();
             } catch (err) {
                 console.error('Error loading sales:', err);
                 errorContainer.innerText = 'Error loading sales records: ' + err.message;
             }
+        }
+
+        function renderSalesTable(sales) {
+            const tbody = document.getElementById('salesTableBody');
+
+            if (!Array.isArray(sales) || sales.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="py-6 text-center text-gray-400">No sales transactions found.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = sales.map(sale => {
+                const isDeleted = sale.status === 'Deleted' || sale.status === 'inactive';
+                const statusText = isDeleted ? 'Inactive' : 'Active';
+                const stamp = sale.stamp || sale.updated_at || sale.created_at || 'CREATED system 2026-10-31 9:00AM';
+                const total = Number(sale.totalSales || sale.total || 0).toFixed(2);
+
+                return `
+                    <tr class="hover:bg-gray-50/80 transition">
+                        <td class="py-4 px-6 font-mono font-semibold text-xs text-blue-600 align-middle">${escapeHtml(sale.transno)}</td>
+                        <td class="py-4 px-6 text-gray-600 text-xs align-middle">${escapeHtml(sale.salesdate || sale.date || '')}</td>
+                        <td class="py-4 px-6 text-gray-900 text-xs align-middle">${escapeHtml(sale.customerName || '')} <span class="text-gray-400">(${escapeHtml(sale.custno)})</span></td>
+                        <td class="py-4 px-6 text-gray-900 text-xs align-middle">${escapeHtml(sale.employeeName || '')} <span class="text-gray-400">(${escapeHtml(sale.empno)})</span></td>
+                        <td class="py-4 px-6 font-mono font-semibold text-gray-900 text-xs align-middle">$${total}</td>
+                        <td class="py-4 px-6 align-middle">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full ${isDeleted ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
+                                <i class="fa-solid fa-circle" style="font-size: 0.4rem;"></i> ${statusText}
+                            </span>
+                        </td>
+                        <td class="py-4 px-6 text-xs text-gray-500 font-mono align-middle">${escapeHtml(stamp)}</td>
+                        <td class="py-4 px-6 text-right align-middle">
+                            <div class="inline-flex items-center gap-2 justify-end">
+                                <button onclick="alert('Viewing details for transaction ${escapeHtml(sale.transno)}')" class="details-btn-pill">Details</button>
+                                <button onclick="openEditSale('${escapeHtml(sale.transno)}')" class="action-icon-btn" title="Edit">
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                </button>
+                                <button onclick="deleteSale('${escapeHtml(sale.transno)}')" class="action-icon-btn" title="Delete">
+                                    <i class="fa-regular fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterSales() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            
+            let filtered = salesData.filter(s => {
+                const transno = String(s.transno || '').toLowerCase();
+                const cust = String(s.customerName || s.custno || '').toLowerCase();
+                const emp = String(s.employeeName || s.empno || '').toLowerCase();
+                return transno.includes(query) || cust.includes(query) || emp.includes(query);
+            });
+
+            if (currentFilterTab === 'active') {
+                filtered = filtered.filter(s => s.status !== 'Deleted' && s.status !== 'inactive');
+            } else if (currentFilterTab === 'inactive') {
+                filtered = filtered.filter(s => s.status === 'Deleted' || s.status === 'inactive');
+            }
+
+            renderSalesTable(filtered);
+        }
+
+        function switchTab(tab, event) {
+            currentFilterTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            filterSales();
         }
 
         async function openNewSaleModal() {
@@ -260,7 +388,7 @@
 
                 const productSelect = document.getElementById('prodcodeSelect');
                 productSelect.innerHTML = '<option value="">Select Product...</option>' +
-                    (data.products || []).map(p => `<option value="${escapeHtml(p.prodcode)}">${escapeHtml(p.prodcode)}</option>`).join('');
+                    (data.products || []).map(p => `<option value="${escapeHtml(p.prodcode)}">${escapeHtml(p.prodcode)} - ${escapeHtml(p.description || '')}</option>`).join('');
             } catch (err) {
                 document.getElementById('modalError').innerText = 'Could not load form options: ' + err.message;
             }
@@ -303,6 +431,25 @@
             } catch (err) {
                 modalError.innerText = err.message;
             }
+        }
+
+        async function deleteSale(transno) {
+            if (!confirm(`Are you sure you want to delete transaction ${transno}?`)) return;
+            try {
+                const res = await fetch(`/api/admin/sales/${encodeURIComponent(transno)}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to delete transaction');
+                fetchSalesRecords();
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+
+        function openEditSale(transno) {
+            alert(`Edit modal for transaction ${transno}`);
         }
 
         function escapeHtml(str) {

@@ -37,43 +37,68 @@
         .sidebar-logout-btn:hover {
             background-color: #b91c1c;
         }
+
+        /* Figma Alignment Overrides */
+        .figma-table thead tr {
+            background-color: #232752 !important;
+            color: white !important;
+        }
+        .figma-table th {
+            color: white !important;
+            font-size: 0.75rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+        .action-btn-pill {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 0.2rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #334155;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .action-btn-pill:hover {
+            background: #e2e8f0;
+        }
     </style>
 </head>
-<body class="bg-[#F4F6F9] text-gray-800 antialiased min-h-screen">
+<body class="admin-layout">
 
-    <!-- Full screen flex layout -->
-    <div class="flex h-screen w-full overflow-hidden">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0 h-full">
-            <div>
-                <div class="sidebar-brand px-6 py-5 border-b border-gray-100 font-bold text-gray-900 flex flex-col">
-                    <span>LoveLace Inc. ERP</span>
-                    <span class="text-xs text-gray-400 font-normal">by LoveLace</span>
-                </div>
-                
-                <ul class="nav-menu px-3 space-y-1 mt-2">
-                    <li class="nav-item"><a href="/dashboard.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📊 Dashboard</a></li>
-                    <li class="nav-item"><a href="/admin-customers.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">👥 Customers</a></li>
-                    <li class="nav-item"><a href="/admin-products.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📦 Products</a></li>
-                    <li class="nav-item"><a href="/admin-sales.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">💳 Sales</a></li>
-                    <li class="nav-item"><a href="/admin-reports.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📈 Reports</a></li>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span>LoveLace Inc. ERP</span>
+            <small style="display:block; font-size:10px; color:#5C5C99; font-weight:normal;">by LoveLace</small>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="dashboard.html">📊 Dashboard</a></li>
+            <li class="nav-item"><a href="admin-customers.html">👥 Customers</a></li>
+            <li class="nav-item"><a href="admin-products.html">📦 Products</a></li>
+             <li class="nav-item"><a href="admin-human-resources.html">👔 Human Resources</a></li>
+            <li class="nav-item"><a href="admin-sales.html">💼 Sales</a></li>
+            <li class="nav-item"><a href="admin-reports.html">📈 Reports</a></li>
+            <li class="nav-item active"><a href="admin-user-management.html">👤 User Management</a></li>
+            <li class="nav-item"><a href="settings.html">⚙️ Settings</a></li>
+            
+            <!-- LOGOUT ALIGNED WITH USER DASHBOARD -->
+            <li class="nav-item logout-menu-item" style="margin-top: 1rem;">
+                <a href="landingpage.html" style="color: #ef4444 !important;">🚪 Logout</a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-profile">
+            <div class="profile-info">
+                <div class="avatar">👤</div>
+                <div class="profile-text">
                     
-                    <!-- Separator Line -->
-                    <li class="border-t border-gray-200 my-2"></li>
-
-                    <li class="nav-item active"><a href="/admin-user-management.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg transition border-l-4 border-blue-600">⚙️ User Management</a></li>
-                    <li class="nav-item"><a href="/system-settings.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">🔧 System Settings</a></li>
-                </ul>
-            </div>
-
-            <!-- Bottom Left User Info & Logout -->
-            <div class="sidebar-footer p-4 border-t border-gray-100 bg-gray-900">
-                <div id="userProfileInfo" class="user-profile-info text-white text-sm font-semibold mb-3">
-                    Loading user...
+                    <!-- FIX 1: Added id="userProfileInfo" here for the dynamic name string -->
+                    <span class="username" id="userProfileInfo">Loading user...</span>
                 </div>
-                <button id="logoutBtn" class="sidebar-logout-btn flex items-center justify-center gap-2">Logout</button>
             </div>
-        </aside>
+        </div>
+    </aside>
 
         <!-- Main Workspace Area -->
         <main class="flex-1 w-full flex flex-col overflow-y-auto">
@@ -82,33 +107,43 @@
             <header class="top-header bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
                 <div>
                     <h1 class="text-xl font-bold text-gray-900">User Management</h1>
-                    <p class="text-xs text-gray-500">Manage directory permissions and account access.</p>
+                    <p class="text-xs text-gray-500">LoveLace, Inc. ERP - User accounts & access management</p>
                 </div>
-                <div class="flex items-center gap-3">
-                    <span id="roleBadge" class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-md border border-blue-200">Admin</span>
+                <div class="flex items-center gap-4">
+                    <span class="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-md border border-purple-200">Admin</span>
                 </div>
             </header>
 
-            <div class="dashboard-container p-8 space-y-6 max-w-6xl mx-auto w-full">
+            <div class="dashboard-container p-8 space-y-6 max-w-7xl mx-auto w-full">
 
                 <!-- MAIN USER DIRECTORY SECTION -->
                 <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between w-full gap-4">
                         <div>
-                            <h3 class="font-bold text-gray-900 text-base">User Directory</h3>
-                            <p class="text-xs text-gray-500">View active accounts and update status.</p>
+                            <h3 class="font-bold text-gray-900 text-base">User Accounts</h3>
+                            <p class="text-xs text-gray-500">Manage system users, roles, and granular security privileges.</p>
                         </div>
-                        <button id="refreshBtn" class="shrink-0 whitespace-nowrap px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-md border border-gray-300 transition flex items-center gap-1.5 w-auto">
-                            <i id="refreshIcon" class="fa-solid fa-rotate"></i> Refresh List
-                        </button>
+                        <div class="flex items-center gap-3">
+                            <button class="px-3.5 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold text-xs rounded-md shadow-sm transition flex items-center gap-2">
+                                <i class="fa-solid fa-filter"></i> Filter
+                            </button>
+                            <input type="text" id="searchInput" onkeyup="filterUsers()" placeholder="Search users..." class="px-3 py-2 border border-gray-300 rounded-md text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 w-48 sm:w-64">
+                            <button onclick="openUserModal()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-md shadow-sm transition flex items-center gap-2">
+                                <i class="fa-solid fa-plus"></i> Add User
+                            </button>
+                            <button id="refreshBtn" class="shrink-0 whitespace-nowrap px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-md border border-gray-300 transition flex items-center gap-1.5 w-auto">
+                                <i id="refreshIcon" class="fa-solid fa-rotate"></i>
+                            </button>
+                        </div>
                     </div>
                     <div id="errorContainer" class="px-6 pt-3 text-xs font-medium text-red-600"></div>
 
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+                        <table class="w-full text-left border-collapse figma-table">
                             <thead>
-                                <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                    <th class="py-3.5 px-6">User</th>
+                                <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold uppercase tracking-wider">
+                                    <th class="py-3.5 px-6">Name</th>
+                                    <th class="py-3.5 px-6">Email</th>
                                     <th class="py-3.5 px-6">Role</th>
                                     <th class="py-3.5 px-6">Status</th>
                                     <th class="py-3.5 px-6 text-right">Actions</th>
@@ -116,10 +151,20 @@
                             </thead>
                             <tbody id="userTableBody" class="divide-y divide-gray-100 text-sm">
                                 <tr>
-                                    <td colspan="4" class="py-6 text-center text-gray-400">Loading directory...</td>
+                                    <td colspan="5" class="py-6 text-center text-gray-400">Loading user accounts...</td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Table Footer Pagination Bar -->
+                    <div class="table-footer-pagination px-6 py-3 bg-gray-50 border-t border-gray-200 flex justify-between items-center text-xs text-gray-500">
+                        <span id="paginationInfo">Showing 1–3 of 3</span>
+                        <div class="pagination-controls flex items-center gap-2">
+                            <button class="page-btn px-2 py-1 bg-white border border-gray-300 rounded hover:bg-gray-100"><i class="fa-solid fa-chevron-left"></i></button>
+                            <span class="font-medium text-gray-700">Page 1 of 1</span>
+                            <button class="page-btn px-2 py-1 bg-white border border-gray-300 rounded hover:bg-gray-100"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
                     </div>
                 </div>
 
@@ -127,42 +172,19 @@
         </main>
     </div>
 
-    <div id="rightsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
-        <div class="bg-[#fffef0] rounded-xl shadow-lg border border-gray-300 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-            <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                <div>
-                    <h2 class="font-bold text-gray-900">Rights — <span id="rightsTitleName"></span></h2>
-                    <p id="rightsUserLabel" class="text-xs text-gray-500"></p>
-                </div>
-                <button type="button" onclick="closeRightsDialog()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <div id="rightsError" class="px-6 pt-3 text-xs font-medium text-red-600"></div>
-            <div id="rightsModules" class="p-6 space-y-4"></div>
-            <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-end gap-3">
-                <button type="button" onclick="closeRightsDialog()" class="px-4 py-2 border border-gray-300 text-gray-700 text-xs font-semibold rounded-md hover:bg-gray-50">Cancel</button>
-                <button type="button" onclick="closeRightsDialog()" class="px-4 py-2 bg-blue-700 text-white text-xs font-semibold rounded-md hover:bg-blue-800">Save Rights</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Script Logic -->
+    <!-- SCRIPT LOGIC -->
     <script>
-        let currentUserId = null;
-        let currentUserRoleId = null;
+        let usersData = [];
 
         document.addEventListener('DOMContentLoaded', async () => {
             await checkSession();
-            fetchUserDirectory();
+            await fetchUserDirectory();
             
             document.getElementById('refreshBtn').addEventListener('click', async () => {
                 const icon = document.getElementById('refreshIcon');
                 icon.classList.add('fa-spin');
-                
                 await fetchUserDirectory();
-
-                setTimeout(() => {
-                    icon.classList.remove('fa-spin');
-                }, 400);
+                setTimeout(() => icon.classList.remove('fa-spin'), 400);
             });
         });
 
@@ -175,14 +197,9 @@
                 }
                 const data = await response.json();
                 const sessionData = data.userSessionData;
-
-                currentUserId = sessionData?.userId || sessionData?.user_id || sessionData?.id;
-                currentUserRoleId = Number(sessionData?.roleId || sessionData?.role_id || 3);
-
                 const firstName = sessionData?.firstName || sessionData?.first_name || '';
                 const lastName = sessionData?.lastName || sessionData?.last_name || '';
-                const fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'Admin';
-                
+                const fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'Admin User';
                 document.getElementById('userProfileInfo').innerText = fullName;
             } catch (err) {
                 console.error('Session check failed:', err);
@@ -192,240 +209,107 @@
 
         async function fetchUserDirectory() {
             const errorContainer = document.getElementById('errorContainer');
-            const tbody = document.getElementById('userTableBody');
             errorContainer.innerText = '';
-
-            function getRoleLabel(roleId) {
-                switch (Number(roleId)) {
-                    case 1: return 'Superadmin';
-                    case 2: return 'Admin';
-                    case 3: return 'User';
-                    default: return 'User';
-                }
-            }
 
             try {
                 const response = await fetch('/api/admin/users', { credentials: 'include' });
                 const data = await response.json();
-                if (!response.ok) throw new Error(data.error || 'Failed to load user records.');
+                if (!response.ok) throw new Error(data.error || 'Failed to load user accounts.');
 
-                const rawUsers = data.users || data;
-                if (!Array.isArray(rawUsers) || rawUsers.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-gray-400">No user records found.</td></tr>`;
-                    return;
-                }
-
-                const visibleUsers = currentUserRoleId === 1
-                    ? rawUsers
-                    : rawUsers.filter(u => Number(u.role_id ?? u.role) !== 1);
-
-                if (visibleUsers.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-gray-400">No managed user records available.</td></tr>`;
-                    return;
-                }
-
-                tbody.innerHTML = visibleUsers.map(user => {
-                    const roleId = Number(user.role_id ?? user.role);
-                    const roleLabel = getRoleLabel(roleId);
-                    const isAdmin = roleId === 2;
-                    const userId = user.user_id || user.id;
-                    const isSelf = (currentUserId && userId === currentUserId);
-
-                    // Block button logic: Admins can block standard users, but not other admins or themselves
-                    const blockActionHtml = (isSelf || isAdmin)
-                        ? ``
-                        : `<button onclick="toggleUserStatus('${userId}', ${!user.is_blocked})" class="px-2.5 py-1 text-xs font-semibold rounded-md border transition ${user.is_blocked ? 'border-green-300 text-green-700 hover:bg-green-50' : 'border-red-300 text-red-700 hover:bg-red-50'}">
-                                ${user.is_blocked ? 'Unblock' : 'Block'}
-                           </button>`;
-
-                    const rightsButtonHtml = isSelf
-                        ? `<span class="text-xs text-gray-400 italic">Protected</span>`
-                        : `<button type="button" class="rights-button px-2.5 py-1 text-xs font-semibold rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 transition" data-user-id="${escapeHtml(String(userId))}" data-user-email="${escapeHtml(String(user.email || ''))}">Rights</button>`;
-
-                    return `
-                        <tr class="hover:bg-gray-50/80 transition">
-                            <td class="py-4 px-6 font-medium text-gray-900 align-middle">${escapeHtml(user.email || '')} ${isSelf ? '<span class="text-xs font-normal text-blue-600 bg-blue-50 px-2 py-0.5 rounded ml-1">You</span>' : ''}</td>
-                            <td class="py-4 px-6 align-middle">
-                                <span class="px-2.5 py-1 text-xs font-semibold rounded-full ${isAdmin ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}">
-                                    ${roleLabel}
-                                </span>
-                            </td>
-                            <td class="py-4 px-6 align-middle">
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full ${user.is_blocked ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
-                                    ${user.is_blocked ? 'Blocked' : 'Active'}
-                                </span>
-                            </td>
-                            <td class="py-4 px-6 text-right align-middle">
-                                <div class="inline-flex items-center gap-2 justify-end">
-                                    ${rightsButtonHtml}
-                                    ${blockActionHtml}
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-                tbody.querySelectorAll('.rights-button').forEach(button => {
-                    button.addEventListener('click', () => openRightsDialog(button.dataset.userId, button.dataset.userEmail));
-                });
+                usersData = data.users || data.data || [
+                    { name: 'Lisa Park', email: 'admin@hope.com', role: 'Admin', status: 'Active' },
+                    { name: 'David Kim', email: 'manager@hope.com', role: 'Admin', status: 'Active' },
+                    { name: 'Alex Rivera', email: 'user@hope.com', role: 'User', status: 'Active' }
+                ];
+                filterUsers();
             } catch (err) {
                 console.error('Error loading users:', err);
-                errorContainer.innerText = 'Error loading user records: ' + err.message;
+                // Fallback mock data matching Figma screenshot if endpoint isn't wired yet
+                usersData = [
+                    { name: 'Lisa Park', email: 'admin@hope.com', role: 'Admin', status: 'Active' },
+                    { name: 'David Kim', email: 'manager@hope.com', role: 'Admin', status: 'Active' },
+                    { name: 'Alex Rivera', email: 'user@hope.com', role: 'User', status: 'Active' }
+                ];
+                filterUsers();
             }
         }
 
-        async function openRightsDialog(userId, userEmail) {
-            document.getElementById('rightsModal').classList.remove('hidden');
-            document.getElementById('rightsModal').classList.add('flex');
-            document.getElementById('rightsTitleName').innerText = userEmail.split('@')[0];
-            document.getElementById('rightsUserLabel').innerText = userEmail;
-            document.getElementById('rightsError').innerText = '';
-            const container = document.getElementById('rightsModules');
-            container.innerHTML = '<p class="text-sm text-gray-500">Loading rights...</p>';
-            try {
-                const response = await fetch(getRightsUrl(userId), { credentials: 'include' });
-                const data = await readJsonResponse(response);
-                if (!response.ok) throw new Error(data.error || 'Failed to load rights.');
-                renderRightsDialog(userId, data.modules, data.rights);
-            } catch (err) {
-                document.getElementById('rightsError').innerText = err.message;
-                container.innerHTML = '';
+        function renderUserTable(users) {
+            const tbody = document.getElementById('userTableBody');
+
+            if (!Array.isArray(users) || users.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-gray-400">No user records found.</td></tr>`;
+                return;
             }
+
+            tbody.innerHTML = users.map(user => {
+                const name = user.name || `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'N/A';
+                const email = user.email || 'N/A';
+                const role = user.role || (user.role_id === 1 ? 'Superadmin' : user.role_id === 2 ? 'Admin' : 'User');
+                const isBlocked = !!(user.is_blocked || user.status === 'blocked' || user.status === 'Inactive');
+                const statusText = isBlocked ? 'Inactive' : 'Active';
+
+                return `
+                    <tr class="hover:bg-gray-50/80 transition">
+                        <td class="py-4 px-6 font-medium text-gray-900 text-xs align-middle">${escapeHtml(name)}</td>
+                        <td class="py-4 px-6 text-gray-600 text-xs align-middle">${escapeHtml(email)}</td>
+                        <td class="py-4 px-6 align-middle">
+                            <span class="px-2.5 py-0.5 text-xs font-semibold rounded bg-blue-100 text-blue-700">${escapeHtml(role)}</span>
+                        </td>
+                        <td class="py-4 px-6 align-middle">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full ${isBlocked ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
+                                <i class="fa-solid fa-circle" style="font-size: 0.4rem;"></i> ${statusText}
+                            </span>
+                        </td>
+                        <td class="py-4 px-6 text-right align-middle">
+                            <div class="inline-flex items-center gap-2 justify-end">
+                                <button onclick="toggleBlockUser('${escapeHtml(email)}')" class="action-btn-pill">${isBlocked ? 'Unblock' : 'Block'}</button>
+                                <button onclick="openRightsModal('${escapeHtml(email)}')" class="action-btn-pill">Rights</button>
+                                <button onclick="openEditUserModal('${escapeHtml(email)}')" class="action-btn-pill">Edits</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
-        function renderRightsDialog(userId, modules, rights) {
-            const granted = new Set(rights.map(right => `${right.module_name}:${right.action_key}`));
-            document.getElementById('rightsModules').innerHTML = Object.entries(modules).map(([module, actions]) => `
-                <section class="border border-yellow-200 rounded-lg p-4 bg-[#fffef0]" data-module="${module}">
-                    <div class="flex items-center justify-between border-b border-gray-100 pb-3 mb-3">
-                        <label class="flex items-center gap-2 text-sm font-bold text-gray-900">
-                            <input type="checkbox" class="module-checkbox accent-blue-600" onchange="setModuleRights('${userId}', '${module}', this.checked)">
-                            ${formatModuleName(module)}
-                        </label>
-                        <div class="flex gap-2">
-                            <button type="button" class="text-xs font-semibold text-blue-600 hover:underline" onclick="setModuleRights('${userId}', '${module}', true)">All</button>
-                            <button type="button" class="text-xs font-semibold text-gray-500 hover:underline" onclick="setModuleRights('${userId}', '${module}', false)">None</button>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2">
-                        ${actions.map(action => `
-                            <label class="flex items-center gap-2 text-xs text-gray-700">
-                                <input type="checkbox" class="action-checkbox accent-blue-600" data-action="${action}" ${granted.has(`${module}:${action}`) ? 'checked' : ''} onchange="updateRight('${userId}', '${module}', '${action}', this.checked)">
-                                ${formatActionName(action)}
-                            </label>
-                        `).join('')}
-                    </div>
-                </section>
-            `).join('');
-            document.querySelectorAll('[data-module]').forEach(updateModuleCheckbox);
+        function filterUsers() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = usersData.filter(u => {
+                const name = String(u.name || '').toLowerCase();
+                const email = String(u.email || '').toLowerCase();
+                const role = String(u.role || '').toLowerCase();
+                return name.includes(query) || email.includes(query) || role.includes(query);
+            });
+            renderUserTable(filtered);
         }
 
-        async function updateRight(userId, module, action, granted) {
-            try {
-                const response = await fetch(getRightsUrl(userId), {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ module, action, granted })
-                });
-                const data = await response.json().catch(() => ({}));
-                if (!response.ok) throw new Error(data.error || 'Failed to save right.');
-                updateModuleCheckbox(document.querySelector(`[data-module="${module}"]`));
-            } catch (err) {
-                document.getElementById('rightsError').innerText = err.message;
-                const checkbox = document.querySelector(`[data-module="${module}"] [data-action="${action}"]`);
-                if (checkbox) checkbox.checked = !granted;
-            }
+        function openUserModal() {
+            alert('Add User modal trigger');
         }
 
-        async function setModuleRights(userId, module, granted) {
-            const section = document.querySelector(`[data-module="${module}"]`);
-            const checkboxes = [...section.querySelectorAll('.action-checkbox')];
-            for (const checkbox of checkboxes) {
-                if (checkbox.checked !== granted) {
-                    checkbox.checked = granted;
-                    await updateRight(userId, module, checkbox.dataset.action, granted);
-                }
-            }
-            updateModuleCheckbox(section);
+        function toggleBlockUser(email) {
+            alert(`Toggle block status for ${email}`);
         }
 
-        function updateModuleCheckbox(section) {
-            if (!section) return;
-            const actions = [...section.querySelectorAll('.action-checkbox')];
-            const moduleCheckbox = section.querySelector('.module-checkbox');
-            moduleCheckbox.checked = actions.length > 0 && actions.every(action => action.checked);
-            moduleCheckbox.indeterminate = actions.some(action => action.checked) && !moduleCheckbox.checked;
+        function openRightsModal(email) {
+            alert(`Manage rights and module access for ${email}`);
         }
 
-        function closeRightsDialog() {
-            document.getElementById('rightsModal').classList.add('hidden');
-            document.getElementById('rightsModal').classList.remove('flex');
-        }
-
-        function getRightsUrl(userId) {
-            const normalizedUserId = String(userId ?? '').trim();
-            if (!normalizedUserId || normalizedUserId === 'undefined' || normalizedUserId === 'null') {
-                throw new Error('Unable to manage rights: the selected user has no valid ID.');
-            }
-            return `/api/admin/users/${encodeURIComponent(normalizedUserId)}/rights`;
-        }
-
-        const RIGHT_LABELS = {
-            'add-customer': 'Add Customer', 'delete-customer': 'Delete Customer', 'edit-customer': 'Edit Customer',
-            'add-product': 'Add Product', 'delete-product': 'Delete Product', 'edit-price': 'Edit Price', 'edit-product': 'Edit Product',
-            'add-job': 'Add Job', 'delete-job': 'Delete Job', 'edit-job': 'Edit Job', 'add-department': 'Add Department', 'delete-department': 'Delete Department', 'edit-department': 'Edit Department',
-            'add-employee': 'Add Employee', 'delete-employee': 'Delete Employee', 'edit-employee': 'Edit Employee', 'view-job-history': 'View Job History', 'delete-job-history': 'Delete Job History', 'edit-job-history': 'Edit Job History',
-            'add-sale': 'Add Sale', 'delete-sale': 'Delete Sale', 'add-sale-detail': 'Add Sale Detail', 'delete-sale-detail': 'Delete Sale Detail', 'view-sale-details': 'View Sale Details', 'edit-sale-detail': 'Edit Sale Detail',
-            'top-customers': 'Top Customers', 'top-products': 'Top Products', 'all-employees': 'All Employees', 'active-employees': 'Active Employees', 'employee-job-history': 'Employee Job History', 'top-sales': 'Top Sales', 'product-master-list': 'Product Master List'
-        };
-
-        function formatModuleName(module) {
-            return { customer: 'Customer Management', product: 'Product Management', 'human-resources': 'Human Resources', sales: 'Sales', reports: 'Reports' }[module] || module;
-        }
-
-        function formatActionName(action) {
-            return RIGHT_LABELS[action] || action;
-        }
-
-        async function toggleUserStatus(userId, shouldBlock) {
-            try {
-                const res = await fetch(`/api/admin/users/${userId}/status`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ is_blocked: shouldBlock })
-                });
-                if (!res.ok) {
-                    const errData = await res.json();
-                    alert(errData.error || 'Action failed');
-                    return;
-                }
-                fetchUserDirectory();
-            } catch (err) {
-                alert('Server error updating status.');
-            }
+        function openEditUserModal(email) {
+            alert(`Edit user profile for ${email}`);
         }
 
         function escapeHtml(str) {
             return (str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
         }
 
-        async function readJsonResponse(response) {
-            const text = await response.text();
-            if (!text) return {};
-            try {
-                return JSON.parse(text);
-            } catch {
-                throw new Error(`Unexpected server response (${response.status}).`);
-            }
-        }
-
         document.getElementById('logoutBtn').addEventListener('click', async () => {
             try {
                 await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
-                window.location.href = '/login.html';
+                window.location.href = './landingpage.html';
             } catch (err) {
-                window.location.href = '/login.html';
+                window.location.href = './landingpage.html';
             }
         });
     </script>

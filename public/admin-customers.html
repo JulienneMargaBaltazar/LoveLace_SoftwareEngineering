@@ -3,181 +3,346 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Management - LoveLace Inc. ERP</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Customer Management (Admin) - LoveLace Inc. ERP</title>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Shared Stylesheet -->
     <link rel="stylesheet" href="style.css">
     <style>
-        .sidebar-footer {
-            padding: 1.25rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(0, 0, 0, 0.1);
+        /* Custom overrides to match Figma wireframe exactly */
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+            background-color: #f3f4f6;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
         }
-        .user-profile-info {
-            font-size: 0.9rem;
-            color: #ffffff;
-            margin-bottom: 0.75rem;
+
+        .filter-tabs {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        
+        .tab-btn {
+            background: none;
+            border: none;
+            font-size: 0.85rem;
+            color: #64748b;
+            cursor: pointer;
+            padding-bottom: 0.25rem;
+            font-weight: 500;
+        }
+
+        .tab-btn.active {
+            color: #4f46e5;
             font-weight: 600;
-            word-break: break-all;
+            border-bottom: 2px solid #4f46e5;
         }
-        .sidebar-logout-btn {
+
+        .count-badge {
+            background: #ef4444;
+            color: white;
+            font-size: 0.65rem;
+            padding: 0.1rem 0.4rem;
+            border-radius: 9999px;
+            margin-left: 0.25rem;
+        }
+
+        .toolbar-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+
+        .filter-btn {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 0.45rem 0.85rem;
+            font-size: 0.85rem;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            cursor: pointer;
+        }
+
+        .search-box {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 0.45rem 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: 220px;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            font-size: 0.85rem;
             width: 100%;
-            background-color: #dc2626;
+        }
+
+        .btn-add-primary {
+            background: #4f46e5;
             color: white;
             border: none;
-            padding: 0.5rem 0.75rem;
-            border-radius: 4px;
+            border-radius: 6px;
+            padding: 0.45rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
             cursor: pointer;
-            font-weight: 500;
-            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
         }
-        .sidebar-logout-btn:hover {
-            background-color: #b91c1c;
+
+        /* Figma Dark Header Table */
+        .figma-table-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+
+        .figma-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        .figma-table thead tr {
+            background-color: #232752; /* Dark blue from Figma screenshot */
+            color: white;
+        }
+
+        .figma-table th {
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            font-size: 0.75rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+
+        .figma-table td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid #f3f4f6;
+            color: #374151;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: #dcfce7;
+            color: #15803d;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.2rem 0.6rem;
+            border-radius: 9999px;
+        }
+
+        .status-pill.blocked {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .action-icon-btn {
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0.25rem;
+            font-size: 0.9rem;
+            transition: color 0.15s;
+        }
+
+        .action-icon-btn:hover {
+            color: #111827;
+        }
+
+        .table-footer-pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            font-size: 0.8rem;
+            color: #6b7280;
+            background: #fafafa;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 0.25rem;
+            align-items: center;
+        }
+
+        .page-btn {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 0.2rem 0.5rem;
+            cursor: pointer;
+            color: #374151;
         }
     </style>
 </head>
-<body class="bg-[#F4F6F9] text-gray-800 antialiased min-h-screen">
+<body class="admin-layout">
 
-    <!-- Full screen flex layout -->
-    <div class="flex h-screen w-full overflow-hidden">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0 h-full">
-            <div>
-                <div class="sidebar-brand px-6 py-5 border-b border-gray-100 font-bold text-gray-900 flex flex-col">
-                    <span>LoveLace Inc. ERP</span>
-                    <span class="text-xs text-gray-400 font-normal">by LoveLace</span>
-                </div>
-                
-                <ul class="nav-menu px-3 space-y-1 mt-2">
-                    <li class="nav-item"><a href="/dashboard.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📊 Dashboard</a></li>
-                    <li class="nav-item active"><a href="/admin-customers.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg transition border-l-4 border-blue-600">👥 Customers</a></li>
-                    <li class="nav-item"><a href="/admin-products.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📦 Products</a></li>
-                    <li class="nav-item"><a href="/admin-sales.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">💳 Sales</a></li>
-                    <li class="nav-item"><a href="/admin-reports.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📈 Reports</a></li>
-                    
-                    <!-- Separator Line -->
-                    <li class="border-t border-gray-200 my-2"></li>
-
-                    <li class="nav-item"><a href="/admin-user-management.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">⚙️ User Management</a></li>
-                    <li class="nav-item"><a href="/admin-system-settings.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">🔧 System Settings</a></li>
-                </ul>
-            </div>
-
-            <!-- Bottom Left User Info & Logout -->
-            <div class="sidebar-footer p-4 border-t border-gray-100 bg-gray-900">
-                <div id="userProfileInfo" class="user-profile-info text-white text-sm font-semibold mb-3">
-                    Loading user...
-                </div>
-                <button id="logoutBtn" class="sidebar-logout-btn flex items-center justify-center gap-2">Logout</button>
-            </div>
-        </aside>
-
-        <!-- Main Workspace Area -->
-        <main class="flex-1 w-full flex flex-col overflow-y-auto">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span>LoveLace Inc. ERP</span>
+            <small style="display:block; font-size:10px; color:#5C5C99; font-weight:normal;">by LoveLace</small>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="dashboard.html">📊 Dashboard</a></li>
+            <li class="nav-item active"><a href="admin-customers.html">👥 Customers</a></li>
+            <li class="nav-item"><a href="admin-products.html">📦 Products</a></li>
+            <li class="nav-item"><a href="admin-human-resources.html">👔 Human Resources</a></li>
+            <li class="nav-item"><a href="admin-sales.html">💼 Sales</a></li>
+            <li class="nav-item"><a href="admin-reports.html">📈 Reports</a></li>
+            <li class="nav-item"><a href="admin-user-management.html">👤 User Management</a></li>
+            <li class="nav-item"><a href="settings.html">⚙️ Settings</a></li>
             
-            <!-- Header Bar -->
-            <header class="top-header bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
-                <div>
-                    <h1 class="text-xl font-bold text-gray-900">Customer Management</h1>
-                    <p class="text-xs text-gray-500">Manage client accounts, payment terms, and status directory.</p>
+            <li class="nav-item logout-menu-item" style="margin-top: 1rem;">
+                <a href="#" id="logoutBtn" style="color: #ef4444 !important;">🚪 Logout</a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-profile">
+            <div class="profile-info">
+                <div class="avatar">👤</div>
+                <div class="profile-text">
+                    <span class="username" id="userProfileInfo">Loading user...</span>
                 </div>
-                <div class="flex items-center gap-3">
-                    <button id="addCustomerBtn" onclick="openCustomerModal()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-md shadow-sm transition flex items-center gap-2">
-                <i class="fa-solid fa-plus"></i> Add Customer
-                    </button>
-                    <span id="roleBadge" class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-md border border-blue-200">Admin</span>
-                </div>
-            </header>
-
-            <div class="dashboard-container p-8 space-y-6 max-w-7xl mx-auto w-full">
-
-                <!-- MAIN CUSTOMER DIRECTORY SECTION -->
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between w-full gap-4">
-                        <div>
-                            <h3 class="font-bold text-gray-900 text-base">Customer Directory</h3>
-                            <p class="text-xs text-gray-500">View active client profiles, payment terms, and timestamps.</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <input type="text" id="searchInput" onkeyup="filterCustomers()" placeholder="Search custno, custname..." class="px-3 py-1.5 border border-gray-300 rounded-md text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 w-48 sm:w-64">
-                            <button id="refreshBtn" class="shrink-0 whitespace-nowrap px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-md border border-gray-300 transition flex items-center gap-1.5 w-auto">
-                                <i id="refreshIcon" class="fa-solid fa-rotate"></i> Refresh List
-                            </button>
-                        </div>
-                    </div>
-                    <div id="errorContainer" class="px-6 pt-3 text-xs font-medium text-red-600"></div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                    <th class="py-3.5 px-6">Cust No</th>
-                                    <th class="py-3.5 px-6">Customer Name</th>
-                                    <th class="py-3.5 px-6">Address</th>
-                                    <th class="py-3.5 px-6">Pay Term</th>
-                                    <th class="py-3.5 px-6">Status</th>
-                                    <th class="py-3.5 px-6">Stamp</th>
-                                    <th class="py-3.5 px-6 text-right">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="customerTableBody" class="divide-y divide-gray-100 text-sm">
-                                <tr>
-                                    <td colspan="7" class="py-6 text-center text-gray-400">Loading directory...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
             </div>
-        </main>
-    </div>
+        </div>
+    </aside>
 
-    <!-- Customer Form Modal (Add / Edit) -->
-    <div id="customerModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-xl shadow-lg border border-gray-200 w-full max-w-md overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                <h3 id="modalTitle" class="font-bold text-gray-900 text-base">Add New Customer</h3>
-                <button onclick="closeCustomerModal()" class="text-gray-400 hover:text-gray-600 transition">
-                    <i class="fa-solid fa-xmark text-lg"></i>
+    <!-- MAIN WORKSPACE -->
+    <main class="main-content" style="flex: 1; padding: 2rem;">
+        
+        <!-- Header Bar -->
+        <header class="top-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <div>
+                <h1 style="font-size: 1.4rem; font-weight: 700; color: #1e293b; margin: 0;">Customer Management</h1>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 2rem;">
+                <!-- Filter Tabs -->
+                <div class="filter-tabs">
+                    <button class="tab-btn active" onclick="switchTab('all')">All customers</button>
+                    <button class="tab-btn" onclick="switchTab('active')">Active <span class="count-badge">8</span></button>
+                    <button class="tab-btn" onclick="switchTab('inactive')">Inactive <span class="count-badge">0</span></button>
+                </div>
+
+                <div class="user-badge-top" style="background: #EDE9FE; color: #6D28D9; padding: 0.3rem 0.75rem; border-radius: 6px; font-weight: 600; font-size: 0.8rem;">Admin</div>
+            </div>
+        </header>
+
+        <div id="errorContainer" style="color: #ef4444; font-size: 0.85rem; margin-bottom: 0.5rem;"></div>
+
+        <!-- Table Toolbar Controls -->
+        <div class="toolbar-row">
+            <button class="filter-btn" id="refreshBtn">
+                <i id="refreshIcon" class="fa-solid fa-filter"></i> Filter
+            </button>
+            
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass" style="color: #9ca3af; font-size: 0.8rem;"></i>
+                <input type="text" id="searchInput" onkeyup="filterCustomers()" placeholder="Search customers...">
+            </div>
+
+            <button onclick="openCustomerModal()" class="btn-add-primary">
+                <i class="fa-solid fa-plus"></i> Add customer
+            </button>
+        </div>
+
+        <!-- FIGMA CUSTOMER TABLE -->
+        <div class="figma-table-card">
+            <table class="figma-table">
+                <thead>
+                    <tr>
+                        <th>Customer No.</th>
+                        <th>Customer Name</th>
+                        <th>Address</th>
+                        <th>PAY TERMS</th>
+                        <th>STATUS</th>
+                        <th>STAMP</th>
+                        <th style="text-align: right; padding-right: 1.5rem;">ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody id="customerTableBody">
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 2rem; color: #9ca3af;">Loading directory...</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Table Pagination Bar -->
+            <div class="table-footer-pagination">
+                <span id="paginationInfo">Showing 1–8 of 1,248</span>
+                <div class="pagination-controls">
+                    <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
+                    <span style="padding: 0 0.5rem; font-weight: 500;">Page 1 of 10</span>
+                    <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- CUSTOMER FORM MODAL (Add / Edit) -->
+    <div id="customerModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); align-items: center; justify-content: center; z-index: 1000; padding: 1rem;">
+        <div style="background: white; border-radius: 12px; max-width: 450px; width: 100%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; overflow: hidden;">
+            <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+                <h3 id="modalTitle" style="font-size: 1.125rem; font-weight: 700; color: #0f172a; margin: 0;">Add New Customer</h3>
+                <button type="button" onclick="closeCustomerModal()" style="background: none; border: none; color: #94a3b8; font-size: 1.25rem; cursor: pointer;">
+                    <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <form id="customerForm" onsubmit="handleFormSubmit(event)" class="p-6 space-y-4">
+            <form id="customerForm" onsubmit="handleFormSubmit(event)" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
                 <input type="hidden" id="modalOriginalCustNo">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">custno *</label>
-                    <input type="text" id="custno" required class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; text-transform: uppercase; margin-bottom: 0.35rem;">Customer No *</label>
+                    <input type="text" id="custno" required style="width: 100%; padding: 0.6rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.875rem; box-sizing: border-box;">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">custname *</label>
-                    <input type="text" id="custname" required class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; text-transform: uppercase; margin-bottom: 0.35rem;">Customer Name *</label>
+                    <input type="text" id="custname" required style="width: 100%; padding: 0.6rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.875rem; box-sizing: border-box;">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">address *</label>
-                    <textarea id="address" rows="2" required class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"></textarea>
+                    <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; text-transform: uppercase; margin-bottom: 0.35rem;">Address *</label>
+                    <textarea id="address" rows="2" required style="width: 100%; padding: 0.6rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.875rem; box-sizing: border-box; resize: vertical;"></textarea>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">payterm *</label>
-                    <select id="payterm" required class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white">
+                    <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; text-transform: uppercase; margin-bottom: 0.35rem;">Pay Term *</label>
+                    <select id="payterm" required style="width: 100%; padding: 0.6rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.875rem; background: white; box-sizing: border-box;">
+                        <option value="Net 30">Net 30</option>
                         <option value="COD">COD (Cash on Delivery)</option>
                         <option value="Net 15">Net 15 Days</option>
-                        <option value="Net 30">Net 30 Days</option>
                         <option value="Net 60">Net 60 Days</option>
                     </select>
                 </div>
-                <div id="modalFormError" class="text-xs text-red-600 font-medium"></div>
-                <div class="flex items-center justify-end gap-3 pt-2 border-t border-gray-100">
-                    <button type="button" onclick="closeCustomerModal()" class="px-4 py-2 border border-gray-300 text-gray-700 text-xs font-semibold rounded-md hover:bg-gray-50 transition">Cancel</button>
-                    <button type="submit" id="saveCustomerBtn" class="px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-md hover:bg-blue-700 transition">Save Customer</button>
+                <div id="modalFormError" style="font-size: 0.75rem; color: #ef4444; font-weight: 600;"></div>
+                <div style="display: flex; justify-content: flex-end; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid #f1f5f9;">
+                    <button type="button" onclick="closeCustomerModal()" style="padding: 0.5rem 1rem; border: 1px solid #cbd5e1; background: white; color: #475569; border-radius: 6px; font-weight: 600; font-size: 0.875rem; cursor: pointer;">Cancel</button>
+                    <button type="submit" id="saveCustomerBtn" style="padding: 0.5rem 1rem; background: #4F46E5; color: white; border: none; border-radius: 6px; font-weight: 600; font-size: 0.875rem; cursor: pointer;">Save Customer</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Script Logic -->
+    <!-- SCRIPT LOGIC -->
     <script>
         let currentUserId = null;
         let currentUserRoleId = null;
@@ -188,14 +353,18 @@
             await fetchCustomerDirectory();
             
             document.getElementById('refreshBtn').addEventListener('click', async () => {
-                const icon = document.getElementById('refreshIcon');
-                icon.classList.add('fa-spin');
-                
                 await fetchCustomerDirectory();
+            });
 
-                setTimeout(() => {
-                    icon.classList.remove('fa-spin');
-                }, 400);
+            document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+                e.preventDefault();
+                try {
+                    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+                } catch (err) {
+                    console.error('Logout error:', err);
+                } finally {
+                    window.location.href = './landingpage.html';
+                }
             });
         });
 
@@ -203,7 +372,7 @@
             try {
                 const response = await fetch('/api/dashboard', { credentials: 'include' });
                 if (!response.ok) {
-                    window.location.href = '/login.html';
+                    window.location.href = './login.html';
                     return;
                 }
                 const data = await response.json();
@@ -214,18 +383,20 @@
 
                 const firstName = sessionData?.firstName || sessionData?.first_name || '';
                 const lastName = sessionData?.lastName || sessionData?.last_name || '';
-                const fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'Superadmin';
+                const fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'Admin User';
                 
-                document.getElementById('userProfileInfo').innerText = fullName;
+                const profileEl = document.getElementById('userProfileInfo');
+                if (profileEl) {
+                    profileEl.innerText = fullName;
+                }
             } catch (err) {
                 console.error('Session check failed:', err);
-                window.location.href = '/login.html';
+                window.location.href = './login.html';
             }
         }
 
         async function fetchCustomerDirectory() {
             const errorContainer = document.getElementById('errorContainer');
-            const tbody = document.getElementById('customerTableBody');
             errorContainer.innerText = '';
 
             try {
@@ -233,7 +404,6 @@
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.error || 'Failed to load customer records.');
 
-                // Extracts exact properties mapping to: custno, custname, address, payterm, stamp, status, etc.
                 customersData = data.customers || data.data || (Array.isArray(data) ? data : []);
                 renderCustomerTable(customersData);
             } catch (err) {
@@ -246,45 +416,37 @@
             const tbody = document.getElementById('customerTableBody');
 
             if (!Array.isArray(customers) || customers.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-gray-400">No customer records found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" style="padding: 2rem; text-align: center; color: #94a3b8;">No customer records found.</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = customers.map(customer => {
-                // Exact key matching: custno, custname, address, payterm, stamp
                 const custno = customer.custno || customer.customer_no || customer.id || 'N/A';
                 const custname = customer.custname || customer.name || 'N/A';
-                const address = customer.address || customer.address || 'N/A';
-                const payterm = customer.payterm || customer.payterms || customer.payment_terms || 'COD';
+                const address = customer.address || customer.adress || 'N/A';
+                const payterm = customer.payterm || customer.payterms || customer.payment_terms || 'Net 30';
                 const isBlocked = !!(customer.is_blocked || customer.status === 'blocked');
-                const stamp = customer.stamp || customer.updated_at || customer.created_at || 'N/A';
+                const stamp = customer.stamp || customer.updated_at || customer.created_at || 'CREATED system 2026-10-01 9:00AM';
 
                 return `
-                    <tr class="hover:bg-gray-50/80 transition">
-                        <td class="py-4 px-6 font-mono font-semibold text-xs text-blue-600 align-middle">${escapeHtml(String(custno))}</td>
-                        <td class="py-4 px-6 font-medium text-gray-900 align-middle">${escapeHtml(String(custname))}</td>
-                        <td class="py-4 px-6 text-xs text-gray-600 max-w-xs truncate align-middle" title="${escapeHtml(String(address))}">${escapeHtml(String(address))}</td>
-                        <td class="py-4 px-6 align-middle">
-                            <span class="px-2.5 py-1 text-xs font-medium rounded bg-gray-100 text-gray-800">${escapeHtml(String(payterm))}</span>
-                        </td>
-                        <td class="py-4 px-6 align-middle">
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full ${isBlocked ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
-                                ${isBlocked ? 'Blocked' : 'Active'}
+                    <tr>
+                        <td style="font-weight: 600; color: #1e293b;">${escapeHtml(String(custno))}</td>
+                        <td style="font-weight: 500; color: #334155;">${escapeHtml(String(custname))}</td>
+                        <td style="color: #64748b; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(String(address))}">${escapeHtml(String(address))}</td>
+                        <td style="font-size: 0.8rem; color: #475569;">${escapeHtml(String(payterm))}</td>
+                        <td>
+                            <span class="status-pill ${isBlocked ? 'blocked' : ''}">
+                                <i class="fa-solid fa-circle" style="font-size: 0.4rem;"></i> ${isBlocked ? 'Inactive' : 'Active'}
                             </span>
                         </td>
-                        <td class="py-4 px-6 text-xs text-gray-500 font-mono align-middle">${escapeHtml(String(stamp))}</td>
-                        <td class="py-4 px-6 text-right align-middle">
-                            <div class="inline-flex items-center gap-2 justify-end">
-                                <button onclick="openCustomerModal('${escapeHtml(String(custno))}')" class="px-2.5 py-1 text-xs font-semibold rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 transition">
-                                    Edit
-                                </button>
-                                <button onclick="toggleCustomerStatus('${escapeHtml(String(custno))}', ${!isBlocked})" class="px-2.5 py-1 text-xs font-semibold rounded-md border transition ${isBlocked ? 'border-green-300 text-green-700 hover:bg-green-50' : 'border-red-300 text-red-700 hover:bg-red-50'}">
-                                    ${isBlocked ? 'Unblock' : 'Block'}
-                                </button>
-                                <button onclick="deleteCustomer('${escapeHtml(String(custno))}')" class="px-2.5 py-1 text-xs font-semibold rounded-md border border-red-300 text-red-700 hover:bg-red-50 transition">
-                                    Delete
-                                </button>                                                      
-                            </div>
+                        <td style="font-size: 0.7rem; color: #64748b; font-family: monospace;">${escapeHtml(String(stamp))}</td>
+                        <td style="text-align: right; padding-right: 1rem;">
+                            <button onclick="openCustomerModal('${escapeHtml(String(custno))}')" class="action-icon-btn" title="Edit Customer">
+                                <i class="fa-regular fa-pen-to-square"></i>
+                            </button>
+                            <button onclick="deleteCustomer('${escapeHtml(String(custno))}')" class="action-icon-btn" title="Delete Customer">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
                         </td>
                     </tr>
                 `;
@@ -301,73 +463,35 @@
             renderCustomerTable(filtered);
         }
 
-       function openCustomerModal(custno = null) {
-    const modal = document.getElementById('customerModal');
-    const title = document.getElementById('modalTitle');
-    const errDiv = document.getElementById('modalFormError');
-    errDiv.innerText = '';
-    document.getElementById('customerForm').reset();
-    document.getElementById('modalOriginalCustNo').value = '';
-    document.getElementById('custno').removeAttribute('readonly');
+        function openCustomerModal(custno = null) {
+            const modal = document.getElementById('customerModal');
+            const title = document.getElementById('modalTitle');
+            const errDiv = document.getElementById('modalFormError');
+            errDiv.innerText = '';
+            document.getElementById('customerForm').reset();
+            document.getElementById('modalOriginalCustNo').value = '';
+            document.getElementById('custno').removeAttribute('readonly');
 
-    if (custno && custno !== 'N/A') {
-        title.innerText = 'Edit Customer';
-        const customer = customersData.find(c => String(c.custno || c.customer_no || c.id) === String(custno));
-        if (customer) {
-            document.getElementById('modalOriginalCustNo').value = custno;
-            document.getElementById('custno').value = customer.custno || customer.customer_no || customer.id || '';
-            document.getElementById('custno').setAttribute('readonly', true);
-            document.getElementById('custname').value = customer.custname || customer.name || '';
-            document.getElementById('address').value = customer.address || customer.adress || '';
-            document.getElementById('payterm').value = customer.payterm || customer.payterms || customer.payment_terms || 'COD';
+            if (custno && custno !== 'N/A') {
+                title.innerText = 'Edit Customer';
+                const customer = customersData.find(c => String(c.custno || c.customer_no || c.id) === String(custno));
+                if (customer) {
+                    document.getElementById('modalOriginalCustNo').value = custno;
+                    document.getElementById('custno').value = customer.custno || customer.customer_no || customer.id || '';
+                    document.getElementById('custno').setAttribute('readonly', true);
+                    document.getElementById('custname').value = customer.custname || customer.name || '';
+                    document.getElementById('address').value = customer.address || customer.adress || '';
+                    document.getElementById('payterm').value = customer.payterm || customer.payterms || customer.payment_terms || 'Net 30';
+                }
+            } else {
+                title.innerText = 'Add New Customer';
+            }
+
+            modal.style.display = 'flex';
         }
-    } else {
-        title.innerText = 'Add New Customer';
-    }
-
-    modal.classList.remove('hidden');
-}
-
-function closeCustomerModal() {
-    document.getElementById('customerModal').classList.add('hidden');
-}
-
-async function handleFormSubmit(event) {
-    event.preventDefault();
-    const originalCustNo = document.getElementById('modalOriginalCustNo').value;
-    const errDiv = document.getElementById('modalFormError');
-    errDiv.innerText = '';
-
-    const payload = {
-        custno: document.getElementById('custno').value.trim(),
-        custname: document.getElementById('custname').value.trim(),
-        address: document.getElementById('address').value.trim(),
-        payterm: document.getElementById('payterm').value
-    };
-
-    const url = originalCustNo ? `/api/admin/customers/${originalCustNo}` : '/api/admin/customers';
-    const method = originalCustNo ? 'PUT' : 'POST';
-
-    try {
-        const res = await fetch(url, {
-            method: method,
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify(payload)
-        });
-
-        const resData = await res.json();
-        if (!res.ok) throw new Error(resData.error || 'Failed to save customer');
-
-        closeCustomerModal();
-        await fetchCustomerDirectory(); // Reload table data
-    } catch (err) {
-        errDiv.innerText = err.message;
-    }
-}
 
         function closeCustomerModal() {
-            document.getElementById('customerModal').classList.add('hidden');
+            document.getElementById('customerModal').style.display = 'none';
         }
 
         async function handleFormSubmit(event) {
@@ -377,12 +501,11 @@ async function handleFormSubmit(event) {
             errDiv.innerText = '';
 
             const payload = {
-                custno: document.getElementById('custno').value,
-                custname: document.getElementById('custname').value,
-                address: document.getElementById('address').value,
+                custno: document.getElementById('custno').value.trim(),
+                custname: document.getElementById('custname').value.trim(),
+                address: document.getElementById('address').value.trim(),
                 payterm: document.getElementById('payterm').value
             };
-
 
             const url = originalCustNo ? `/api/admin/customers/${originalCustNo}` : '/api/admin/customers';
             const method = originalCustNo ? 'PUT' : 'POST';
@@ -395,72 +518,47 @@ async function handleFormSubmit(event) {
                     body: JSON.stringify(payload)
                 });
 
-                if (!res.ok) {
-                    const errData = await res.json();
-                    throw new Error(errData.error || 'Failed to save customer');
-                }
+                const resData = await res.json();
+                if (!res.ok) throw new Error(resData.error || 'Failed to save customer');
 
                 closeCustomerModal();
-                fetchCustomerDirectory();
+                await fetchCustomerDirectory();
             } catch (err) {
                 errDiv.innerText = err.message;
             }
         }
 
-        async function toggleCustomerStatus(custno, shouldBlock) {
+        async function deleteCustomer(custno) {
+            if (!confirm(`Are you sure you want to delete customer ${custno}?`)) return;
             try {
-                const res = await fetch(`/api/admin/customers/${custno}/status`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ is_blocked: shouldBlock })
+                const res = await fetch(`/api/admin/customers/${custno}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
                 });
-
-                if (!res.ok) {
-                    const errData = await res.json();
-                    alert(errData.error || 'Action failed');
-                    return;
-                }
-
-                fetchCustomerDirectory();
+                const resData = await res.json();
+                if (!res.ok) throw new Error(resData.error || 'Failed to delete customer');
+                await fetchCustomerDirectory();
             } catch (err) {
-                alert('Server error updating customer status.');
+                alert(err.message);
+            }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (tab === 'active') {
+                renderCustomerTable(customersData.filter(c => !c.is_blocked && c.status !== 'blocked'));
+            } else if (tab === 'inactive') {
+                renderCustomerTable(customersData.filter(c => c.is_blocked || c.status === 'blocked'));
+            } else {
+                renderCustomerTable(customersData);
             }
         }
 
         function escapeHtml(str) {
-            return (str || '').toString().replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+            return (str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
         }
-
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            try {
-                await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
-                window.location.href = '/login.html';
-            } catch (err) {
-                window.location.href = '/login.html';
-            }
-        });
-
-        async function deleteCustomer(custno) {
-    if (!confirm(`Are you sure you want to delete customer #${custno}? This action cannot be undone.`)) {
-        return;
-    }
-
-    try {
-        const res = await fetch(`/api/admin/customers/${custno}`, {
-            method: 'DELETE',
-            credentials: 'include'
-        });
-
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Failed to delete customer');
-
-        // Refresh the customer table directory
-        await fetchCustomerDirectory();
-    } catch (err) {
-        alert('Error deleting customer: ' + err.message);
-    }
-}
     </script>
 </body>
 </html>

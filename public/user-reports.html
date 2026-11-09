@@ -74,35 +74,35 @@
         }
     </style>
 </head>
-<body class="bg-[#F4F6F9] text-gray-800 antialiased min-h-screen">
+<body class="admin-layout flex h-screen w-full overflow-hidden bg-[#F4F6F9]">
 
-    <!-- Full screen flex layout -->
-    <div class="flex h-screen w-full overflow-hidden">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0 h-full">
-            <div>
-                <div class="sidebar-brand px-6 py-5 border-b border-gray-100 font-bold text-gray-900 flex flex-col">
-                    <span>LoveLace Inc. ERP</span>
-                    <span class="text-xs text-gray-400 font-normal">by LoveLace</span>
-                </div>
-                
-                <ul id="navMenu" class="nav-menu px-3 space-y-1 mt-2">
-                    <li class="nav-item"><a href="/dashboard.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📊 Dashboard</a></li>
-                    <li class="nav-item"><a href="/user-customers.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">👥 Customers</a></li>
-                    <li class="nav-item"><a href="/user-products.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📦 Products</a></li>
-                    <li class="nav-item"><a href="/user-sales.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">💳 Sales</a></li>
-                    <li class="nav-item active"><a href="/user-reports.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg transition border-l-4 border-blue-600">📈 Reports</a></li>
-                </ul>
-            </div>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span>LoveLace Inc. ERP</span>
+            <small style="display:block; font-size:10px; color:#5C5C99; font-weight:normal;">by LoveLace</small>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="user-dashboard.html">📊 Dashboard</a></li>
+            <li class="nav-item"><a href="user-customers.html">👥 Customers</a></li>
+            <li class="nav-item"><a href="user-products.html">📦 Products</a></li>
+            <li class="nav-item"><a href="user-human-resources.html">👔 Human Resources</a></li>
+            <li class="nav-item"><a href="user-sales.html">💼 Sales</a></li>
+            <li class="nav-item active"><a href="user-reports.html">📈 Reports</a></li>
+            <li class="nav-item"><a href="settings.html">⚙️ Settings</a></li>
+            <li class="nav-item logout-menu-item" style="margin-top: 1rem;"><a href="landingpage.html" style="color: #ef4444 !important;" id="logoutBtn">🚪 Logout</a></li>
+        </ul>
 
-            <!-- Bottom Left User Info & Logout -->
-            <div class="sidebar-footer p-4 border-t border-gray-100 bg-gray-900">
-                <div id="userProfileInfo" class="user-profile-info text-white text-sm font-semibold mb-3">
-                    Loading user...
+        <div class="sidebar-profile">
+            <div class="profile-info">
+                <div class="avatar">👤</div>
+                <div class="profile-text">
+                    <span class="username" id="userProfileInfo">Loading user...</span>
+                    <span class="role">User</span>
                 </div>
-                <button id="logoutBtn" class="sidebar-logout-btn flex items-center justify-center gap-2">Logout</button>
             </div>
-        </aside>
+        </div>
+    </aside>
 
         <!-- Main Workspace Area -->
         <main class="flex-1 w-full flex flex-col overflow-y-auto">
@@ -259,63 +259,37 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             setDefaultDateRange();
-            await checkSessionAndRights();
+            if (!await checkSessionAndRights()) return;
             await loadEmployeesDropdown();
             switchReport('top-customers');
         });
 
         function setDefaultDateRange() {
-            const today = new Date();
-            const fromDate = new Date(today);
-            fromDate.setDate(today.getDate() - 30);
-            document.getElementById('fromDate').value = toDateInputValue(fromDate);
-            document.getElementById('toDate').value = toDateInputValue(today);
-        }
-
-        function toDateInputValue(date) {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
+            // Set default date range from Jan 1, 2010 to Dec 31, 2011[cite: 5]
+            document.getElementById('fromDate').value = '2010-01-01';
+            document.getElementById('toDate').value = '2011-12-31';
         }
 
         async function checkSessionAndRights() {
-    try {
-        const response = await fetch('/api/dashboard', { credentials: 'include' });
-        if (!response.ok) {
-            window.location.href = '/login.html';
-            return;
+            try {
+                const response = await fetch('/api/dashboard', { credentials: 'include' });
+                if (!response.ok) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                const data = await response.json();
+                const sessionData = data.userSessionData || {};
+
+                const firstName = sessionData.firstName || '';
+                const lastName = sessionData.lastName || '';
+                document.getElementById('userProfileInfo').innerText = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'User';
+                return true;
+            } catch (err) {
+                console.error('Session or rights check failed:', err);
+                window.location.href = '/login.html';
+                return false;
+            }
         }
-        const data = await response.json();
-        const sessionData = data.userSessionData || {};
-
-        // Populate user name in sidebar
-        const firstName = sessionData.firstName || '';
-        const lastName = sessionData.lastName || '';
-        document.getElementById('userProfileInfo').innerText = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'User';
-
-        // Superadmins (role 1) and Admins (role 2) always have access
-        const roleId = Number(sessionData.roleId || 3);
-        if (roleId === 1 || roleId === 2 || sessionData.isSuperAdmin) {
-            return; // Allow access
-        }
-
-        // Check if user has explicit 'reports' view permission in the fetched rights array
-        const userRights = data.rights || [];
-        const hasReportsRight = userRights.some(r =>
-            String(r.module_name || '').toLowerCase() === 'reports' &&
-            r.is_allowed === true
-        );
-
-        if (!hasReportsRight) {
-            alert('Access Denied: You do not have permission to view Reports.');
-            window.location.href = '/dashboard.html'; // Redirect to normal dashboard
-        }
-    } catch (err) {
-        console.error('Session or rights check failed:', err);
-        window.location.href = '/login.html';
-    }
-}
 
         async function loadEmployeesDropdown() {
             try {
@@ -335,7 +309,6 @@
             currentReport = reportKey;
             const meta = REPORT_METADATA[reportKey];
 
-            // Highlight Active Tab Button in Navbar
             document.querySelectorAll('.report-tab-btn').forEach(btn => {
                 btn.classList.remove('bg-blue-600', 'text-white');
                 btn.classList.add('text-gray-600', 'hover:bg-gray-100');
@@ -348,19 +321,23 @@
                 activeBtn.setAttribute('aria-selected', 'true');
             }
 
-            // Update Header & Question Titles
             document.getElementById('reportTitle').innerText = meta.title;
             document.getElementById('reportQuestion').innerText = meta.question;
             document.getElementById('printReportTitle').innerText = meta.title;
             document.getElementById('reportCard').setAttribute('aria-labelledby', `tab-${reportKey}`);
 
-            // Toggle Input Fields
             document.getElementById('fromDateContainer').classList.toggle('hidden', !meta.inputs.includes('fromDate'));
             document.getElementById('toDateContainer').classList.toggle('hidden', !meta.inputs.includes('toDate'));
             document.getElementById('topNContainer').classList.toggle('hidden', !meta.inputs.includes('topN'));
             document.getElementById('employeeSelectContainer').classList.toggle('hidden', !meta.inputs.includes('employeeSelect'));
 
-            // Execute Query automatically
+            if (reportKey === 'employee-history') {
+                const empSelect = document.getElementById('empNoFilter');
+                if (!empSelect.value && empSelect.options.length > 1) {
+                    empSelect.selectedIndex = 1; // Selects the first actual employee
+                }
+            }
+
             executeReportQuery();
         }
 
@@ -537,15 +514,16 @@
         }
 
         function escapeHtml(str) {
-            return (str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+            return String(str ?? '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
         }
 
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
             try {
                 await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
-                window.location.href = '/login.html';
+                window.location.href = './landingpage.html';
             } catch (err) {
-                window.location.href = '/login.html';
+                window.location.href = './landingpage.html';
             }
         });
     </script>

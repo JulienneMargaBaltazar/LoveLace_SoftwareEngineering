@@ -74,42 +74,37 @@
         }
     </style>
 </head>
-<body class="bg-[#F4F6F9] text-gray-800 antialiased min-h-screen">
-
-    <!-- Full screen flex layout -->
-    <div class="flex h-screen w-full overflow-hidden">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0 h-full">
-            <div>
-                <div class="sidebar-brand px-6 py-5 border-b border-gray-100 font-bold text-gray-900 flex flex-col">
-                    <span>LoveLace Inc. ERP</span>
-                    <span class="text-xs text-gray-400 font-normal">by LoveLace</span>
+<body class="admin-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span>LoveLace Inc. ERP</span>
+            <small style="display:block; font-size:10px; color:#5C5C99; font-weight:normal;">by LoveLace</small>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="dashboard.html">📊 Dashboard</a></li>
+            <li class="nav-item"><a href="admin-customers.html">👥 Customers</a></li>
+            <li class="nav-item"><a href="admin-products.html">📦 Products</a></li>
+            <li class="nav-item"><a href="admin-human-resources.html">👔 Human Resources</a></li>
+            <li class="nav-item"><a href="admin-sales.html">💼 Sales</a></li>
+            <li class="nav-item active"><a href="admin-reports.html">📈 Reports</a></li>
+            <li class="nav-item"><a href="admin-user-management.html">👤 User Management</a></li>
+            <li class="nav-item"><a href="settings.html">⚙️ Settings</a></li>
+            
+            <li class="nav-item logout-menu-item" style="margin-top: 1rem;">
+                <a href="#" id="logoutBtn" style="color: #ef4444 !important;">🚪 Logout</a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-profile">
+            <div class="profile-info">
+                <div class="avatar">👤</div>
+                <div class="profile-text">
+                    <span class="username" id="userProfileInfo">Loading user...</span>
                 </div>
-                
-                <ul class="nav-menu px-3 space-y-1 mt-2">
-                    <li class="nav-item"><a href="/dashboard.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📊 Dashboard</a></li>
-                    <li class="nav-item"><a href="/admin-customers.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">👥 Customers</a></li>
-                    <li class="nav-item"><a href="/admin-products.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📦 Products</a></li>
-                    <li class="nav-item"><a href="/admin-sales.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">💳 Sales</a></li>
-                    <li class="nav-item active"><a href="/admin-reports.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg transition border-l-4 border-blue-600">📈 Reports</a></li>
-                    
-                    <!-- Separator Line -->
-                    <li class="border-t border-gray-200 my-2"></li>
-
-                    <li class="nav-item"><a href="/admin-user-management.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">⚙️ User Management</a></li>
-                    <li class="nav-item"><a href="/system-settings.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">🔧 System Settings</a></li>
-                </ul>
             </div>
-
-            <!-- Bottom Left User Info & Logout -->
-            <div class="sidebar-footer p-4 border-t border-gray-100 bg-gray-900">
-                <div id="userProfileInfo" class="user-profile-info text-white text-sm font-semibold mb-3">
-                    Loading user...
-                </div>
-                <button id="logoutBtn" class="sidebar-logout-btn flex items-center justify-center gap-2">Logout</button>
-            </div>
-        </aside>
-
+        </div>
+    </aside>
         <!-- Main Workspace Area -->
         <main class="flex-1 w-full flex flex-col overflow-y-auto">
             

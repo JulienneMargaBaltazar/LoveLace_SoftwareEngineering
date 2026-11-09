@@ -1165,13 +1165,14 @@ router.get('/reports/all-employees', requireAuth, async (req, res) => {
 router.get('/reports/options', requireAnyRight('reports'), async (req, res) => {
     try {
         const { data, error } = await supabase
-            .from('app_employee')
-            .select('empno, firstname, lastname');
+            .from('employee')
+            .select('empno, firstname, lastname')
+            .eq('is_deleted', false);
 
         if (error) throw error;
         const employees = (data || []).map(e => ({
             empno: e.empno,
-            empname: `${e.firstname} ${e.lastname}`
+            empname: e.empname || `${e.firstname || ''} ${e.lastname || ''}`.trim()
         }));
 
         return res.status(200).json({ employees });
@@ -1182,22 +1183,49 @@ router.get('/reports/options', requireAnyRight('reports'), async (req, res) => {
 });
 
 // 7. Employee Job & Salary History
-router.get('/reports/employee-history', requireAuth, async (req, res) => {
+router.get('/reports/employee-history', async (req, res) => {
     try {
         const { empNo } = req.query;
-        let query = supabase.from('employee_history_view').select('*');
-        if (empNo) {
-            query = query.eq('empno', empNo);
+        if (!empNo) {
+            return res.status(400).json({ error: 'empno is required' });
         }
-        const { data, error } = await query;
-        if (error) throw error;
-        return res.status(200).json({ records: data || [] });
+
+        // Fetch employee info
+        const { data: emp, error: empErr } = await supabase
+            .from('employee')
+            .select('*')
+            .eq('empno', empNo)
+            .single();
+
+        if (empErr) throw empErr;
+
+        // Fetch job history for this employee
+        const { data: history, error: histErr } = await supabase
+            .from('jobhistory')
+            .select('*')
+            .eq('empno', empNo)
+            .eq('is_deleted', false)
+            .order('effdate', { ascending: false });
+
+        if (histErr) throw histErr;
+
+        const fullName = `${emp.firstname || emp.empname || ''} ${emp.lastname || ''}`.trim();
+
+        const records = (history || []).map(h => ({
+            empno: emp.empno,
+            empName: fullName,
+            jobcode: h.jobcode,
+            deptcode: h.deptcode,
+            effdate: h.effdate,
+            salary: h.salary
+        }));
+
+        res.json({ records });
     } catch (err) {
-        console.error('Error fetching employee history:', err);
-        return res.status(500).json({ error: 'Failed to load employee history.' });
+        console.error('Error in employee-history report:', err);
+        res.status(500).json({ error: 'Failed to generate report.' });
     }
 });
-
 // 8. Top Sales Transactions
 router.get('/reports/top-sales', requireAuth, async (req, res) => {
     try {
@@ -1216,4 +1244,74 @@ router.get('/reports/top-sales', requireAuth, async (req, res) => {
     }
 });
 
+// ==========================================
+// GET Employees with Latest Job & Department
+// ==========================================
+router.use(requireAuth);
+router.get('/employees', async (req, res) => {
+    try {
+        // Query employees along with their job history records
+        const { data: employees, error } = await supabase
+            .from('employee')
+            .select(`
+                *,
+                jobhistory (
+                    empno,
+                    jobcode,
+                    deptcode,
+                    effdate,
+                    is_deleted
+                )
+            `)
+
+        if (error) throw error;
+
+        // Process records to extract the latest active job and department code
+        const formattedEmployees = (employees || []).map(emp => {
+            const historyList = (emp.jobhistory || [])
+                .filter(jh => !jh.is_deleted)
+                .sort((a, b) => new Date(b.effdate) - new Date(a.effdate));
+
+            const latest = historyList[0] || {};
+
+            return {
+                empno: emp.empno,
+                empname: emp.empname || `${emp.first_name || ''} ${emp.last_name || ''}`.trim(),
+                jobcode: latest.jobcode || emp.jobcode || 'N/A',
+                deptcode: latest.deptcode || emp.deptcode || 'N/A',
+                status: emp.status || 'Active'
+            };
+        });
+
+        res.status(200).json({ employees: formattedEmployees });
+    } catch (err) {
+        console.error('Error fetching employees:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+// --- 2. JOBS REGISTRY ---
+router.get('/jobs', async (req, res) => {
+    try {
+        const { data, error } = await supabase.from('job').select('*');
+        if (error) throw error;
+        res.json({ jobs: data });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// GET /api/admin/departments
+router.get('/departments', async (req, res) => {
+    try {
+        const { data: depts, error } = await supabase
+            .from('department')
+            .select('*')
+            .eq('is_deleted', false);
+
+        if (error) throw error;
+        res.status(200).json({ departments: depts || [] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 export default router;

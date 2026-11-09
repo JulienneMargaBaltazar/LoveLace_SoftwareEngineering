@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports & Analytics - LoveLace Inc. ERP</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2pdf.js for exporting reports to PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Shared Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .report-navbar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            overflow-x: auto;
+        }
+        .report-navbar [role="tablist"] {
+            display: flex;
+            flex: 1;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: max-content;
+        }
+        .report-tab-btn {
+            width: auto;
+            flex: 0 0 auto;
+            white-space: nowrap;
+        }
+        .sidebar-footer {
+            padding: 1.25rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.1);
+        }
+        .user-profile-info {
+            font-size: 0.9rem;
+            color: #ffffff;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            word-break: break-all;
+        }
+        .sidebar-logout-btn {
+            width: 100%;
+            background-color: #dc2626;
+            color: white;
+            border: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+        .sidebar-logout-btn:hover {
+            background-color: #b91c1c;
+        }
+        @media print {
+            aside, header, .report-navbar, .filter-bar, .no-print {
+                display: none !important;
+            }
+            body, main, .dashboard-container {
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: visible !important;
+            }
+            #reportCard {
+                border: none !important;
+                box-shadow: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[#F4F6F9] text-gray-800 antialiased min-h-screen">
+
+    <!-- Full screen flex layout -->
+    <div class="flex h-screen w-full overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0 h-full">
+            <div>
+                <div class="sidebar-brand px-6 py-5 border-b border-gray-100 font-bold text-gray-900 flex flex-col">
+                    <span>LoveLace Inc. ERP</span>
+                    <span class="text-xs text-gray-400 font-normal">by LoveLace</span>
+                </div>
+                
+                <ul class="nav-menu px-3 space-y-1 mt-2">
+                    <li class="nav-item"><a href="/dashboard.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📊 Dashboard</a></li>
+                    <li class="nav-item"><a href="/admin-customers.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">👥 Customers</a></li>
+                    <li class="nav-item"><a href="/admin-products.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">📦 Products</a></li>
+                    <li class="nav-item"><a href="/admin-sales.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">💳 Sales</a></li>
+                    <li class="nav-item active"><a href="/admin-reports.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg transition border-l-4 border-blue-600">📈 Reports</a></li>
+                    
+                    <!-- Separator Line -->
+                    <li class="border-t border-gray-200 my-2"></li>
+
+                    <li class="nav-item"><a href="/admin-user-management.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">⚙️ User Management</a></li>
+                    <li class="nav-item"><a href="/system-settings.html" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 transition">🔧 System Settings</a></li>
+                </ul>
+            </div>
+
+            <!-- Bottom Left User Info & Logout -->
+            <div class="sidebar-footer p-4 border-t border-gray-100 bg-gray-900">
+                <div id="userProfileInfo" class="user-profile-info text-white text-sm font-semibold mb-3">
+                    Loading user...
+                </div>
+                <button id="logoutBtn" class="sidebar-logout-btn flex items-center justify-center gap-2">Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace Area -->
+        <main class="flex-1 w-full flex flex-col overflow-y-auto">
+            
+            <!-- Header Bar -->
+            <header class="top-header bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900">Reports & Analytics</h1>
+                    <p class="text-xs text-gray-500">Read-only operational analytics, master listings, and performance summaries.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span id="roleBadge" class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-md border border-blue-200">Admin</span>
+                </div>
+            </header>
+
+            <div class="dashboard-container p-8 space-y-6 max-w-7xl mx-auto w-full">
+
+                <!-- REPORTS NAVIGATION BAR -->
+                <nav class="report-navbar bg-white rounded-xl border border-gray-200 shadow-sm px-4 py-3" aria-label="Reports directory">
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider mr-2 hidden sm:inline">Reports:</span>
+                    <div role="tablist" aria-label="Available reports">
+                        <button type="button" onclick="switchReport('top-customers')" id="tab-top-customers" role="tab" aria-selected="true" aria-controls="reportCard" class="report-tab-btn px-3.5 py-2 text-xs font-semibold rounded-lg transition bg-blue-600 text-white">Top Customers</button>
+                        <button type="button" onclick="switchReport('product-master')" id="tab-product-master" role="tab" aria-selected="false" aria-controls="reportCard" class="report-tab-btn px-3.5 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition">Product Master List</button>
+                        <button type="button" onclick="switchReport('top-products')" id="tab-top-products" role="tab" aria-selected="false" aria-controls="reportCard" class="report-tab-btn px-3.5 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition">Top Products</button>
+                        <button type="button" onclick="switchReport('active-employees')" id="tab-active-employees" role="tab" aria-selected="false" aria-controls="reportCard" class="report-tab-btn px-3.5 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition">Active Employees</button>
+                        <button type="button" onclick="switchReport('all-employees')" id="tab-all-employees" role="tab" aria-selected="false" aria-controls="reportCard" class="report-tab-btn px-3.5 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition">All Employees</button>
+                        <button type="button" onclick="switchReport('employee-history')" id="tab-employee-history" role="tab" aria-selected="false" aria-controls="reportCard" class="report-tab-btn px-3.5 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition">Employee Job History</button>
+                        <button type="button" onclick="switchReport('top-sales')" id="tab-top-sales" role="tab" aria-selected="false" aria-controls="reportCard" class="report-tab-btn px-3.5 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition">Top Sales</button>
+                    </div>
+                </nav>
+
+                <!-- MAIN REPORT OUTPUT & FILTER CARD -->
+                <div id="reportCard" role="tabpanel" aria-labelledby="tab-top-customers" class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="filter-bar px-6 py-4 border-b border-gray-100 flex flex-wrap items-end justify-between gap-4">
+                        <div>
+                            <h3 id="reportTitle" class="font-bold text-gray-900 text-base">Top Customers by Sales</h3>
+                            <p id="reportQuestion" class="text-xs text-gray-500">Who buys the most?</p>
+                        </div>
+
+                        <!-- Dynamic Inputs & Actions Form -->
+                        <form id="reportFilterForm" onsubmit="handleFilterSubmit(event)" class="flex flex-wrap items-center gap-3">
+                            <div id="fromDateContainer" class="flex flex-col">
+                                <label class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1">From Date</label>
+                                <input type="date" id="fromDate" class="px-3 py-1.5 text-xs bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+
+                            <div id="toDateContainer" class="flex flex-col">
+                                <label class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1">To Date</label>
+                                <input type="date" id="toDate" class="px-3 py-1.5 text-xs bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+
+                            <div id="employeeSelectContainer" class="flex flex-col hidden">
+                                <label class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Employee</label>
+                                <select id="empNoFilter" class="px-3 py-1.5 text-xs bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Select Employee...</option>
+                                </select>
+                            </div>
+
+                            <div id="topNContainer" class="flex flex-col">
+                                <label class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1">Top N</label>
+                                <input type="number" id="topN" value="10" min="1" max="100" class="w-20 px-3 py-1.5 text-xs bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+
+                            <div class="flex items-center gap-2 self-end">
+                                <button type="submit" class="px-3 py-2 bg-gray-800 hover:bg-gray-900 text-white font-semibold text-xs rounded-lg transition flex items-center gap-1.5">
+                                    <i class="fa-solid fa-filter"></i> Run Query
+                                </button>
+                                <button type="button" onclick="window.print()" class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-lg border border-gray-300 transition flex items-center gap-1.5">
+                                    <i class="fa-solid fa-print"></i> Print
+                                </button>
+                                <button type="button" onclick="exportToPDF()" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5">
+                                    <i class="fa-solid fa-file-pdf"></i> Save as PDF
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="errorContainer" class="px-6 pt-3 text-xs font-medium text-red-600"></div>
+
+                    <!-- Printable Report Area -->
+                    <div id="reportPrintArea" class="p-6">
+                        <div class="hidden print:block mb-4 border-b pb-2">
+                            <h1 class="text-xl font-bold">LoveLace Inc. ERP Report</h1>
+                            <p id="printReportTitle" class="text-sm font-semibold text-gray-700"></p>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead id="reportTableHeader">
+                                    <!-- Dynamic Columns -->
+                                </thead>
+                                <tbody id="reportTableBody" class="divide-y divide-gray-100 text-sm">
+                                    <tr>
+                                        <td colspan="10" class="py-6 text-center text-gray-400">Loading report data...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        let currentReport = 'top-customers';
+
+        const REPORT_METADATA = {
+            'top-customers': {
+                title: 'Top Customers by Sales',
+                question: 'Who buys the most?',
+                inputs: ['fromDate', 'toDate', 'topN'],
+                endpoint: '/api/admin/reports/top-customers'
+            },
+            'product-master': {
+                title: 'Product Master List',
+                question: 'What do we sell and at what current price?',
+                inputs: [],
+                endpoint: '/api/admin/reports/product-master'
+            },
+            'top-products': {
+                title: 'Top Products by Sales',
+                question: 'Which products earn the most (quantity and amount)?',
+                inputs: ['fromDate', 'toDate', 'topN'],
+                endpoint: '/api/admin/reports/top-products'
+            },
+            'active-employees': {
+                title: 'Active Employees Directory',
+                question: 'Who currently works here? (sepDate is empty)',
+                inputs: [],
+                endpoint: '/api/admin/reports/active-employees'
+            },
+            'all-employees': {
+                title: 'Complete Employee Roster',
+                question: 'Everyone, including those who have separated',
+                inputs: [],
+                endpoint: '/api/admin/reports/all-employees'
+            },
+            'employee-history': {
+                title: 'Employee Job & Salary History',
+                question: "How did one employee's job and salary change?",
+                inputs: ['employeeSelect'],
+                endpoint: '/api/admin/reports/employee-history'
+            },
+            'top-sales': {
+                title: 'Top Sales Transactions',
+                question: 'Which individual sales are the biggest?',
+                inputs: ['fromDate', 'toDate', 'topN'],
+                endpoint: '/api/admin/reports/top-sales'
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            setDefaultDateRange();
+            await checkSession();
+            await loadEmployeesDropdown();
+            switchReport('top-customers');
+        });
+
+        function setDefaultDateRange() {
+            const today = new Date();
+            const fromDate = new Date(today);
+            fromDate.setDate(today.getDate() - 30);
+            document.getElementById('fromDate').value = toDateInputValue(fromDate);
+            document.getElementById('toDate').value = toDateInputValue(today);
+        }
+
+        function toDateInputValue(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        async function checkSession() {
+            try {
+                const response = await fetch('/api/dashboard', { credentials: 'include' });
+                if (!response.ok) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                const data = await response.json();
+                const sessionData = data.userSessionData;
+                const firstName = sessionData?.firstName || sessionData?.first_name || '';
+                const lastName = sessionData?.lastName || sessionData?.last_name || '';
+                const roleId = Number(sessionData?.roleId || sessionData?.role_id || 3);
+                document.getElementById('userProfileInfo').innerText = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'Admin User';
+                document.getElementById('roleBadge').innerText = roleId === 1 ? 'Superadmin' : roleId === 2 ? 'Admin' : 'User';
+            } catch (err) {
+                console.error('Session check failed:', err);
+                window.location.href = '/login.html';
+            }
+        }
+
+        async function loadEmployeesDropdown() {
+            try {
+                const res = await fetch('/api/admin/reports/options', { credentials: 'include' });
+                const data = await res.json();
+                if (res.ok && data.employees) {
+                    const select = document.getElementById('empNoFilter');
+                    select.innerHTML = '<option value="">Select Employee...</option>' + 
+                        data.employees.map(e => `<option value="${e.empno}">${e.empname} (${e.empno})</option>`).join('');
+                }
+            } catch (err) {
+                console.error('Failed to populate employees dropdown:', err);
+            }
+        }
+
+        function switchReport(reportKey) {
+            currentReport = reportKey;
+            const meta = REPORT_METADATA[reportKey];
+
+            // Highlight Active Tab Button in Navbar
+            document.querySelectorAll('.report-tab-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.add('text-gray-600', 'hover:bg-gray-100');
+                btn.setAttribute('aria-selected', 'false');
+            });
+            const activeBtn = document.getElementById(`tab-${reportKey}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-gray-600', 'hover:bg-gray-100');
+                activeBtn.classList.add('bg-blue-600', 'text-white');
+                activeBtn.setAttribute('aria-selected', 'true');
+            }
+
+            // Update Header & Question Titles
+            document.getElementById('reportTitle').innerText = meta.title;
+            document.getElementById('reportQuestion').innerText = meta.question;
+            document.getElementById('printReportTitle').innerText = meta.title;
+            document.getElementById('reportCard').setAttribute('aria-labelledby', `tab-${reportKey}`);
+
+            // Toggle Input Fields
+            document.getElementById('fromDateContainer').classList.toggle('hidden', !meta.inputs.includes('fromDate'));
+            document.getElementById('toDateContainer').classList.toggle('hidden', !meta.inputs.includes('toDate'));
+            document.getElementById('topNContainer').classList.toggle('hidden', !meta.inputs.includes('topN'));
+            document.getElementById('employeeSelectContainer').classList.toggle('hidden', !meta.inputs.includes('employeeSelect'));
+
+            // Execute Query automatically
+            executeReportQuery();
+        }
+
+        function handleFilterSubmit(e) {
+            e.preventDefault();
+            executeReportQuery();
+        }
+
+        async function executeReportQuery() {
+            const meta = REPORT_METADATA[currentReport];
+            const errorContainer = document.getElementById('errorContainer');
+            const tbody = document.getElementById('reportTableBody');
+            errorContainer.innerText = '';
+
+            const params = new URLSearchParams();
+            if (meta.inputs.includes('fromDate') && document.getElementById('fromDate').value) {
+                params.append('fromDate', document.getElementById('fromDate').value);
+            }
+            if (meta.inputs.includes('toDate') && document.getElementById('toDate').value) {
+                params.append('toDate', document.getElementById('toDate').value);
+            }
+            if (meta.inputs.includes('topN') && document.getElementById('topN').value) {
+                params.append('topN', document.getElementById('topN').value);
+            }
+            if (meta.inputs.includes('employeeSelect') && document.getElementById('empNoFilter').value) {
+                params.append('empNo', document.getElementById('empNoFilter').value);
+            }
+
+            try {
+                const response = await fetch(`${meta.endpoint}?${params.toString()}`, { credentials: 'include' });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Failed to fetch report data.');
+
+                renderReportTable(currentReport, data.records || []);
+            } catch (err) {
+                console.error('Error fetching report:', err);
+                errorContainer.innerText = 'Error generating report: ' + err.message;
+                tbody.innerHTML = `<tr><td colspan="10" class="py-6 text-center text-red-500 font-medium">${escapeHtml(err.message)}</td></tr>`;
+            }
+        }
+
+        function renderReportTable(reportKey, records) {
+            const thead = document.getElementById('reportTableHeader');
+            const tbody = document.getElementById('reportTableBody');
+
+            if (records.length === 0) {
+                thead.innerHTML = '';
+                tbody.innerHTML = `<tr><td colspan="10" class="py-6 text-center text-gray-400">No records found matching the specified parameters.</td></tr>`;
+                return;
+            }
+
+            if (reportKey === 'top-customers') {
+                thead.innerHTML = `
+                    <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <th class="py-3.5 px-6">Rank</th>
+                        <th class="py-3.5 px-6">Cust No</th>
+                        <th class="py-3.5 px-6">Customer Name</th>
+                        <th class="py-3.5 px-6 text-right">Total Sales</th>
+                    </tr>`;
+                tbody.innerHTML = records.map((r, i) => `
+                    <tr class="hover:bg-gray-50/80 transition">
+                        <td class="py-4 px-6 font-semibold text-gray-500 align-middle">${i + 1}</td>
+                        <td class="py-4 px-6 font-medium text-gray-900 align-middle">${escapeHtml(r.custno)}</td>
+                        <td class="py-4 px-6 text-gray-900 align-middle">${escapeHtml(r.custname)}</td>
+                        <td class="py-4 px-6 text-right font-bold text-gray-900 align-middle">$${Number(r.totalSales || 0).toFixed(2)}</td>
+                    </tr>`).join('');
+            } else if (reportKey === 'product-master') {
+                thead.innerHTML = `
+                    <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <th class="py-3.5 px-6">Prod Code</th>
+                        <th class="py-3.5 px-6">Description</th>
+                        <th class="py-3.5 px-6">Unit</th>
+                        <th class="py-3.5 px-6 text-right">Current Price</th>
+                    </tr>`;
+                tbody.innerHTML = records.map(r => `
+                    <tr class="hover:bg-gray-50/80 transition">
+                        <td class="py-4 px-6 font-medium text-gray-900 align-middle">${escapeHtml(r.prodcode)}</td>
+                        <td class="py-4 px-6 text-gray-900 align-middle">${escapeHtml(r.description)}</td>
+                        <td class="py-4 px-6 text-gray-600 align-middle">${escapeHtml(r.unit)}</td>
+                        <td class="py-4 px-6 text-right font-semibold text-gray-900 align-middle">$${Number(r.unitprice || 0).toFixed(2)}</td>
+                    </tr>`).join('');
+            } else if (reportKey === 'top-products') {
+                thead.innerHTML = `
+                    <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <th class="py-3.5 px-6">Rank</th>
+                        <th class="py-3.5 px-6">Prod Code</th>
+                        <th class="py-3.5 px-6">Description</th>
+                        <th class="py-3.5 px-6 text-right">Total Units Sold</th>
+                        <th class="py-3.5 px-6 text-right">Total Revenue</th>
+                    </tr>`;
+                tbody.innerHTML = records.map((r, i) => `
+                    <tr class="hover:bg-gray-50/80 transition">
+                        <td class="py-4 px-6 font-semibold text-gray-500 align-middle">${i + 1}</td>
+                        <td class="py-4 px-6 font-medium text-gray-900 align-middle">${escapeHtml(r.prodcode)}</td>
+                        <td class="py-4 px-6 text-gray-900 align-middle">${escapeHtml(r.description)}</td>
+                        <td class="py-4 px-6 text-right font-medium text-gray-700 align-middle">${Number(r.totalQuantity || 0)}</td>
+                        <td class="py-4 px-6 text-right font-bold text-gray-900 align-middle">$${Number(r.totalRevenue || 0).toFixed(2)}</td>
+                    </tr>`).join('');
+            } else if (reportKey === 'active-employees' || reportKey === 'all-employees') {
+                thead.innerHTML = `
+                    <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <th class="py-3.5 px-6">Emp No</th>
+                        <th class="py-3.5 px-6">Name</th>
+                        <th class="py-3.5 px-6">Gender</th>
+                        <th class="py-3.5 px-6">Hire Date</th>
+                        <th class="py-3.5 px-6">Separation Date</th>
+                    </tr>`;
+                tbody.innerHTML = records.map(r => `
+                    <tr class="hover:bg-gray-50/80 transition">
+                        <td class="py-4 px-6 font-medium text-gray-900 align-middle">${escapeHtml(r.empno)}</td>
+                        <td class="py-4 px-6 text-gray-900 align-middle">${escapeHtml(r.firstname)} ${escapeHtml(r.lastname)}</td>
+                        <td class="py-4 px-6 text-gray-600 align-middle">${escapeHtml(r.gender || '')}</td>
+                        <td class="py-4 px-6 text-gray-600 align-middle">${escapeHtml(r.hiredate || '')}</td>
+                        <td class="py-4 px-6 text-gray-600 align-middle">${r.sepdate ? escapeHtml(r.sepdate) : '<span class="text-xs text-green-600 font-medium">Active</span>'}</td>
+                    </tr>`).join('');
+            } else if (reportKey === 'employee-history') {
+                thead.innerHTML = `
+                    <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <th class="py-3.5 px-6">Emp No</th>
+                        <th class="py-3.5 px-6">Employee</th>
+                        <th class="py-3.5 px-6">Job Code</th>
+                        <th class="py-3.5 px-6">Department</th>
+                        <th class="py-3.5 px-6">Effective Date</th>
+                        <th class="py-3.5 px-6 text-right">Salary</th>
+                    </tr>`;
+                tbody.innerHTML = records.map(r => `
+                    <tr class="hover:bg-gray-50/80 transition">
+                        <td class="py-4 px-6 font-medium text-gray-900 align-middle">${escapeHtml(r.empno)}</td>
+                        <td class="py-4 px-6 text-gray-900 align-middle">${escapeHtml(r.empName || '')}</td>
+                        <td class="py-4 px-6 text-gray-900 align-middle">${escapeHtml(r.jobcode)}</td>
+                        <td class="py-4 px-6 text-gray-600 align-middle">${escapeHtml(r.deptcode || '')}</td>
+                        <td class="py-4 px-6 text-gray-600 align-middle">${escapeHtml(r.effdate || '')}</td>
+                        <td class="py-4 px-6 text-right font-bold text-gray-900 align-middle">$${Number(r.salary || 0).toFixed(2)}</td>
+                    </tr>`).join('');
+            } else if (reportKey === 'top-sales') {
+                thead.innerHTML = `
+                    <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <th class="py-3.5 px-6">Trans No</th>
+                        <th class="py-3.5 px-6">Date</th>
+                        <th class="py-3.5 px-6">Customer</th>
+                        <th class="py-3.5 px-6">Employee</th>
+                        <th class="py-3.5 px-6 text-right">Total Amount</th>
+                    </tr>`;
+                tbody.innerHTML = records.map(r => `
+                    <tr class="hover:bg-gray-50/80 transition">
+                        <td class="py-4 px-6 font-medium text-gray-900 align-middle">${escapeHtml(r.transno)}</td>
+                        <td class="py-4 px-6 text-gray-600 align-middle">${escapeHtml(r.salesdate || '')}</td>
+                        <td class="py-4 px-6 text-gray-900 align-middle">${escapeHtml(r.customerName)}</td>
+                        <td class="py-4 px-6 text-gray-900 align-middle">${escapeHtml(r.employeeName)}</td>
+                        <td class="py-4 px-6 text-right font-bold text-gray-900 align-middle">$${Number(r.totalSales || 0).toFixed(2)}</td>
+                    </tr>`).join('');
+            }
+        }
+
+        function exportToPDF() {
+            const element = document.getElementById('reportPrintArea');
+            const opt = {
+                margin:       0.5,
+                filename:     `${currentReport}_report.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function escapeHtml(str) {
+            return (str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+                window.location.href = '/login.html';
+            } catch (err) {
+                window.location.href = '/login.html';
+            }
+        });
+    </script>
+</body>
+</html>

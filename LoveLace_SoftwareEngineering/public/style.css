@@ -1,0 +1,431 @@
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #f1eff2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    color: #e9e7e9;
+}
+
+
+.card {
+    background: #FFFFFF;
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(41, 41, 102, 0.15);
+    width: 100%;
+    max-width: 480px;
+}
+
+
+.card h2 {
+    margin-top: 0;
+    margin-bottom: 0.25rem;
+    color: #292966;
+    font-size: 1.75rem;
+    text-align: left;
+}
+
+
+.card h4 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: #acacb1;
+    font-size: 0.95rem;
+    text-align: left;
+    font-weight: normal;
+}
+
+
+.card-subtitle {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: #5C5C99; /* Deep Slate */
+    font-size: 0.9rem;
+    font-weight: normal;
+    text-align: left;
+    line-height: 1.4;
+}
+
+
+.msg-success {
+    color: #292966;
+}
+
+
+.msg-error {
+    color: #ef4444;
+}
+.name-row {
+    display: flex;
+    gap: 1rem;
+}
+
+
+.name-row .input-group {
+    flex: 1;
+}
+
+
+.input-group {
+    margin-bottom: 1.25rem;
+}
+
+
+.input-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #292966;
+}
+
+
+.input-group input {
+    width: 100%;
+    padding: 0.75rem 0.85rem;
+    border: 2px solid #A3A3CC;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+
+.input-group input:focus {
+    outline: none;
+    border-color: #5C5C99;
+    box-shadow: 0 0 0 3px rgba(92, 92, 153, 0.25);
+}
+
+
+/* ==========================================================================
+   PASSWORD VIEW/HIDE ALIGNMENT FIX
+   ========================================================================== */
+.password-wrapper {
+    position: relative !important;
+    width: 100% !important;
+    display: block !important;
+}
+
+
+/* Extra padding-right keeps long passwords from text-overlapping your button */
+.password-wrapper input {
+    padding-right: 70px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+
+/* Pins your text-toggles perfectly on the right-hand margin */
+.password-toggle {
+    position: absolute !important;
+    right: 16px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    background: none !important;
+    border: none !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    font-family: inherit !important;
+    width: auto !important;
+   
+    /* ADD THESE TWO LINES TO FIX THE COLOR AND TEXT STYLE: */
+    color: #5C5C99 !important; /* Matches your main purple button theme */
+    text-transform: uppercase !important; /* Keeps it looking clean and uniform */
+}
+/* ========================================================================== */
+
+
+.terms-group {
+    margin-bottom: 1.25rem;
+}
+
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+    font-weight: normal;
+    color: #292966;
+    cursor: pointer;
+}
+
+
+.checkbox-label input[type="checkbox"] {
+    width: 1.1rem;
+    height: 1.1rem;
+    margin-right: 0.5rem;
+    accent-color: #5C5C99;
+    cursor: pointer;
+}
+
+
+.checkbox-label a {
+    color: #5C5C99;
+    font-weight: 600;
+    text-decoration: none;
+    margin-left: 0.25rem;
+}
+
+
+.checkbox-label a:hover {
+    text-decoration: underline;
+}
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f4f6f9;
+}
+
+
+/* Sidebar */
+.sidebar {
+    width: 240px;
+    background: #ffffff;
+    border-right: 1px solid #e2e8f0;
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.sidebar-brand {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #292966;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+
+.nav-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+
+.nav-item a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.85rem;
+    color: #5C5C99;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+    transition: all 0.2s ease;
+}
+
+
+.nav-item.active a, .nav-item a:hover {
+    background-color: #CCCCFF;
+    color: #292966;
+    font-weight: 600;
+}
+
+
+/* Main Workspace */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.top-header {
+    background: #ffffff;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.top-header h1 {
+    font-size: 1.25rem;
+    margin: 0;
+    color: #292966;
+}
+
+
+.dashboard-container {
+    padding: 2rem;
+}
+
+
+/* Welcome Banner */
+.welcome-banner {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 4px rgba(41, 41, 102, 0.05);
+}
+
+
+.welcome-banner h2 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.25rem;
+    color: #292966;
+}
+
+
+/* Grid Layouts */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+
+.stat-card {
+    background: #ffffff;
+    padding: 1.25rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(41, 41, 102, 0.05);
+}
+
+
+.stat-header {
+    font-size: 0.8rem;
+    color: #5C5C99;
+    margin-bottom: 0.5rem;
+}
+
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #292966;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+.badge-pill {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+
+.badge-pill.success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+}
+
+
+.action-card {
+    background: #ffffff;
+    border-radius: 12px;
+    height: 90px;
+    box-shadow: 0 2px 4px rgba(41, 41, 102, 0.05);
+}
+
+
+button {
+    width: 100%;
+    padding: 0.85rem;
+    background-color: #5C5C99;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+
+button:hover {
+    background-color: #292966;
+}
+
+
+.auth-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: #5C5C99;
+}
+
+
+.auth-footer a {
+    color: #292966;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Zoom and scale modules nicely on desktop mouse hover */
+.module-card:hover {
+    transform: scale(1.06);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    background-color: #fcfbfe !important;
+}
+
+/* Accent active lock highlight when clicked */
+.module-card.is-active {
+    transform: scale(1.04);
+    border-color: #292966 !important; /* Adjusted to match your primary dark brand color */
+    background-color: #f4f4ff !important;
+    box-shadow: 0 0 0 4px rgba(92, 92, 153, 0.2);
+}
+
+/* ==========================================================================
+   LANDING PAGE ERP MODULE CARD ANIMATIONS
+   ========================================================================== */
+
+/* Zoom and scale modules nicely on desktop mouse hover */
+.module-card:hover {
+    transform: scale(1.04) !important;
+    box-shadow: 0 10px 25px rgba(92, 92, 153, 0.15) !important;
+    background-color: #ffffff !important;
+    border-color: #5C5C99 !important;
+}
+
+/* Smooth pop transition profile when clicked and locked active */
+.module-card.is-active {
+    transform: scale(1.02) !important;
+    border-color: #292966 !important;
+    background-color: rgba(204, 204, 255, 0.15) !important;
+    box-shadow: inset 0 2px 4px rgba(41, 41, 102, 0.05) !important;
+}
+
+/* Dynamic fade effect for the mock data table tracking */
+#mockTableContainer {
+    animation: fadeInTable 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes fadeInTable {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
