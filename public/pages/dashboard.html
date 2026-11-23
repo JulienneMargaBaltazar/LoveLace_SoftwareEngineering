@@ -219,12 +219,12 @@
                 </div>
             </section>
 
-            <!-- Row 1 Charts: Revenue Line Chart + Sales Status Donut Chart -->
+            <!-- Row 1 Charts: All-Time Revenue Line Chart + Sales Status Donut Chart -->
             <section class="charts-grid">
                 <div class="chart-card">
                     <div class="chart-card-header">
                         <div>
-                            <h3 id="revenueChartTitle">All-Time Sales Revenue (2010 � Present)</h3>
+                            <h3 id="revenueChartTitle">All-Time Sales Revenue (2010 – Present)</h3>
                             <span>Annual revenue progression across all historical records</span>
                         </div>
                         <select id="revenueGranularity" onchange="updateRevenueGranularity()" style="padding:0.25rem 0.5rem; border:1px solid #CBD5E1; border-radius:6px; font-size:0.75rem; color:#292966; background:#F8FAFC; cursor:pointer;">
@@ -345,7 +345,9 @@
                 safeFetchList('/api/admin/products', ['products'])
             ]);
 
-            // 1. Update KPI Cards
+            cachedSalesData = sales;
+
+            // 1. Update KPI Cards (All-Time)
             const totalRevenue = sales.reduce((sum, s) => sum + Number(s.total || s.amount || s.total_amount || 0), 0);
             const activeCustomers = customers.filter(c => !(c.is_blocked || c.status === 'blocked')).length;
             const pendingOrInactive = sales.filter(s => {
@@ -361,7 +363,6 @@
             document.getElementById('kpiPendingSales').innerText = pendingOrInactive.toLocaleString();
 
             // 2. Render Charts from Live Data
-            cachedSalesData = sales;
             renderRevenueLineChart(sales, 'year');
             renderStatusDonutChart(sales);
             renderPaytermBarChart(customers);
@@ -372,7 +373,7 @@
             const mode = document.getElementById('revenueGranularity').value;
             document.getElementById('revenueChartTitle').innerText =
                 mode === 'year'
-                    ? 'All-Time Sales Revenue (2010 � Present)'
+                    ? 'All-Time Sales Revenue (2010 – Present)'
                     : 'All-Time Monthly Sales Revenue';
             renderRevenueLineChart(cachedSalesData, mode);
         }
@@ -425,110 +426,7 @@
                         legend: { display: false },
                         tooltip: {
                             callbacks: {
-                                label: ctx => ' 
-
-        function renderStatusDonutChart(sales) {
-            let active = 0, pending = 0, inactive = 0;
-            sales.forEach(s => {
-                const st = String(s.status || 'active').toLowerCase();
-                if (st === 'pending') pending++;
-                else if (st === 'inactive' || st === 'cancelled') inactive++;
-                else active++;
-            });
-
-            if (statusChartInstance) statusChartInstance.destroy();
-            statusChartInstance = new Chart(document.getElementById('statusDonutChart'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Active / Completed', 'Pending', 'Inactive'],
-                    datasets: [{
-                        data: [active, pending, inactive],
-                        backgroundColor: ['#10B981', '#F59E0B', '#EF4444'],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '65%',
-                    plugins: {
-                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
-                    }
-                }
-            });
-        }
-
-        function renderPaytermBarChart(customers) {
-            const termCounts = { 'COD': 0, 'Net 15': 0, 'Net 30': 0, 'Net 60': 0 };
-            customers.forEach(c => {
-                const term = String(c.payterm || c.payterms || c.payment_terms || 'COD').trim();
-                termCounts[term] = (termCounts[term] || 0) + 1;
-            });
-
-            if (paytermChartInstance) paytermChartInstance.destroy();
-            paytermChartInstance = new Chart(document.getElementById('paytermBarChart'), {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(termCounts),
-                    datasets: [{
-                        label: 'Customers',
-                        data: Object.values(termCounts),
-                        backgroundColor: ['#292966', '#5C5C99', '#818CF8', '#A3A3CC'],
-                        borderRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: '#F1F5F9' } },
-                        x: { grid: { display: false } }
-                    }
-                }
-            });
-        }
-
-        function renderRecentSales(sales) {
-            const tbody = document.getElementById('recentSalesBody');
-            if (!sales.length) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#94A3B8; padding:1.5rem;">No sales records found yet.</td></tr>';
-                return;
-            }
-            const recent = sales.slice(0, 5);
-            tbody.innerHTML = recent.map(s => {
-                const transNo = s.transno || s.trans_no || s.id || 'N/A';
-                const cust = s.custname || s.customer_name || s.custno || 'N/A';
-                const amt = Number(s.total || s.amount || s.total_amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                const status = String(s.status || 'Active');
-                const isPending = status.toLowerCase() === 'pending';
-                const badgeStyle = isPending
-                    ? 'background:#FEF3C7; color:#92400E;'
-                    : 'background:#DCFCE7; color:#15803D;';
-                return `
-                    <tr>
-                        <td style="font-weight:600; color:#2563EB;">${transNo}</td>
-                        <td>${cust}</td>
-                        <td style="font-weight:600;">$${amt}</td>
-                        <td><span class="status-pill" style="${badgeStyle}">${status}</span></td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
-            e.preventDefault();
-            try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }); } catch {}
-            window.location.href = '/login.html';
-        });
-
-        initDashboard();
-    </script>
-    <script src="/js/permissions.js"></script>
-    <script src="/js/layout.js"></script>
-</body>
-</html>
- + Number(ctx.parsed.y || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                                label: ctx => ' $' + Number(ctx.parsed.y || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
                             }
                         }
                     },
@@ -537,110 +435,7 @@
                             beginAtZero: true,
                             grid: { color: '#F1F5F9' },
                             ticks: {
-                                callback: val => '
-
-        function renderStatusDonutChart(sales) {
-            let active = 0, pending = 0, inactive = 0;
-            sales.forEach(s => {
-                const st = String(s.status || 'active').toLowerCase();
-                if (st === 'pending') pending++;
-                else if (st === 'inactive' || st === 'cancelled') inactive++;
-                else active++;
-            });
-
-            if (statusChartInstance) statusChartInstance.destroy();
-            statusChartInstance = new Chart(document.getElementById('statusDonutChart'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Active / Completed', 'Pending', 'Inactive'],
-                    datasets: [{
-                        data: [active, pending, inactive],
-                        backgroundColor: ['#10B981', '#F59E0B', '#EF4444'],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '65%',
-                    plugins: {
-                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
-                    }
-                }
-            });
-        }
-
-        function renderPaytermBarChart(customers) {
-            const termCounts = { 'COD': 0, 'Net 15': 0, 'Net 30': 0, 'Net 60': 0 };
-            customers.forEach(c => {
-                const term = String(c.payterm || c.payterms || c.payment_terms || 'COD').trim();
-                termCounts[term] = (termCounts[term] || 0) + 1;
-            });
-
-            if (paytermChartInstance) paytermChartInstance.destroy();
-            paytermChartInstance = new Chart(document.getElementById('paytermBarChart'), {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(termCounts),
-                    datasets: [{
-                        label: 'Customers',
-                        data: Object.values(termCounts),
-                        backgroundColor: ['#292966', '#5C5C99', '#818CF8', '#A3A3CC'],
-                        borderRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: '#F1F5F9' } },
-                        x: { grid: { display: false } }
-                    }
-                }
-            });
-        }
-
-        function renderRecentSales(sales) {
-            const tbody = document.getElementById('recentSalesBody');
-            if (!sales.length) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#94A3B8; padding:1.5rem;">No sales records found yet.</td></tr>';
-                return;
-            }
-            const recent = sales.slice(0, 5);
-            tbody.innerHTML = recent.map(s => {
-                const transNo = s.transno || s.trans_no || s.id || 'N/A';
-                const cust = s.custname || s.customer_name || s.custno || 'N/A';
-                const amt = Number(s.total || s.amount || s.total_amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                const status = String(s.status || 'Active');
-                const isPending = status.toLowerCase() === 'pending';
-                const badgeStyle = isPending
-                    ? 'background:#FEF3C7; color:#92400E;'
-                    : 'background:#DCFCE7; color:#15803D;';
-                return `
-                    <tr>
-                        <td style="font-weight:600; color:#2563EB;">${transNo}</td>
-                        <td>${cust}</td>
-                        <td style="font-weight:600;">$${amt}</td>
-                        <td><span class="status-pill" style="${badgeStyle}">${status}</span></td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
-            e.preventDefault();
-            try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }); } catch {}
-            window.location.href = '/login.html';
-        });
-
-        initDashboard();
-    </script>
-    <script src="/js/permissions.js"></script>
-    <script src="/js/layout.js"></script>
-</body>
-</html>
- + Number(val).toLocaleString()
+                                callback: val => '$' + Number(val).toLocaleString()
                             }
                         },
                         x: { grid: { display: false } }
