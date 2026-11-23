@@ -1,3 +1,4 @@
+cat << 'EOF' > index.js
 import 'dotenv/config';
 import express from 'express';
 import session from 'express-session';
@@ -16,45 +17,67 @@ const app = express();
 app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'public', 'pages')));
-
-// Make root '/' load landingpage.html automatically
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'pages', 'landingpage.html'));
-});
-
 // 1. Core Global Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 2. Session Middleware (MUST be registered BEFORE routes)
+// 2. Session Middleware (MUST be registered BEFORE protected routes)
 app.use(
   session({
     secret: process.env.SESSION_SECRET || 'your-super-secret-key-change-in-production',
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false, // <-- MUST be false on HTTP localhost so the browser accepts the cookie!
+      secure: false, // false on HTTP localhost so the browser accepts the cookie
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 // 1 day
     }
   })
 );
 
-// Protect the reports page before falling through to static file handling.
-app.get('/user-reports.html', requireAnyRight('reports'), (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'user-reports.html'));
+// 3. Protected Page Route (Reports)
+app.get(['/reports', '/reports.html', '/user-reports.html'], requireAnyRight('reports'), (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'pages', 'reports.html'));
 });
 
+// 4. Static Asset & Page Serving (supports both /landingpage.html and /pages/landingpage.html)
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public', 'pages')));
 
-// 3. API Routes
+// 5. Clean Extensionless Page Routes for All 14 Consolidated Pages
+const pages = [
+  'customers',
+  'dashboard',
+  'forgotpassword',
+  'hr',
+  'landingpage',
+  'login',
+  'passwordreset',
+  'products',
+  'reports',
+  'sales',
+  'set-password',
+  'signup',
+  'terms',
+  'users'
+];
+
+pages.forEach((page) => {
+  app.get(`/${page}`, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'pages', `${page}.html`));
+  });
+});
+
+// Root '/' -> landingpage.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'pages', 'landingpage.html'));
+});
+
+// 6. API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/admin/reports', requireAnyRight('reports'));
 app.use('/api/admin', adminRoutes);
 
-// 4. Protected Route Example
 app.get('/api/dashboard', requireAuth, (req, res) => {
   supabase
     .from('user_rights')
@@ -80,18 +103,13 @@ app.get('/api/dashboard', requireAuth, (req, res) => {
         rights: rights || []
       });
     })
-    .catch(error => {
+    .catch((error) => {
       console.error('Dashboard rights error:', error);
       return res.status(500).json({ error: 'Unable to load user rights.' });
     });
 });
 
-// 5. Root Redirect (Ensure this matches your actual filename: signup.html vs signUp.html)
-app.get('/', (req, res) => {
-  res.redirect('/landingpage.html');
-});
-
-// 6. Database Connection Test & Server Startup
+// 7. Database Connection Test & Server Startup
 async function testConnection() {
   console.log('🔄 Pinging Supabase database instance...');
   const { data, error } = await supabase.from('app_user').select('*').limit(1);
@@ -107,3 +125,4 @@ app.listen(PORT, async () => {
   console.log(`🚀 Server is running on port ${PORT}`);
   await testConnection();
 });
+EOF
