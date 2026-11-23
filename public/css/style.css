@@ -155,8 +155,8 @@ body.admin-layout {
 }
 .checkbox-label a:hover { text-decoration: underline; }
 
-/* Buttons & Footers */
-button {
+/* Buttons & Footers (Scoped to Auth Cards) */
+.card button {
     width: 100%;
     padding: 0.85rem;
     background-color: #5C5C99;
@@ -168,7 +168,7 @@ button {
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
-button:hover { background-color: #292966; }
+.card button:hover { background-color: #292966; }
 .auth-footer { margin-top: 1.5rem; text-align: center; font-size: 0.875rem; color: #5C5C99; }
 .auth-footer a { color: #292966; font-weight: 600; text-decoration: none; }
 .auth-footer a:hover { text-decoration: underline; }
@@ -496,4 +496,58 @@ button:hover { background-color: #292966; }
     color: #334155 !important;
     font-size: 0.875rem !important;
     background-color: #FFFFFF !important; /* Locks background fields to pure white */
+}
+
+
+/* ==========================================================================
+   5. ADMIN LAYOUT BUTTON, TOOLBAR & MODAL SPACING NORMALIZATION
+   ========================================================================== */
+.admin-layout button {
+    width: auto;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.admin-layout header button,
+.admin-layout .top-header button {
+    padding: 0.4rem 0.75rem !important;
+    font-size: 0.8125rem !important;
+}
+
+/* Modal header close (X) button fix */
+.admin-layout [id*="Modal"] header button,
+.admin-layout [id*="Modal"] .border-b button,
+.admin-layout [role="dialog"] button:first-of-type {
+    width: 2rem !important;
+    height: 2rem !important;
+    min-width: 2rem !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: transparent !important;
+    color: #64748B !important;
+    border-radius: 0.5rem !important;
+}
+
+.admin-layout [id*="Modal"] header button:hover,
+.admin-layout [id*="Modal"] .border-b button:hover {
+    background: #F1F5F9 !important;
+    color: #0F172A !important;
+}
+
+/* Modal footer Cancel / Save buttons */
+.admin-layout [id*="Modal"] .border-t button,
+.admin-layout [id*="Modal"] form > div:last-child button {
+    padding: 0.5rem 1.25rem !important;
+    font-size: 0.875rem !important;
+    min-width: 110px;
+}
+
+/* Keep pagination controls compact and single-line */
+.admin-layout table + div,
+.admin-layout .pagination,
+.admin-layout [id*="Pagination"],
+.admin-layout [id*="pagination"] {
+    white-space: nowrap;
 }
