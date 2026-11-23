@@ -51,14 +51,82 @@ window.RIGHTS_CATALOGUE = {
   ]
 };
 
-// Temporary mock user while wiring pages.
-// Switch role to 'superadmin' | 'admin' | 'user' to preview any view.
+// Default state before /api/dashboard resolves
 window.CURRENT_USER = {
-  id: 1,
-  name: 'Julienne Baltazar',
-  email: 'julienne@hope-erp.local',
-  role: 'superadmin', // 'superadmin' | 'admin' | 'user'
-  rights: ['*']       // '*' grants all rights; or test with e.g. ['customer.view', 'customer.add']
+  id: null,
+  name: '',
+  email: '',
+  roleId: null,
+  role: 'user',
+  rights: []
+};
+
+function normalizeRole(rawRole) {
+  if (rawRole === 1 || String(rawRole).toLowerCase() === '1' || String(rawRole).toLowerCase() === 'superadmin') {
+    return 'superadmin';
+  }
+  if (rawRole === 2 || String(rawRole).toLowerCase() === '2' || String(rawRole).toLowerCase() === 'admin') {
+    return 'admin';
+  }
+  return 'user';
+}
+
+function formatRoleLabel(role) {
+  if (role === 'superadmin') return 'Superadmin';
+  if (role === 'admin') return 'Admin';
+  return 'User';
+}
+
+window.loadCurrentUserSession = async function () {
+  const publicPages = ['/', '/landingpage', '/landingpage.html', '/login', '/login.html', '/signup', '/signup.html', '/forgotpassword', '/forgotpassword.html', '/passwordreset', '/passwordreset.html', '/set-password', '/set-password.html', '/terms', '/terms.html'];
+  const currentPath = window.location.pathname;
+
+  try {
+    const res = await fetch('/api/dashboard', { credentials: 'include' });
+    if (!res.ok) {
+      if (!publicPages.includes(currentPath)) {
+        window.location.href = '/login.html';
+      }
+      return null;
+    }
+
+    const data = await res.json();
+    const session = data.userSessionData || {};
+    const first = session.firstName || session.first_name || '';
+    const last = session.lastName || session.last_name || '';
+    const fullName = `${first} ${last}`.trim() || session.email || 'User';
+    const role = normalizeRole(session.roleId ?? session.role_id);
+
+    const activeRights = Array.isArray(data.rights)
+      ? data.rights.filter((r) => r.is_allowed).map((r) => r.action_key)
+      : [];
+
+    window.CURRENT_USER = {
+      id: session.userId || session.user_id || session.id,
+      name: fullName,
+      email: session.email || '',
+      roleId: session.roleId ?? session.role_id,
+      role,
+      rights: role === 'superadmin' ? ['*'] : activeRights
+    };
+
+    // Keep all possible header/sidebar name & role elements in sync across every page
+    const nameEl = document.getElementById('user-name');
+    const profileEl = document.getElementById('userProfileInfo');
+    const roleEl = document.getElementById('user-role');
+    const badgeEl = document.getElementById('roleBadge');
+
+    if (nameEl) nameEl.textContent = fullName;
+    if (profileEl) profileEl.innerText = fullName;
+    if (roleEl) roleEl.textContent = formatRoleLabel(role);
+    if (badgeEl) badgeEl.innerText = formatRoleLabel(role);
+
+    document.dispatchEvent(new CustomEvent('userLoaded', { detail: window.CURRENT_USER }));
+    return window.CURRENT_USER;
+  } catch (err) {
+    console.error('Failed to load user session:', err);
+    return null;
+  }
 };
 
 // Check if user matches one of the allowed roles: hasRole('admin', 'superadmin')
@@ -83,9 +151,13 @@ window.hasModuleAccess = function (modulePrefix) {
 // Global logout helper
 window.logoutUser = async function () {
   try {
-    await fetch('/api/auth/logout', { method: 'POST' });
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
   } finally {
-    window.location.href = '/login';
+    window.location.href = '/login.html';
   }
 };
+
+document.addEventListener('DOMContentLoaded', () => {
+  window.loadCurrentUserSession();
+});
 EOF
