@@ -16,6 +16,14 @@ const app = express();
 app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public', 'pages')));
+
+// Make root '/' load landingpage.html automatically
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'pages', 'landingpage.html'));
+});
+
 // 1. Core Global Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
