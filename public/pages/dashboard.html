@@ -348,7 +348,7 @@
             cachedSalesData = sales;
 
             // 1. Update KPI Cards (All-Time)
-            const totalRevenue = sales.reduce((sum, s) => sum + Number(s.total || s.amount || s.total_amount || 0), 0);
+            const totalRevenue = sales.reduce((sum, s) => sum + Number(s.totalSales || s.total || s.amount || s.total_amount || 0), 0);
             const activeCustomers = customers.filter(c => !(c.is_blocked || c.status === 'blocked')).length;
             const pendingOrInactive = sales.filter(s => {
                 const st = String(s.status || '').toLowerCase();
@@ -393,7 +393,7 @@
                     ? `${yr}`
                     : d.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
 
-                const amt = Number(s.total || s.amount || s.total_amount || 0);
+                const amt = Number(s.totalSales || s.total || s.amount || s.total_amount || 0);
                 if (!buckets[sortKey]) buckets[sortKey] = { label, total: 0 };
                 buckets[sortKey].total += amt;
             });
@@ -516,7 +516,7 @@
             tbody.innerHTML = recent.map(s => {
                 const transNo = s.transno || s.trans_no || s.id || 'N/A';
                 const cust = s.custname || s.customer_name || s.custno || 'N/A';
-                const amt = Number(s.total || s.amount || s.total_amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const amt = Number(s.totalSales || s.total || s.amount || s.total_amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 const status = String(s.status || 'Active');
                 const isPending = status.toLowerCase() === 'pending';
                 const badgeStyle = isPending
