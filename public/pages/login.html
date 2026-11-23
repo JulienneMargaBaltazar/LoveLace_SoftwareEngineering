@@ -96,11 +96,11 @@
                     if (data.redirectUrl) {
                         window.location.href = data.redirectUrl;
                     } else if (data.roleId === 1) {
-                        window.location.href = '/superadmin-dashboard.html';
+                        window.location.href = '/dashboard.html';
                     } else if (data.roleId === 2) {
                         window.location.href = '/dashboard.html';
                     } else {
-                        window.location.href = '/user-dashboard.html';
+                        window.location.href = '/dashboard.html';
                     }
                 } else {
                     alert(data.error || 'Login failed. Please check your credentials.');

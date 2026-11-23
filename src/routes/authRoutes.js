@@ -153,10 +153,10 @@ router.post('/login', async (req, res) => {
         });
       }
 
-      let redirectUrl = '/user-dashboard.html';
+      let redirectUrl = '/dashboard.html';
       const roleId = Number(user.role_id);
       if (roleId === 1) {
-        redirectUrl = '/superadmin-dashboard.html';
+        redirectUrl = '/dashboard.html';
       } else if (roleId === 2) {
         redirectUrl = '/dashboard.html';
       }
