@@ -381,19 +381,36 @@
         function renderRevenueLineChart(sales, granularity = 'year') {
             const buckets = {};
             sales.forEach(s => {
-                const rawDate = s.sales_date || s.sale_date || s.created_at;
+                // Find any YYYY-MM-DD string or date property on the sales record
+                let rawDate = s.salesdate || s.salesDate || s.sales_date || s.sale_date || s.saleDate || s.transdate || s.transDate || s.date || s.stamp || s.created_at;
+                if (!rawDate) {
+                    for (const val of Object.values(s)) {
+                        if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}/.test(val.trim())) {
+                            rawDate = val.trim();
+                            break;
+                        }
+                    }
+                }
                 if (!rawDate) return;
-                const d = new Date(rawDate);
-                if (isNaN(d.getTime())) return;
 
-                const yr = d.getFullYear();
-                const mo = String(d.getMonth() + 1).padStart(2, '0');
-                const sortKey = granularity === 'year' ? `${yr}` : `${yr}-${mo}`;
-                const label = granularity === 'year'
-                    ? `${yr}`
-                    : d.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+                const str = String(rawDate).trim();
+                const ymd = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
+                let yr, mo, label;
+                if (ymd) {
+                    yr = ymd[1];
+                    mo = ymd[2];
+                    const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                    label = granularity === 'year' ? yr : (monthNames[Number(mo) - 1] + ' ' + yr);
+                } else {
+                    const d = new Date(str);
+                    if (isNaN(d.getTime())) return;
+                    yr = String(d.getFullYear());
+                    mo = String(d.getMonth() + 1).padStart(2, '0');
+                    label = granularity === 'year' ? yr : d.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+                }
 
-                const amt = Number(s.totalSales || s.total || s.amount || s.total_amount || 0);
+                const sortKey = granularity === 'year' ? yr : (yr + '-' + mo);
+                const amt = Number(s.totalSales ?? s.total ?? s.total_amount ?? s.amount ?? s.sales_amount ?? 0) || 0;
                 if (!buckets[sortKey]) buckets[sortKey] = { label, total: 0 };
                 buckets[sortKey].total += amt;
             });
