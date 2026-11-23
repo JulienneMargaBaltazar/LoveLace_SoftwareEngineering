@@ -1,0 +1,564 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - LoveLace Inc. ERP</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.25rem;
+            width: 100%;
+        }
+        .charts-bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+            width: 100%;
+        }
+        .chart-card {
+            background: #FFFFFF;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid #A3A3CC;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
+            display: flex;
+            flex-direction: column;
+        }
+        .chart-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .chart-card-header h3 {
+            margin: 0;
+            color: #292966;
+            font-size: 1rem;
+        }
+        .chart-card-header span {
+            font-size: 0.75rem;
+            color: #5C5C99;
+        }
+        .chart-canvas-wrap {
+            position: relative;
+            height: 240px;
+            width: 100%;
+        }
+        .recent-sales-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .recent-sales-table th {
+            text-align: left;
+            padding: 0.6rem 0.75rem;
+            background: #292966;
+            color: #FFFFFF;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+        .recent-sales-table td {
+            padding: 0.65rem 0.75rem;
+            border-bottom: 1px solid #F1F5F9;
+            color: #334155;
+        }
+        .status-pill {
+            padding: 0.15rem 0.5rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+        @media (max-width: 1024px) {
+            .charts-grid, .charts-bottom-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="admin-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span>LoveLace Inc. ERP</span>
+            <small style="display:block; font-size:10px; color:#5C5C99; font-weight:normal;">by LoveLace</small>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item active"><a href="/dashboard">📊 Dashboard</a></li>
+            <li class="nav-item"><a href="/customers">👥 Customers</a></li>
+            <li class="nav-item"><a href="/products">📦 Products</a></li>
+            <li class="nav-item"><a href="/hr">👔 Human Resources</a></li>
+            <li class="nav-item"><a href="/sales">💼 Sales</a></li>
+            <li class="nav-item"><a href="/users">⚙️ User Management</a></li>
+            <li class="nav-item"><a href="/settings">🔧 System Settings</a></li>
+            <li class="nav-item logout-menu-item" style="margin-top: 1rem;">
+                <a href="/" id="logoutBtn" style="color: #ef4444 !important;">🚪 Logout</a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-profile">
+            <div class="profile-info">
+                <div class="avatar">👑</div>
+                <div class="profile-text">
+                    <span class="username" id="userProfileInfo">Loading user...</span>
+                    <span class="role" id="sidebarRoleLabel">User</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN WORKSPACE CONTAINER -->
+    <main class="main-content">
+        <header class="top-header">
+            <div class="search-bar-mock">
+                <span>🔍</span>
+                <input type="text" placeholder="Search modules..." disabled>
+            </div>
+            <div class="user-badge-top" id="topRoleBadge" style="background: #EDE9FE; color: #6D28D9;">User</div>
+        </header>
+
+        <div class="dashboard-container">
+            <!-- Purple Welcome Banner -->
+            <div class="welcome-banner-purple">
+                <div class="banner-content">
+                    <h1 id="welcomeHeading">Welcome back!</h1>
+                    <p>LoveLace Inc. ERP — Live Operations, Sales & Resource Overview.</p>
+                </div>
+            </div>
+
+            <!-- Live Metric Cards Grid (4 Columns) -->
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon-wrapper purple">💰</div>
+                    <div class="stat-meta">
+                        <span class="stat-header">All-Time Sales Revenue</span>
+                        <div class="stat-value">
+                            <span id="kpiRevenue">$0.00</span>
+                            <span class="badge-pill success" id="kpiSalesCount">0 sales</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon-wrapper blue">👥</div>
+                    <div class="stat-meta">
+                        <span class="stat-header">Total Customers</span>
+                        <div class="stat-value">
+                            <span id="kpiCustomers">0</span>
+                            <span class="badge-pill success" id="kpiActiveCustomers">0 active</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon-wrapper teal">📦</div>
+                    <div class="stat-meta">
+                        <span class="stat-header">Products Catalog</span>
+                        <div class="stat-value">
+                            <span id="kpiProducts">0</span>
+                            <span class="badge-pill success">items</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon-wrapper orange">⏳</div>
+                    <div class="stat-meta">
+                        <span class="stat-header">Pending / Inactive Sales</span>
+                        <div class="stat-value">
+                            <span id="kpiPendingSales">0</span>
+                            <span class="badge-pill" style="background: #FEF3C7; color: #92400E;">review</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Actions Container Panel -->
+            <section class="quick-actions-section">
+                <div class="section-title-row">
+                    <h3>Quick Actions</h3>
+                    <a href="/reports" class="view-all-link">View Full Reports →</a>
+                </div>
+                
+                <div class="actions-grid">
+                    <button onclick="location.href='/sales'" class="action-btn-card">
+                        <div class="action-icon">💼</div>
+                        <div class="action-label">
+                            <strong>Record Sale</strong>
+                            <span>Manage transactions</span>
+                        </div>
+                    </button>
+                    
+                    <button onclick="location.href='/customers'" class="action-btn-card">
+                        <div class="action-icon">👥</div>
+                        <div class="action-label">
+                            <strong>Customers</strong>
+                            <span>Client directory</span>
+                        </div>
+                    </button>
+                    
+                    <button onclick="location.href='/products'" class="action-btn-card">
+                        <div class="action-icon">📦</div>
+                        <div class="action-label">
+                            <strong>Products</strong>
+                            <span>Inventory & pricing</span>
+                        </div>
+                    </button>
+                    
+                    <button onclick="location.href='/users'" class="action-btn-card">
+                        <div class="action-icon">⚙️</div>
+                        <div class="action-label">
+                            <strong>Manage Users</strong>
+                            <span>Roles & permissions</span>
+                        </div>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Row 1 Charts: All-Time Revenue Line Chart + Sales Status Donut Chart -->
+            <section class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <div>
+                            <h3 id="revenueChartTitle">All-Time Sales Revenue (2010 – Present)</h3>
+                            <span>Annual revenue progression across all historical records</span>
+                        </div>
+                        <select id="revenueGranularity" onchange="updateRevenueGranularity()" style="padding:0.25rem 0.5rem; border:1px solid #CBD5E1; border-radius:6px; font-size:0.75rem; color:#292966; background:#F8FAFC; cursor:pointer;">
+                            <option value="year" selected>By Year (All-Time)</option>
+                            <option value="month">By Month (All-Time)</option>
+                        </select>
+                    </div>
+                    <div class="chart-canvas-wrap">
+                        <canvas id="revenueLineChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3>Sales by Status</h3>
+                        <span>Active vs Pending vs Inactive</span>
+                    </div>
+                    <div class="chart-canvas-wrap">
+                        <canvas id="statusDonutChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Row 2 Charts: Payment Terms Bar Chart + Recent Sales Table -->
+            <section class="charts-bottom-grid">
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3>Customers by Payment Terms</h3>
+                        <span>COD / Net 15 / Net 30 / Net 60</span>
+                    </div>
+                    <div class="chart-canvas-wrap">
+                        <canvas id="paytermBarChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3>Recent Sales Transactions</h3>
+                        <a href="/sales" class="view-all-link">All sales →</a>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table class="recent-sales-table">
+                            <thead>
+                                <tr>
+                                    <th>Trans No</th>
+                                    <th>Customer</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentSalesBody">
+                                <tr><td colspan="4" style="text-align:center; color:#94A3B8; padding:1.5rem;">Loading live sales...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        let revenueChartInstance = null;
+        let statusChartInstance = null;
+        let paytermChartInstance = null;
+        let cachedSalesData = [];
+
+        const ROLE_LABELS = { 1: 'Superadmin', 2: 'Admin', 3: 'User' };
+
+        async function initDashboard() {
+            try {
+                const response = await fetch('/api/dashboard', { credentials: 'include' });
+                if (!response.ok) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                const data = await response.json();
+                const sessionData = data.userSessionData || {};
+
+                let firstName = sessionData.first_name || sessionData.firstName || '';
+                let lastName = sessionData.last_name || sessionData.lastName || '';
+                let fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : (sessionData.name || 'User');
+                if (fullName && !firstName) firstName = fullName.split(' ')[0];
+
+                const roleId = Number(sessionData.roleId || sessionData.role_id || 3);
+                const roleName = ROLE_LABELS[roleId] || 'User';
+
+                document.getElementById('welcomeHeading').innerText = `Welcome back, ${firstName}!`;
+                document.getElementById('userProfileInfo').innerText = fullName;
+                document.getElementById('sidebarRoleLabel').innerText = roleName;
+                document.getElementById('topRoleBadge').innerText = roleName;
+
+                await loadLiveMetricsAndCharts();
+            } catch (err) {
+                console.error('Session check failed:', err);
+                window.location.href = '/login.html';
+            }
+        }
+
+        async function safeFetchList(url, keys) {
+            try {
+                const res = await fetch(url, { credentials: 'include' });
+                if (!res.ok) return [];
+                const json = await res.json();
+                if (Array.isArray(json)) return json;
+                for (const k of keys) {
+                    if (Array.isArray(json[k])) return json[k];
+                }
+                return Array.isArray(json.data) ? json.data : [];
+            } catch {
+                return [];
+            }
+        }
+
+        async function loadLiveMetricsAndCharts() {
+            const [sales, customers, products] = await Promise.all([
+                safeFetchList('/api/admin/sales', ['sales']),
+                safeFetchList('/api/admin/customers', ['customers']),
+                safeFetchList('/api/admin/products', ['products'])
+            ]);
+
+            cachedSalesData = sales;
+
+            // 1. Update KPI Cards (All-Time)
+            const totalRevenue = sales.reduce((sum, s) => sum + Number(s.totalSales || s.total || s.amount || s.total_amount || 0), 0);
+            const activeCustomers = customers.filter(c => !(c.is_blocked || c.status === 'blocked')).length;
+            const pendingOrInactive = sales.filter(s => {
+                const st = String(s.status || '').toLowerCase();
+                return st === 'pending' || st === 'inactive' || st === 'cancelled';
+            }).length;
+
+            document.getElementById('kpiRevenue').innerText = '$' + totalRevenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('kpiSalesCount').innerText = `${sales.length} sales`;
+            document.getElementById('kpiCustomers').innerText = customers.length.toLocaleString();
+            document.getElementById('kpiActiveCustomers').innerText = `${activeCustomers} active`;
+            document.getElementById('kpiProducts').innerText = products.length.toLocaleString();
+            document.getElementById('kpiPendingSales').innerText = pendingOrInactive.toLocaleString();
+
+            // 2. Render Charts from Live Data
+            renderRevenueLineChart(sales, 'year');
+            renderStatusDonutChart(sales);
+            renderPaytermBarChart(customers);
+            renderRecentSales(sales);
+        }
+
+        function updateRevenueGranularity() {
+            const mode = document.getElementById('revenueGranularity').value;
+            document.getElementById('revenueChartTitle').innerText =
+                mode === 'year'
+                    ? 'All-Time Sales Revenue (2010 – Present)'
+                    : 'All-Time Monthly Sales Revenue';
+            renderRevenueLineChart(cachedSalesData, mode);
+        }
+
+        function renderRevenueLineChart(sales, granularity = 'year') {
+            const buckets = {};
+            sales.forEach(s => {
+                // Find any YYYY-MM-DD string or date property on the sales record
+                let rawDate = s.salesdate || s.salesDate || s.sales_date || s.sale_date || s.saleDate || s.transdate || s.transDate || s.date || s.stamp || s.created_at;
+                if (!rawDate) {
+                    for (const val of Object.values(s)) {
+                        if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}/.test(val.trim())) {
+                            rawDate = val.trim();
+                            break;
+                        }
+                    }
+                }
+                if (!rawDate) return;
+
+                const str = String(rawDate).trim();
+                const ymd = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
+                let yr, mo, label;
+                if (ymd) {
+                    yr = ymd[1];
+                    mo = ymd[2];
+                    const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                    label = granularity === 'year' ? yr : (monthNames[Number(mo) - 1] + ' ' + yr);
+                } else {
+                    const d = new Date(str);
+                    if (isNaN(d.getTime())) return;
+                    yr = String(d.getFullYear());
+                    mo = String(d.getMonth() + 1).padStart(2, '0');
+                    label = granularity === 'year' ? yr : d.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+                }
+
+                const sortKey = granularity === 'year' ? yr : (yr + '-' + mo);
+                const amt = Number(s.totalSales ?? s.total ?? s.total_amount ?? s.amount ?? s.sales_amount ?? 0) || 0;
+                if (!buckets[sortKey]) buckets[sortKey] = { label, total: 0 };
+                buckets[sortKey].total += amt;
+            });
+
+            const sortedKeys = Object.keys(buckets).sort();
+            const labels = sortedKeys.map(k => buckets[k].label);
+            const values = sortedKeys.map(k => buckets[k].total);
+
+            if (revenueChartInstance) revenueChartInstance.destroy();
+            revenueChartInstance = new Chart(document.getElementById('revenueLineChart'), {
+                type: 'line',
+                data: {
+                    labels: labels.length ? labels : ['No Sales Data'],
+                    datasets: [{
+                        label: 'All-Time Revenue ($)',
+                        data: values.length ? values : [0],
+                        borderColor: '#5C5C99',
+                        backgroundColor: 'rgba(92, 92, 153, 0.15)',
+                        borderWidth: 2.5,
+                        tension: 0.3,
+                        fill: true,
+                        pointBackgroundColor: '#292966',
+                        pointRadius: granularity === 'year' ? 4 : 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => ' $' + Number(ctx.parsed.y || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#F1F5F9' },
+                            ticks: {
+                                callback: val => '$' + Number(val).toLocaleString()
+                            }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function renderStatusDonutChart(sales) {
+            let active = 0, pending = 0, inactive = 0;
+            sales.forEach(s => {
+                const st = String(s.status || 'active').toLowerCase();
+                if (st === 'pending') pending++;
+                else if (st === 'inactive' || st === 'cancelled') inactive++;
+                else active++;
+            });
+
+            if (statusChartInstance) statusChartInstance.destroy();
+            statusChartInstance = new Chart(document.getElementById('statusDonutChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Active / Completed', 'Pending', 'Inactive'],
+                    datasets: [{
+                        data: [active, pending, inactive],
+                        backgroundColor: ['#10B981', '#F59E0B', '#EF4444'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+                    }
+                }
+            });
+        }
+
+        function renderPaytermBarChart(customers) {
+            const termCounts = { 'COD': 0, 'Net 15': 0, 'Net 30': 0, 'Net 60': 0 };
+            customers.forEach(c => {
+                const term = String(c.payterm || c.payterms || c.payment_terms || 'COD').trim();
+                termCounts[term] = (termCounts[term] || 0) + 1;
+            });
+
+            if (paytermChartInstance) paytermChartInstance.destroy();
+            paytermChartInstance = new Chart(document.getElementById('paytermBarChart'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(termCounts),
+                    datasets: [{
+                        label: 'Customers',
+                        data: Object.values(termCounts),
+                        backgroundColor: ['#292966', '#5C5C99', '#818CF8', '#A3A3CC'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: '#F1F5F9' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function renderRecentSales(sales) {
+            const tbody = document.getElementById('recentSalesBody');
+            if (!sales.length) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#94A3B8; padding:1.5rem;">No sales records found yet.</td></tr>';
+                return;
+            }
+            const recent = sales.slice(0, 5);
+            tbody.innerHTML = recent.map(s => {
+                const transNo = s.transno || s.trans_no || s.id || 'N/A';
+                const cust = s.custname || s.customer_name || s.custno || 'N/A';
+                const amt = Number(s.totalSales || s.total || s.amount || s.total_amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const status = String(s.status || 'Active');
+                const isPending = status.toLowerCase() === 'pending';
+                const badgeStyle = isPending
+                    ? 'background:#FEF3C7; color:#92400E;'
+                    : 'background:#DCFCE7; color:#15803D;';
+                return `
+                    <tr>
+                        <td style="font-weight:600; color:#2563EB;">${transNo}</td>
+                        <td>${cust}</td>
+                        <td style="font-weight:600;">$${amt}</td>
+                        <td><span class="status-pill" style="${badgeStyle}">${status}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }); } catch {}
+            window.location.href = '/login.html';
+        });
+
+        initDashboard();
+    </script>
+    <script src="/js/permissions.js"></script>
+    <script src="/js/layout.js"></script>
+</body>
+</html>

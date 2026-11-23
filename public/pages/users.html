@@ -9,7 +9,7 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Shared Stylesheet -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/css/style.css">
     <style>
         .sidebar-footer {
             padding: 1.25rem;
@@ -73,18 +73,18 @@
             <small style="display:block; font-size:10px; color:#5C5C99; font-weight:normal;">by LoveLace</small>
         </div>
         <ul class="nav-menu">
-            <li class="nav-item"><a href="dashboard.html">📊 Dashboard</a></li>
-            <li class="nav-item"><a href="admin-customers.html">👥 Customers</a></li>
-            <li class="nav-item"><a href="admin-products.html">📦 Products</a></li>
-             <li class="nav-item"><a href="admin-human-resources.html">👔 Human Resources</a></li>
-            <li class="nav-item"><a href="admin-sales.html">💼 Sales</a></li>
-            <li class="nav-item"><a href="admin-reports.html">📈 Reports</a></li>
-            <li class="nav-item active"><a href="admin-user-management.html">👤 User Management</a></li>
+            <li class="nav-item"><a href="/dashboard">📊 Dashboard</a></li>
+            <li class="nav-item"><a href="/customers">👥 Customers</a></li>
+            <li class="nav-item"><a href="/products">📦 Products</a></li>
+             <li class="nav-item"><a href="/hr">👔 Human Resources</a></li>
+            <li class="nav-item"><a href="/sales">💼 Sales</a></li>
+            <li class="nav-item"><a href="/reports">📈 Reports</a></li>
+            <li class="nav-item active"><a href="/users">👤 User Management</a></li>
             <li class="nav-item"><a href="settings.html">⚙️ Settings</a></li>
             
             <!-- LOGOUT ALIGNED WITH USER DASHBOARD -->
             <li class="nav-item logout-menu-item" style="margin-top: 1rem;">
-                <a href="landingpage.html" style="color: #ef4444 !important;">🚪 Logout</a>
+                <a href="/" style="color: #ef4444 !important;">🚪 Logout</a>
             </li>
         </ul>
         
@@ -110,7 +110,7 @@
                     <p class="text-xs text-gray-500">LoveLace, Inc. ERP - User accounts & access management</p>
                 </div>
                 <div class="flex items-center gap-4">
-                    <span class="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-md border border-purple-200">Admin</span>
+                    <span id="roleBadge" class="role px-3 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-md border border-purple-200">Loading...</span>
                 </div>
             </header>
 
@@ -313,5 +313,7 @@
             }
         });
     </script>
+  <script src="/js/permissions.js"></script>
+  <script src="/js/layout.js"></script>
 </body>
 </html>

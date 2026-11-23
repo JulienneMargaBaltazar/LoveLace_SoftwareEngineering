@@ -11,7 +11,7 @@
     <!-- html2pdf.js for exporting reports to PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- Shared Stylesheet -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/css/style.css">
     <style>
         .report-navbar {
             display: flex;
@@ -82,13 +82,13 @@
             <small style="display:block; font-size:10px; color:#5C5C99; font-weight:normal;">by LoveLace</small>
         </div>
         <ul class="nav-menu">
-            <li class="nav-item"><a href="dashboard.html">📊 Dashboard</a></li>
-            <li class="nav-item"><a href="admin-customers.html">👥 Customers</a></li>
-            <li class="nav-item"><a href="admin-products.html">📦 Products</a></li>
-            <li class="nav-item"><a href="admin-human-resources.html">👔 Human Resources</a></li>
-            <li class="nav-item"><a href="admin-sales.html">💼 Sales</a></li>
-            <li class="nav-item active"><a href="admin-reports.html">📈 Reports</a></li>
-            <li class="nav-item"><a href="admin-user-management.html">👤 User Management</a></li>
+            <li class="nav-item"><a href="/dashboard">📊 Dashboard</a></li>
+            <li class="nav-item"><a href="/customers">👥 Customers</a></li>
+            <li class="nav-item"><a href="/products">📦 Products</a></li>
+            <li class="nav-item"><a href="/hr">👔 Human Resources</a></li>
+            <li class="nav-item"><a href="/sales">💼 Sales</a></li>
+            <li class="nav-item active"><a href="/reports">📈 Reports</a></li>
+            <li class="nav-item"><a href="/users">👤 User Management</a></li>
             <li class="nav-item"><a href="settings.html">⚙️ Settings</a></li>
             
             <li class="nav-item logout-menu-item" style="margin-top: 1rem;">
@@ -523,5 +523,7 @@
             }
         });
     </script>
+  <script src="/js/permissions.js"></script>
+  <script src="/js/layout.js"></script>
 </body>
 </html>
