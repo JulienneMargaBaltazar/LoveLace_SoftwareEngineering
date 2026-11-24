@@ -187,7 +187,7 @@
         }
 
         // Action steps for valid configurations
-        alert(data?.message || 'Account created successfully!');
+        await AppDialog.alert(data?.message || 'Account created successfully!');
         window.location.href = '/login.html';
 
       } catch (err) {
@@ -196,7 +196,7 @@
           pwdBubble.classList.remove('hidden');
         } else {
           // Outputs clean parsed server payload error configurations
-          alert(err.message);
+          await AppDialog.alert(err.message);
         }
       }
     });

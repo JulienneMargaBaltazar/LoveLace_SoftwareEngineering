@@ -103,11 +103,11 @@
                         window.location.href = '/dashboard.html';
                     }
                 } else {
-                    alert(data.error || 'Login failed. Please check your credentials.');
+                    await AppDialog.alert(data.error || 'Login failed. Please check your credentials.');
                 }
             } catch (err) {
                 console.error('Login network error:', err);
-                alert('An unexpected error occurred. Please try again.');
+                await AppDialog.alert('An unexpected error occurred. Please try again.');
             }
         });
     </script>
