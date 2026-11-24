@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -91,23 +91,23 @@
             <small style="display:block; font-size:10px; color:#5C5C99; font-weight:normal;">by LoveLace</small>
         </div>
         <ul class="nav-menu">
-            <li class="nav-item"><a href="/dashboard">📊 Dashboard</a></li>
-            <li class="nav-item"><a href="/customers">👥 Customers</a></li>
-            <li class="nav-item active"><a href="/products">📦 Products</a></li>
-            <li class="nav-item"><a href="/hr">👔 Human Resources</a></li>
-            <li class="nav-item"><a href="/sales">💼 Sales</a></li>
-            <li class="nav-item"><a href="/users">⚙️ User Management</a></li>
-            <li class="nav-item"><a href="settings.html">🔧 System Settings</a></li>
+            <li class="nav-item"><a href="/dashboard">ðŸ“Š Dashboard</a></li>
+            <li class="nav-item"><a href="/customers">ðŸ‘¥ Customers</a></li>
+            <li class="nav-item active"><a href="/products">ðŸ“¦ Products</a></li>
+            <li class="nav-item"><a href="/hr">ðŸ‘” Human Resources</a></li>
+            <li class="nav-item"><a href="/sales">ðŸ’¼ Sales</a></li>
+            <li class="nav-item"><a href="/users">âš™ï¸ User Management</a></li>
+            <li class="nav-item"><a href="settings.html">ðŸ”§ System Settings</a></li>
             
             <!-- LOGOUT CONTAINER MATCHING USER DASHBOARD REDIRECT -->
             <li class="nav-item logout-menu-item" style="margin-top: 1rem;">
-                <a href="/" style="color: #ef4444 !important;" id="logoutBtn">🚪 Logout</a>
+                <a href="/" style="color: #ef4444 !important;" id="logoutBtn">ðŸšª Logout</a>
             </li>
         </ul>
         
         <div class="sidebar-profile">
             <div class="profile-info">
-                <div class="avatar">👑</div>
+                <div class="avatar">ðŸ‘‘</div>
                 <div class="profile-text">
                     <span class="username" id="userProfileInfo">Loading user...</span>
                     <span class="role">Superadmin</span>
@@ -184,7 +184,7 @@
 
                 <!-- Table Footer Pagination Bar -->
                 <div class="table-footer-pagination px-6 py-3 bg-gray-50 border-t border-gray-200 flex justify-between items-center text-xs text-gray-500">
-                    <span id="paginationInfo">Showing 1–8 of 128</span>
+                    <span id="paginationInfo">Showing 1â€“8 of 128</span>
                     <div class="pagination-controls flex items-center gap-2">
                         <button class="page-btn px-2 py-1 bg-white border border-gray-300 rounded hover:bg-gray-100"><i class="fa-solid fa-chevron-left"></i></button>
                         <span class="font-medium text-gray-700">Page 1 of 16</span>
@@ -294,7 +294,7 @@
             }
         }
 
-        function renderProductTable(products) {
+        async function renderProductTable(products) {
             const tbody = document.getElementById('productTableBody');
 
             if (!Array.isArray(products) || products.length === 0) {
@@ -425,7 +425,7 @@
         }
 
         async function deleteProduct(prodcode) {
-            if (!confirm(`Are you sure you want to delete product #${prodcode}? This action cannot be undone.`)) {
+            if (!await showConfirm(`Are you sure you want to delete product #${prodcode}? This action cannot be undone.`)) {
                 return;
             }
 
@@ -440,7 +440,7 @@
 
                 await fetchProductDirectory();
             } catch (err) {
-                alert('Error deleting product: ' + err.message);
+                await showAlert('Error deleting product: ' + err.message);
             }
         }
 
@@ -460,5 +460,6 @@
     </script>
   <script src="/js/permissions.js"></script>
   <script src="/js/layout.js"></script>
+    <script src="/js/dialog.js"></script>
 </body>
 </html>

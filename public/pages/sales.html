@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -100,22 +100,22 @@
             <small style="display:block; font-size:10px; color:#5C5C99; font-weight:normal;">by LoveLace</small>
         </div>
         <ul class="nav-menu">
-            <li class="nav-item"><a href="/dashboard">📊 Dashboard</a></li>
-            <li class="nav-item"><a href="/customers">👥 Customers</a></li>
-            <li class="nav-item"><a href="/products">📦 Products</a></li>
-            <li class="nav-item"><a href="/hr">👔 Human Resources</a></li>
-            <li class="nav-item active"><a href="/sales">💼 Sales</a></li>
-            <li class="nav-item"><a href="/users">⚙️ User Management</a></li>
-            <li class="nav-item"><a href="settings.html">🔧 System Settings</a></li>
+            <li class="nav-item"><a href="/dashboard">ðŸ“Š Dashboard</a></li>
+            <li class="nav-item"><a href="/customers">ðŸ‘¥ Customers</a></li>
+            <li class="nav-item"><a href="/products">ðŸ“¦ Products</a></li>
+            <li class="nav-item"><a href="/hr">ðŸ‘” Human Resources</a></li>
+            <li class="nav-item active"><a href="/sales">ðŸ’¼ Sales</a></li>
+            <li class="nav-item"><a href="/users">âš™ï¸ User Management</a></li>
+            <li class="nav-item"><a href="settings.html">ðŸ”§ System Settings</a></li>
             
             <li class="nav-item logout-menu-item" style="margin-top: 1rem;">
-                <a href="#" id="logoutBtn" style="color: #ef4444 !important;">🚪 Logout</a>
+                <a href="#" id="logoutBtn" style="color: #ef4444 !important;">ðŸšª Logout</a>
             </li>
         </ul>
 
         <div class="sidebar-profile">
             <div class="profile-info">
-                <div class="avatar">👑</div>
+                <div class="avatar">ðŸ‘‘</div>
                 <div class="profile-text">
                     <span class="username" id="userProfileInfo">Loading user...</span>
                     <span class="role">Superadmin</span>
@@ -193,7 +193,7 @@
 
                 <!-- Table Footer Pagination Bar -->
                 <div class="table-footer-pagination px-6 py-3 bg-gray-50 border-t border-gray-200 flex justify-between items-center text-xs text-gray-500">
-                    <span id="paginationInfo">Showing 1–3 of 3</span>
+                    <span id="paginationInfo">Showing 1â€“3 of 3</span>
                     <div class="pagination-controls flex items-center gap-2">
                         <button class="page-btn px-2 py-1 bg-white border border-gray-300 rounded hover:bg-gray-100"><i class="fa-solid fa-chevron-left"></i></button>
                         <span class="font-medium text-gray-700">Page 1 of 1</span>
@@ -297,7 +297,7 @@
             }
         }
 
-        function renderSalesTable(sales) {
+        async function renderSalesTable(sales) {
             const tbody = document.getElementById('salesTableBody');
 
             if (!Array.isArray(sales) || sales.length === 0) {
@@ -336,7 +336,7 @@
                         <td class="py-4 px-6 font-mono text-xs font-semibold text-gray-900 align-middle">$${total}</td>
                         <td class="py-4 px-6 text-right align-middle">
                             <div class="inline-flex items-center gap-2 justify-end">
-                                <button onclick="alert('Viewing details for transaction ${escapeHtml(sale.transno)}')" class="details-btn-pill">Details</button>
+                                <button onclick="await showAlert('Viewing details for transaction ${escapeHtml(sale.transno)}')" class="details-btn-pill">Details</button>
                                 <button onclick="openEditSale('${escapeHtml(sale.transno)}')" class="action-icon-btn" title="Edit">
                                     <i class="fa-regular fa-pen-to-square"></i>
                                 </button>
@@ -446,7 +446,7 @@
         }
 
         async function deleteSale(transno) {
-            if (!confirm(`Are you sure you want to delete transaction ${transno}?`)) return;
+            if (!await showConfirm(`Are you sure you want to delete transaction ${transno}?`)) return;
             try {
                 const res = await fetch(`/api/admin/sales/${encodeURIComponent(transno)}`, {
                     method: 'DELETE',
@@ -456,12 +456,12 @@
                 if (!res.ok) throw new Error(data.error || 'Failed to delete transaction');
                 fetchSalesRecords();
             } catch (err) {
-                alert('Error: ' + err.message);
+                await showAlert('Error: ' + err.message);
             }
         }
 
         function openEditSale(transno) {
-            alert(`Edit modal for transaction ${transno}`);
+            await showAlert(`Edit modal for transaction ${transno}`);
         }
 
         function escapeHtml(str) {
@@ -480,5 +480,6 @@
     </script>
   <script src="/js/permissions.js"></script>
   <script src="/js/layout.js"></script>
+    <script src="/js/dialog.js"></script>
 </body>
 </html>

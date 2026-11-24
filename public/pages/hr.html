@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -32,22 +32,22 @@
             <small style="display:block; font-size:10px; color:#5C5C99; font-weight:normal;">by LoveLace</small>
         </div>
         <ul class="nav-menu">
-            <li class="nav-item"><a href="/dashboard">📊 Dashboard</a></li>
-            <li class="nav-item"><a href="/customers">👥 Customers</a></li>
-            <li class="nav-item"><a href="/products">📦 Products</a></li>
-            <li class="nav-item active"><a href="/hr">👔 Human Resources</a></li>
-            <li class="nav-item"><a href="/sales">💼 Sales</a></li>
-            <li class="nav-item"><a href="/users">⚙️ User Management</a></li>
-            <li class="nav-item"><a href="settings.html">🔧 System Settings</a></li>
+            <li class="nav-item"><a href="/dashboard">ðŸ“Š Dashboard</a></li>
+            <li class="nav-item"><a href="/customers">ðŸ‘¥ Customers</a></li>
+            <li class="nav-item"><a href="/products">ðŸ“¦ Products</a></li>
+            <li class="nav-item active"><a href="/hr">ðŸ‘” Human Resources</a></li>
+            <li class="nav-item"><a href="/sales">ðŸ’¼ Sales</a></li>
+            <li class="nav-item"><a href="/users">âš™ï¸ User Management</a></li>
+            <li class="nav-item"><a href="settings.html">ðŸ”§ System Settings</a></li>
             
             <li class="nav-item logout-menu-item" style="margin-top: 1rem;">
-                <a href="/" style="color: #ef4444 !important;" id="logoutBtn">🚪 Logout</a>
+                <a href="/" style="color: #ef4444 !important;" id="logoutBtn">ðŸšª Logout</a>
             </li>
         </ul>
         
         <div class="sidebar-profile">
             <div class="profile-info">
-                <div class="avatar">👑</div>
+                <div class="avatar">ðŸ‘‘</div>
                 <div class="profile-text">
                     <span class="username" id="userProfileInfo">Loading user...</span>
                     <span class="role">Superadmin</span>
@@ -302,9 +302,9 @@ function renderEmployeesTable(query) {
             <tr class="hover:bg-gray-50/80 transition border-b border-gray-100">
                 <td class="py-4 px-6 font-mono font-semibold text-xs text-blue-600">${escapeHtml(emp.empno || emp.id)}</td>
                 <td class="py-4 px-6 font-medium text-gray-900">${escapeHtml(name)}</td>
-                <td class="py-4 px-6 text-gray-600">${escapeHtml(emp.gender || '—')}</td>
-                <td class="py-4 px-6 text-gray-600 font-mono text-xs">${escapeHtml(emp.hiredate || '—')}</td>
-                <td class="py-4 px-6 text-gray-600 font-mono text-xs">${emp.sepdate ? escapeHtml(emp.sepdate) : '—'}</td>
+                <td class="py-4 px-6 text-gray-600">${escapeHtml(emp.gender || 'â€”')}</td>
+                <td class="py-4 px-6 text-gray-600 font-mono text-xs">${escapeHtml(emp.hiredate || 'â€”')}</td>
+                <td class="py-4 px-6 text-gray-600 font-mono text-xs">${emp.sepdate ? escapeHtml(emp.sepdate) : 'â€”'}</td>
                 <td class="py-4 px-6">
                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full ${isInactive ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
                         <i class="fa-solid fa-circle" style="font-size: 0.4rem;"></i> ${isInactive ? 'Inactive' : 'Active'}
@@ -313,7 +313,7 @@ function renderEmployeesTable(query) {
                 <td class="py-4 px-6 text-right">
                     <div class="inline-flex items-center gap-2 justify-end">
                         <button type="button" onclick="showHistory('${escapeHtml(emp.empno || emp.id)}')" class="px-2.5 py-1 text-xs font-semibold rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50">History</button>
-                        <button onclick="alert('Editing employee ${escapeHtml(emp.empno)}')" class="action-icon-btn" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
+                        <button onclick="await showAlert('Editing employee ${escapeHtml(emp.empno)}')" class="action-icon-btn" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
                     </div>
                 </td>
             </tr>`;
@@ -365,8 +365,8 @@ function renderJobsTable(query) {
                 <td class="py-4 px-6 text-xs text-gray-500 font-mono">${escapeHtml(stamp)}</td>
                 <td class="py-4 px-6 text-right">
                     <div class="inline-flex items-center gap-2 justify-end">
-                        <button onclick="alert('Editing job ${escapeHtml(code)}')" class="action-icon-btn" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
-                        <button onclick="alert('Deleting job ${escapeHtml(code)}')" class="action-icon-btn text-red-600 hover:text-red-800" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
+                        <button onclick="await showAlert('Editing job ${escapeHtml(code)}')" class="action-icon-btn" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
+                        <button onclick="await showAlert('Deleting job ${escapeHtml(code)}')" class="action-icon-btn text-red-600 hover:text-red-800" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
                     </div>
                 </td>
             </tr>`;
@@ -418,8 +418,8 @@ function renderDepartmentsTable(query) {
                 <td class="py-4 px-6 text-xs text-gray-500 font-mono">${escapeHtml(stamp)}</td>
                 <td class="py-4 px-6 text-right">
                     <div class="inline-flex items-center gap-2 justify-end">
-                        <button onclick="alert('Editing department ${escapeHtml(code)}')" class="action-icon-btn" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
-                        <button onclick="alert('Deleting department ${escapeHtml(code)}')" class="action-icon-btn text-red-600 hover:text-red-800" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
+                        <button onclick="await showAlert('Editing department ${escapeHtml(code)}')" class="action-icon-btn" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
+                        <button onclick="await showAlert('Deleting department ${escapeHtml(code)}')" class="action-icon-btn text-red-600 hover:text-red-800" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
                     </div>
                 </td>
             </tr>`;
@@ -439,9 +439,9 @@ async function showHistory(empno) {
         if(!response.ok) throw new Error(data.error || 'Failed to load employee history.');
         tbody.innerHTML = data.records?.length ? data.records.map(row => `
             <tr class="border-b border-gray-100 text-sm">
-                <td class="py-3 px-4">${escapeHtml(row.effdate || '—')}</td>
-                <td class="py-3 px-4">${escapeHtml(row.jobcode || '—')}</td>
-                <td class="py-3 px-4">${escapeHtml(row.deptcode || '—')}</td>
+                <td class="py-3 px-4">${escapeHtml(row.effdate || 'â€”')}</td>
+                <td class="py-3 px-4">${escapeHtml(row.jobcode || 'â€”')}</td>
+                <td class="py-3 px-4">${escapeHtml(row.deptcode || 'â€”')}</td>
                 <td class="py-3 px-4 text-right">$${Number(row.salary || 0).toFixed(2)}</td>
             </tr>`).join('') : '<tr><td colspan="4" class="py-6 text-center text-gray-400">No job history found.</td></tr>';
     } catch(error) {
@@ -456,7 +456,7 @@ function closeHistory() {
 }
 
 function openAddModal() {
-    alert(`Opening modal to add new ${currentSegment.slice(0, -1)}...`);
+    await showAlert(`Opening modal to add new ${currentSegment.slice(0, -1)}...`);
 }
 
 function escapeHtml(value) {
@@ -474,5 +474,6 @@ document.getElementById('logoutBtn').addEventListener('click', async (e) => {
 </script>
   <script src="/js/permissions.js"></script>
   <script src="/js/layout.js"></script>
+    <script src="/js/dialog.js"></script>
 </body>
 </html>

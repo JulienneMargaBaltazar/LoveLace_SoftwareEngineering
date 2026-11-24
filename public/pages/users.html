@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -73,24 +73,24 @@
             <small style="display:block; font-size:10px; color:#5C5C99; font-weight:normal;">by LoveLace</small>
         </div>
         <ul class="nav-menu">
-            <li class="nav-item"><a href="/dashboard">📊 Dashboard</a></li>
-            <li class="nav-item"><a href="/customers">👥 Customers</a></li>
-            <li class="nav-item"><a href="/products">📦 Products</a></li>
-             <li class="nav-item"><a href="/hr">👔 Human Resources</a></li>
-            <li class="nav-item"><a href="/sales">💼 Sales</a></li>
-            <li class="nav-item"><a href="/reports">📈 Reports</a></li>
-            <li class="nav-item active"><a href="/users">👤 User Management</a></li>
-            <li class="nav-item"><a href="settings.html">⚙️ Settings</a></li>
+            <li class="nav-item"><a href="/dashboard">ðŸ“Š Dashboard</a></li>
+            <li class="nav-item"><a href="/customers">ðŸ‘¥ Customers</a></li>
+            <li class="nav-item"><a href="/products">ðŸ“¦ Products</a></li>
+             <li class="nav-item"><a href="/hr">ðŸ‘” Human Resources</a></li>
+            <li class="nav-item"><a href="/sales">ðŸ’¼ Sales</a></li>
+            <li class="nav-item"><a href="/reports">ðŸ“ˆ Reports</a></li>
+            <li class="nav-item active"><a href="/users">ðŸ‘¤ User Management</a></li>
+            <li class="nav-item"><a href="settings.html">âš™ï¸ Settings</a></li>
             
             <!-- LOGOUT ALIGNED WITH USER DASHBOARD -->
             <li class="nav-item logout-menu-item" style="margin-top: 1rem;">
-                <a href="/" style="color: #ef4444 !important;">🚪 Logout</a>
+                <a href="/" style="color: #ef4444 !important;">ðŸšª Logout</a>
             </li>
         </ul>
         
         <div class="sidebar-profile">
             <div class="profile-info">
-                <div class="avatar">👤</div>
+                <div class="avatar">ðŸ‘¤</div>
                 <div class="profile-text">
                     
                     <!-- FIX 1: Added id="userProfileInfo" here for the dynamic name string -->
@@ -159,7 +159,7 @@
 
                     <!-- Table Footer Pagination Bar -->
                     <div class="table-footer-pagination px-6 py-3 bg-gray-50 border-t border-gray-200 flex justify-between items-center text-xs text-gray-500">
-                        <span id="paginationInfo">Showing 1–3 of 3</span>
+                        <span id="paginationInfo">Showing 1â€“3 of 3</span>
                         <div class="pagination-controls flex items-center gap-2">
                             <button class="page-btn px-2 py-1 bg-white border border-gray-300 rounded hover:bg-gray-100"><i class="fa-solid fa-chevron-left"></i></button>
                             <span class="font-medium text-gray-700">Page 1 of 1</span>
@@ -285,19 +285,19 @@
         }
 
         function openUserModal() {
-            alert('Add User modal trigger');
+            await showAlert('Add User modal trigger');
         }
 
         function toggleBlockUser(email) {
-            alert(`Toggle block status for ${email}`);
+            await showAlert(`Toggle block status for ${email}`);
         }
 
         function openRightsModal(email) {
-            alert(`Manage rights and module access for ${email}`);
+            await showAlert(`Manage rights and module access for ${email}`);
         }
 
         function openEditUserModal(email) {
-            alert(`Edit user profile for ${email}`);
+            await showAlert(`Edit user profile for ${email}`);
         }
 
         function escapeHtml(str) {
@@ -315,5 +315,6 @@
     </script>
   <script src="/js/permissions.js"></script>
   <script src="/js/layout.js"></script>
+    <script src="/js/dialog.js"></script>
 </body>
 </html>
