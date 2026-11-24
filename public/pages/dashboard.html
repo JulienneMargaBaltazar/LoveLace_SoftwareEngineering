@@ -194,21 +194,21 @@
             <small style="display:block; font-size:10px; color:#5C5C99; font-weight:normal;">by LoveLace</small>
         </div>
         <ul class="nav-menu">
-            <li class="nav-item active"><a href="/dashboard">📊 Dashboard</a></li>
-            <li class="nav-item"><a href="/customers">👥 Customers</a></li>
-            <li class="nav-item"><a href="/products">📦 Products</a></li>
-            <li class="nav-item"><a href="/hr">👔 Human Resources</a></li>
-            <li class="nav-item"><a href="/sales">💼 Sales</a></li>
-            <li class="nav-item"><a href="/users">⚙️ User Management</a></li>
-            <li class="nav-item"><a href="/settings">🔧 System Settings</a></li>
+            <li class="nav-item active"><a href="/dashboard">??Dashboard</a></li>
+            <li class="nav-item"><a href="/customers">??Customers</a></li>
+            <li class="nav-item"><a href="/products">??Products</a></li>
+            <li class="nav-item"><a href="/hr">??Human Resources</a></li>
+            <li class="nav-item"><a href="/sales">??Sales</a></li>
+            <li class="nav-item"><a href="/users">??User Management</a></li>
+            <li class="nav-item"><a href="/settings">??System Settings</a></li>
             <li class="nav-item logout-menu-item" style="margin-top: 1rem;">
-                <a href="/" id="logoutBtn" style="color: #ef4444 !important;">🚪 Logout</a>
+                <a href="/" id="logoutBtn" style="color: #ef4444 !important;">??Logout</a>
             </li>
         </ul>
         
         <div class="sidebar-profile">
             <div class="profile-info">
-                <div class="avatar">👑</div>
+                <div class="avatar">??</div>
                 <div class="profile-text">
                     <span class="username" id="userProfileInfo">Loading user...</span>
                     <span class="role" id="sidebarRoleLabel">User</span>
@@ -430,7 +430,7 @@
 
             cachedSalesData = sales;
 
-            const totalRevenue = sales.reduce((sum, s) => sum + (Number(s.totalSales ?? s.total ?? s.total_amount ?? s.amount ?? s.sales_amount ?? 0) || 0), 0);
+            const totalRevenue = sales.reduce((sum, s) => sum + (Number(s.totalSales ??s.total ??s.total_amount ??s.amount ??s.sales_amount ??0) || 0), 0);
             const activeCustomers = customers.filter(c => !(c.is_blocked || c.status === 'blocked')).length;
             const pendingOrInactive = sales.filter(s => {
                 const st = String(s.status || '').toLowerCase();
@@ -490,7 +490,7 @@
                 }
 
                 const sortKey = granularity === 'year' ? yr : (yr + '-' + mo);
-                const amt = Number(s.totalSales ?? s.total ?? s.total_amount ?? s.amount ?? s.sales_amount ?? 0) || 0;
+                const amt = Number(s.totalSales ??s.total ??s.total_amount ??s.amount ??s.sales_amount ??0) || 0;
                 if (!buckets[sortKey]) buckets[sortKey] = { label, total: 0 };
                 buckets[sortKey].total += amt;
             });
@@ -611,7 +611,7 @@
             tbody.innerHTML = recent.map(s => {
                 const transNo = s.transno || s.trans_no || s.id || 'N/A';
                 const cust = s.custname || s.customer_name || s.custno || 'N/A';
-                const amt = Number(s.totalSales ?? s.total ?? s.total_amount ?? s.amount ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const amt = Number(s.totalSales ??s.total ??s.total_amount ??s.amount ??0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 const status = String(s.status || 'Active');
                 const isPending = status.toLowerCase() === 'pending';
                 const badgeStyle = isPending
