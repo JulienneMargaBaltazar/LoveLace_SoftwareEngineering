@@ -25,36 +25,40 @@
             border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 16px; outline: none;
         }
         .app-dialog-input:focus { border-color: #312e81; box-shadow: 0 0 0 3px rgba(49, 46, 129, 0.12); }
-        .app-dialog-actions { display: flex; justify-content: flex-end; gap: 10px; }
-        .app-dialog-btn {
-            display: inline-flex !important; align-items: center !important; justify-content: center !important;
-            min-width: 92px !important; height: 38px !important; padding: 0 18px !important;
-            border-radius: 8px !important; font-size: 13px !important; font-weight: 600 !important;
-            line-height: 1 !important; cursor: pointer !important; box-sizing: border-box !important;
-            transition: all 0.15s ease !important;
+        #appDialogBackdrop .app-dialog-actions {
+            display: flex !important; justify-content: flex-end !important;
+            align-items: center !important; gap: 10px !important; margin-top: 4px !important;
         }
-        .app-dialog-btn-cancel {
+        #appDialogBackdrop .app-dialog-btn {
+            display: inline-flex !important; align-items: center !important; justify-content: center !important;
+            width: 104px !important; min-width: 104px !important; height: 38px !important;
+            padding: 0 16px !important; margin: 0 !important; border-radius: 8px !important;
+            font-family: inherit !important; font-size: 13px !important; font-weight: 600 !important;
+            line-height: 1 !important; cursor: pointer !important; box-sizing: border-box !important;
+            text-align: center !important; transition: all 0.15s ease !important;
+        }
+        #appDialogBackdrop .app-dialog-btn-cancel {
             background: #ffffff !important; color: #334155 !important;
             border: 1.5px solid #cbd5e1 !important;
         }
-        .app-dialog-btn-cancel:hover {
+        #appDialogBackdrop .app-dialog-btn-cancel:hover {
             background: #f1f5f9 !important; border-color: #94a3b8 !important; color: #0f172a !important;
         }
-        .app-dialog-btn-primary {
+        #appDialogBackdrop .app-dialog-btn-primary {
             background: #262262 !important; color: #ffffff !important; border: 1.5px solid #262262 !important;
         }
-        .app-dialog-btn-primary:hover { background: #1e1b4b !important; }
-        .app-dialog-btn-danger {
+        #appDialogBackdrop .app-dialog-btn-primary:hover { background: #1e1b4b !important; }
+        #appDialogBackdrop .app-dialog-btn-danger {
             background: #dc2626 !important; color: #ffffff !important; border: 1.5px solid #dc2626 !important;
         }
-        .app-dialog-btn-danger:hover { background: #b91c1c !important; }
+        #appDialogBackdrop .app-dialog-btn-danger:hover { background: #b91c1c !important; }
     `;
     document.head.appendChild(style);
 
     function openDialog({ title = "Notice", message = "", mode = "alert", defaultValue = "", confirmText = "OK", cancelText = "Cancel", danger = false }) {
         return new Promise((resolve) => {
             const backdrop = document.createElement("div");
-            backdrop.className = "app-dialog-backdrop";
+            backdrop.id = "appDialogBackdrop"; backdrop.className = "app-dialog-backdrop";
             backdrop.innerHTML = `
                 <div class="app-dialog-box" role="dialog" aria-modal="true">
                     <h3 class="app-dialog-title"></h3>
