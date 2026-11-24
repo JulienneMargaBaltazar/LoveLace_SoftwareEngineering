@@ -304,7 +304,7 @@
                         </select>
                     </div>
                     <div class="chart-canvas-wrap">
-                        <canvas id="revenueLineChart"></canvas>
+                        <div style="position: relative; width: 100%; height: 220px;"><canvas id="revenueLineChart"></canvas></div>
                     </div>
                 </div>
 
@@ -316,7 +316,7 @@
                         </div>
                     </div>
                     <div class="chart-canvas-wrap">
-                        <canvas id="statusDonutChart"></canvas>
+                        <div style="position: relative; width: 100%; height: 220px;"><canvas id="statusDonutChart"></canvas></div>
                     </div>
                 </div>
             </section>
@@ -331,7 +331,7 @@
                         </div>
                     </div>
                     <div class="chart-canvas-wrap">
-                        <canvas id="paytermBarChart"></canvas>
+                        <div style="position: relative; width: 100%; height: 220px;"><canvas id="paytermBarChart"></canvas></div>
                     </div>
                 </div>
 
@@ -637,6 +637,8 @@
         initDashboard();
     </script>
     <script src="/js/permissions.js"></script>
-    <script src="/js/layout.js"></script>
+    <script src="/js/layout.js">
+window.addEventListener('resize', () => { Object.values(Chart.instances || {}).forEach(c => c.resize()); });
+</script>
 </body>
 </html>
