@@ -27,22 +27,27 @@
         .app-dialog-input:focus { border-color: #312e81; box-shadow: 0 0 0 3px rgba(49, 46, 129, 0.12); }
         .app-dialog-actions { display: flex; justify-content: flex-end; gap: 10px; }
         .app-dialog-btn {
-            display: inline-flex; align-items: center; justify-content: center;
-            min-width: 88px; height: 38px; padding: 0 18px; border-radius: 8px;
-            font-size: 13px; font-weight: 600; line-height: 1; cursor: pointer;
-            box-sizing: border-box; transition: all 0.15s ease;
+            display: inline-flex !important; align-items: center !important; justify-content: center !important;
+            min-width: 92px !important; height: 38px !important; padding: 0 18px !important;
+            border-radius: 8px !important; font-size: 13px !important; font-weight: 600 !important;
+            line-height: 1 !important; cursor: pointer !important; box-sizing: border-box !important;
+            transition: all 0.15s ease !important;
         }
         .app-dialog-btn-cancel {
             background: #ffffff !important; color: #334155 !important;
             border: 1.5px solid #cbd5e1 !important;
         }
         .app-dialog-btn-cancel:hover {
-            background: #f8fafc !important; border-color: #94a3b8 !important; color: #0f172a !important;
+            background: #f1f5f9 !important; border-color: #94a3b8 !important; color: #0f172a !important;
         }
-        .app-dialog-btn-primary { background: #262262; color: #ffffff; }
-        .app-dialog-btn-primary:hover { background: #1e1b4b; }
-        .app-dialog-btn-danger { background: #dc2626; color: #ffffff; }
-        .app-dialog-btn-danger:hover { background: #b91c1c; }
+        .app-dialog-btn-primary {
+            background: #262262 !important; color: #ffffff !important; border: 1.5px solid #262262 !important;
+        }
+        .app-dialog-btn-primary:hover { background: #1e1b4b !important; }
+        .app-dialog-btn-danger {
+            background: #dc2626 !important; color: #ffffff !important; border: 1.5px solid #dc2626 !important;
+        }
+        .app-dialog-btn-danger:hover { background: #b91c1c !important; }
     `;
     document.head.appendChild(style);
 
