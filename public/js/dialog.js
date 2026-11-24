@@ -56,7 +56,7 @@
             const dialog = document.createElement('dialog');
             dialog.className = 'erp-dialog';
             const iconSymbol = variant === 'danger' ? '⚠️' : 'ℹ️';
-            const confirmBtnClass = variant === 'danger' ? 'erp-btn-danger' : 'erp-btn-primary';
+            const confirmBtnClass = variant === 'danger' ? '⚠️' : 'ℹ️';
 
             dialog.innerHTML = `
                 <div class="erp-dialog-body">
