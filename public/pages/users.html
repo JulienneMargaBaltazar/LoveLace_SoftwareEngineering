@@ -284,20 +284,20 @@
             renderUserTable(filtered);
         }
 
-        function openUserModal() {
-            alert('Add User modal trigger');
+        async function openUserModal() {
+            await AppDialog.alert('Add User modal trigger');
         }
 
-        function toggleBlockUser(email) {
-            alert(`Toggle block status for ${email}`);
+        async function toggleBlockUser(email) {
+            await AppDialog.alert(`Toggle block status for ${email}`);
         }
 
-        function openRightsModal(email) {
-            alert(`Manage rights and module access for ${email}`);
+        async function openRightsModal(email) {
+            await AppDialog.alert(`Manage rights and module access for ${email}`);
         }
 
-        function openEditUserModal(email) {
-            alert(`Edit user profile for ${email}`);
+        async function openEditUserModal(email) {
+            await AppDialog.alert(`Edit user profile for ${email}`);
         }
 
         function escapeHtml(str) {

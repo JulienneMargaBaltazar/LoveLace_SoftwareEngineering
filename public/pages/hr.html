@@ -313,7 +313,7 @@ function renderEmployeesTable(query) {
                 <td class="py-4 px-6 text-right">
                     <div class="inline-flex items-center gap-2 justify-end">
                         <button type="button" onclick="showHistory('${escapeHtml(emp.empno || emp.id)}')" class="px-2.5 py-1 text-xs font-semibold rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50">History</button>
-                        <button onclick="alert('Editing employee ${escapeHtml(emp.empno)}')" class="action-icon-btn" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
+                        <button onclick="await AppDialog.alert('Editing employee ${escapeHtml(emp.empno)}')" class="action-icon-btn" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
                     </div>
                 </td>
             </tr>`;
@@ -365,8 +365,8 @@ function renderJobsTable(query) {
                 <td class="py-4 px-6 text-xs text-gray-500 font-mono">${escapeHtml(stamp)}</td>
                 <td class="py-4 px-6 text-right">
                     <div class="inline-flex items-center gap-2 justify-end">
-                        <button onclick="alert('Editing job ${escapeHtml(code)}')" class="action-icon-btn" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
-                        <button onclick="alert('Deleting job ${escapeHtml(code)}')" class="action-icon-btn text-red-600 hover:text-red-800" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
+                        <button onclick="await AppDialog.alert('Editing job ${escapeHtml(code)}')" class="action-icon-btn" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
+                        <button onclick="await AppDialog.alert('Deleting job ${escapeHtml(code)}')" class="action-icon-btn text-red-600 hover:text-red-800" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
                     </div>
                 </td>
             </tr>`;
@@ -418,8 +418,8 @@ function renderDepartmentsTable(query) {
                 <td class="py-4 px-6 text-xs text-gray-500 font-mono">${escapeHtml(stamp)}</td>
                 <td class="py-4 px-6 text-right">
                     <div class="inline-flex items-center gap-2 justify-end">
-                        <button onclick="alert('Editing department ${escapeHtml(code)}')" class="action-icon-btn" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
-                        <button onclick="alert('Deleting department ${escapeHtml(code)}')" class="action-icon-btn text-red-600 hover:text-red-800" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
+                        <button onclick="await AppDialog.alert('Editing department ${escapeHtml(code)}')" class="action-icon-btn" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
+                        <button onclick="await AppDialog.alert('Deleting department ${escapeHtml(code)}')" class="action-icon-btn text-red-600 hover:text-red-800" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
                     </div>
                 </td>
             </tr>`;
@@ -442,7 +442,7 @@ async function showHistory(empno) {
                 <td class="py-3 px-4">${escapeHtml(row.effdate || '—')}</td>
                 <td class="py-3 px-4">${escapeHtml(row.jobcode || '—')}</td>
                 <td class="py-3 px-4">${escapeHtml(row.deptcode || '—')}</td>
-                <td class="py-3 px-4 text-right">$${Number(row.salary || 0).toFixed(2)}</td>
+                <td class="py-3 px-4 text-right">${Number(row.salary || 0).toFixed(2)}</td>
             </tr>`).join('') : '<tr><td colspan="4" class="py-6 text-center text-gray-400">No job history found.</td></tr>';
     } catch(error) {
         document.getElementById('historyError').innerText = error.message;
@@ -455,8 +455,8 @@ function closeHistory() {
     document.getElementById('historyModal').classList.remove('flex');
 }
 
-function openAddModal() {
-    alert(`Opening modal to add new ${currentSegment.slice(0, -1)}...`);
+async function openAddModal() {
+    await AppDialog.alert(`Opening modal to add new ${currentSegment.slice(0, -1)}...`);
 }
 
 function escapeHtml(value) {
