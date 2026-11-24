@@ -223,7 +223,7 @@ router.post('/set-password', async (req, res) => {
 });
 
 // ==========================================
-// 4. REQUEST PASSWORD RESET
+// 4. REQUEST PASSWORD RESET (VIA SUPABASE EMAIL)
 // ==========================================
 router.post('/forgotpassword', async (req, res) => {
   try {
@@ -233,10 +233,12 @@ router.post('/forgotpassword', async (req, res) => {
       return res.status(400).json({ error: 'Email is required.' });
     }
 
+    const cleanEmail = email.trim().toLowerCase();
+
     const { data: user, error } = await supabase
       .from('app_user')
-      .select('*')
-      .eq('email', email.trim().toLowerCase())
+      .select('user_id, email')
+      .eq('email', cleanEmail)
       .maybeSingle();
 
     if (error) {
@@ -245,35 +247,35 @@ router.post('/forgotpassword', async (req, res) => {
     }
 
     if (!user) {
-      return res.status(200).json({ 
-        message: 'If that email address is registered, a password reset link has been dispatched.' 
+      return res.status(200).json({
+        message: 'If that email address is registered, a password reset link has been dispatched.'
       });
     }
 
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    const tokenExpires = new Date(Date.now() + 15 * 60 * 1000);
-
-    const { error: updateError } = await supabase
-      .from('app_user')
-      .update({
-        reset_token: resetToken,
-        reset_token_expires: tokenExpires.toISOString()
-      })
-      .eq('user_id', user.user_id);
-
-    if (updateError) {
-      console.error('Database update error during password reset request:', updateError);
-      return res.status(500).json({ error: 'Internal server error.' });
+    // Ensure the app_user email exists in Supabase Auth so resetPasswordForEmail sends an email
+    const { error: createAuthError } = await supabase.auth.admin.createUser({
+      email: cleanEmail,
+      email_confirm: true
+    });
+    if (createAuthError && !createAuthError.message.toLowerCase().includes('already')) {
+      console.warn('Supabase Auth sync warning:', createAuthError.message);
     }
 
-    const resetLink = `http://localhost:3000/passwordreset.html?token=${resetToken}`;
-    console.log(`\n🔗 [SIMULATED EMAIL DISPATCH] ----------------------------------------`);
-    console.log(`To: ${email}`);
-    console.log(`Password Reset Link: ${resetLink}`);
-    console.log(`----------------------------------------------------------------------\n`);
+    // Build dynamic redirect URL (works on both localhost:3000 and devtunnels)
+    const origin = req.headers.origin || `${req.protocol}://${req.get('host')}`;
+    const redirectTo = `${origin}/passwordreset.html`;
 
-    return res.status(200).json({ 
-      message: 'If that email address is registered, a password reset link has been dispatched.' 
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
+      redirectTo
+    });
+
+    if (resetError) {
+      console.error('Supabase resetPasswordForEmail error:', resetError.message);
+      return res.status(400).json({ error: resetError.message });
+    }
+
+    return res.status(200).json({
+      message: 'If that email address is registered, a password reset link has been dispatched.'
     });
 
   } catch (err) {
@@ -281,48 +283,67 @@ router.post('/forgotpassword', async (req, res) => {
     return res.status(500).json({ error: 'Internal server error.' });
   }
 });
+
 // ==========================================
-// 5. RESET PASSWORD WITH TOKEN
+// 5. RESET PASSWORD WITH TOKEN (SUPABASE OR DB)
 // ==========================================
 router.post('/passwordreset', async (req, res) => {
   try {
-    const { token, newPassword } = req.body;
+    const { token, access_token, newPassword } = req.body;
+    const activeToken = access_token || token;
 
-    // 1. Enforce payload parameter presence
-    if (!token || !newPassword) {
+    if (!activeToken || !newPassword) {
       return res.status(400).json({ error: 'Token and new password are required.' });
     }
 
-    // 2. Run password validation check rules
     const passwordError = validatePasswordStrength(newPassword);
     if (passwordError) {
       return res.status(400).json({ error: passwordError });
     }
 
-    // 3. Locate matching user by token signature
-    const { data: user, error } = await supabase
-      .from('app_user')
-      .select('*')
-      .eq('reset_token', token)
-      .maybeSingle();
+    let targetUserId = null;
+    let targetEmail = null;
 
-    if (error || !user) {
-      return res.status(400).json({ error: 'Invalid or already used password reset token.' });
+    // 1. Check if token is a Supabase Auth recovery JWT from email link
+    const { data: authData, error: authError } = await supabase.auth.getUser(activeToken);
+    if (!authError && authData?.user?.email) {
+      targetEmail = authData.user.email.trim().toLowerCase();
+
+      const { data: appUser } = await supabase
+        .from('app_user')
+        .select('user_id')
+        .eq('email', targetEmail)
+        .maybeSingle();
+
+      if (!appUser) {
+        return res.status(400).json({ error: 'No matching application user found.' });
+      }
+      targetUserId = appUser.user_id;
+
+      // Also sync password in Supabase Auth
+      await supabase.auth.admin.updateUserById(authData.user.id, { password: newPassword });
+    } else {
+      // 2. Fallback: Legacy DB reset_token check
+      const { data: user, error } = await supabase
+        .from('app_user')
+        .select('*')
+        .eq('reset_token', activeToken)
+        .maybeSingle();
+
+      if (error || !user) {
+        return res.status(400).json({ error: 'Invalid or expired password reset link.' });
+      }
+
+      if (new Date() > new Date(user.reset_token_expires)) {
+        return res.status(400).json({ error: 'Password reset token has expired. Please request a new one.' });
+      }
+      targetUserId = user.user_id;
     }
 
-    // 4. Verify token age expiration validation rules
-    const now = new Date();
-    const expiresAt = new Date(user.reset_token_expires);
-
-    if (now > expiresAt) {
-      return res.status(400).json({ error: 'Password reset token has expired. Please request a new one.' });
-    }
-
-    // 5. Generate secure hash signature mutations
+    // 3. Hash and update password_hash in app_user so /login works immediately
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-    // 6. Save update mutations and invalidate token signatures instantly
     const { error: mutationError } = await supabase
       .from('app_user')
       .update({
@@ -331,15 +352,15 @@ router.post('/passwordreset', async (req, res) => {
         reset_token_expires: null,
         is_first_login: false
       })
-      .eq('user_id', user.user_id);
+      .eq('user_id', targetUserId);
 
     if (mutationError) {
       console.error('Failed to commit password mutation:', mutationError);
       return res.status(500).json({ error: 'Failed to update password.' });
     }
 
-    return res.status(200).json({ 
-      message: 'Password successfully updated! You can now log in with your new credentials.' 
+    return res.status(200).json({
+      message: 'Password successfully updated! You can now log in with your new credentials.'
     });
 
   } catch (err) {
@@ -347,4 +368,5 @@ router.post('/passwordreset', async (req, res) => {
     return res.status(500).json({ error: 'Internal server error.' });
   }
 });
+
 export default router;
