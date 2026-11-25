@@ -1,8 +1,6 @@
 # Customer Management Screens
 
-This is option of customer screens designed for a "New Customer" creation workflow. This repository contains the UI states for adding a new customer profile to the system, including error handling and interaction states.
-
-## 📸 Preview
+This is option one of customer screens designed for a "New Customer" creation workflow. 
 
 The design includes three distinct states represented in the screenshots:
 
