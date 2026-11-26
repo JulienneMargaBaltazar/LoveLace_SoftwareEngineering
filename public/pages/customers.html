@@ -180,9 +180,9 @@
                             <select id="payTermsFilter" onchange="handlePayTermsChange()" class="px-3 py-2 border border-gray-300 rounded-md text-xs bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 min-w-[160px]">
                                 <option value="">All Payment Terms</option>
                                 <option value="COD">COD</option>
-                                <option value="Net 15">Net 15</option>
-                                <option value="Net 30">Net 30</option>
-                                <option value="Net 60">Net 60</option>
+                                <option value="30D">Net 30</option>
+                                 <option value="45D">Net 45</option>
+                                <option value="60D">Net 60</option>
                             </select>
                         </div>
 
@@ -287,416 +287,474 @@
     </div>
 
     <!-- Script Logic -->
-    <script>
-        const DEFAULT_PAGE_SIZE = 25;
-        const MAX_PAGE_SIZE = 100;
-        const VALID_STATUSES = new Set(['active', 'deleted', 'all']);
+<script>
+    const DEFAULT_PAGE_SIZE = 25;
+    const MAX_PAGE_SIZE = 100;
+    const VALID_STATUSES = new Set(['active', 'deleted', 'all']);
 
-        let currentUserId = null;
-        let currentUserRoleId = null;
-        let customersData = [];
-        let searchDebounceTimer = null;
+    let currentUserId = null;
+    let currentUserRoleId = null;
+    let customersData = [];
+    let searchDebounceTimer = null;
 
-        const directoryState = {
-            q: '',
-            status: 'active', // Soft-deleted customers excluded by default
-            payTerms: '',
-            page: 1,
-            pageSize: DEFAULT_PAGE_SIZE,
-            totalCount: 0,
-            totalPages: 0
-        };
+    const directoryState = {
+        q: '',
+        status: 'active', // Soft-deleted customers excluded by default
+        payTerms: '',
+        page: 1,
+        pageSize: DEFAULT_PAGE_SIZE,
+        totalCount: 0,
+        totalPages: 0
+    };
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            readStateFromUrl();
-            syncControlsFromState();
-            await checkSession();
+    document.addEventListener('DOMContentLoaded', async () => {
+        readStateFromUrl();
+        await checkSession();
+
+        // For ordinary users (role_id === 3), show all customers (including soft-deleted) by default
+        const urlParams = new URLSearchParams(window.location.search);
+        if (currentUserRoleId === 3 && !urlParams.has('status')) {
+            directoryState.status = 'all';
+        }
+
+        syncControlsFromState();
+        await fetchCustomerDirectory();
+
+        document.getElementById('refreshBtn').addEventListener('click', async () => {
+            const icon = document.getElementById('refreshIcon');
+            icon.classList.add('fa-spin');
             await fetchCustomerDirectory();
-            
-            document.getElementById('refreshBtn').addEventListener('click', async () => {
-                const icon = document.getElementById('refreshIcon');
-                icon.classList.add('fa-spin');
-                await fetchCustomerDirectory();
-                setTimeout(() => icon.classList.remove('fa-spin'), 400);
-            });
+            setTimeout(() => icon.classList.remove('fa-spin'), 400);
         });
+    });
 
-        window.addEventListener('popstate', async () => {
-            readStateFromUrl();
-            syncControlsFromState();
-            await fetchCustomerDirectory();
+    document.addEventListener('userLoaded', () => {
+        if (Array.isArray(customersData) && customersData.length > 0) {
+            renderCustomerTable(customersData);
+        }
+    });
+
+    window.addEventListener('popstate', async () => {
+        readStateFromUrl();
+        syncControlsFromState();
+        await fetchCustomerDirectory();
+    });
+
+    function readStateFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        const qParam = params.get('q');
+        const statusParam = (params.get('status') || 'active').toLowerCase();
+        const payTermsParam = params.get('payTerms');
+        const pageParam = Number.parseInt(params.get('page') || '1', 10);
+        const pageSizeParam = Number.parseInt(params.get('pageSize') || String(DEFAULT_PAGE_SIZE), 10);
+
+        directoryState.q = qParam ? qParam.trim() : '';
+        directoryState.status = VALID_STATUSES.has(statusParam) ? statusParam : 'active';
+        directoryState.payTerms = payTermsParam ? payTermsParam.trim() : '';
+        directoryState.page = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
+        directoryState.pageSize = Number.isFinite(pageSizeParam) && pageSizeParam > 0
+            ? Math.min(pageSizeParam, MAX_PAGE_SIZE)
+            : DEFAULT_PAGE_SIZE;
+    }
+
+    function syncControlsFromState() {
+        document.getElementById('searchInput').value = directoryState.q;
+        document.getElementById('pageSizeSelect').value = String(directoryState.pageSize);
+
+        const payTermsSelect = document.getElementById('payTermsFilter');
+        if (directoryState.payTerms && ![...payTermsSelect.options].some(o => o.value === directoryState.payTerms)) {
+            const opt = document.createElement('option');
+            opt.value = directoryState.payTerms;
+            opt.textContent = directoryState.payTerms;
+            payTermsSelect.appendChild(opt);
+        }
+        payTermsSelect.value = directoryState.payTerms;
+
+        if (directoryState.payTerms || directoryState.pageSize !== DEFAULT_PAGE_SIZE) {
+            document.getElementById('filterPanel').classList.remove('hidden');
+        }
+
+        document.querySelectorAll('#statusFilterTabs .tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.status === directoryState.status);
         });
+    }
 
-        function readStateFromUrl() {
-            const params = new URLSearchParams(window.location.search);
-            const qParam = params.get('q');
-            const statusParam = (params.get('status') || 'active').toLowerCase();
-            const payTermsParam = params.get('payTerms');
-            const pageParam = Number.parseInt(params.get('page') || '1', 10);
-            const pageSizeParam = Number.parseInt(params.get('pageSize') || String(DEFAULT_PAGE_SIZE), 10);
+    function syncUrlFromState() {
+        const params = new URLSearchParams();
+        if (directoryState.q) params.set('q', directoryState.q);
+        if (directoryState.status !== 'active') params.set('status', directoryState.status);
+        if (directoryState.payTerms) params.set('payTerms', directoryState.payTerms);
+        if (directoryState.page > 1) params.set('page', String(directoryState.page));
+        if (directoryState.pageSize !== DEFAULT_PAGE_SIZE) params.set('pageSize', String(directoryState.pageSize));
 
-            directoryState.q = qParam ? qParam.trim() : '';
-            directoryState.status = VALID_STATUSES.has(statusParam) ? statusParam : 'active';
-            directoryState.payTerms = payTermsParam ? payTermsParam.trim() : '';
-            directoryState.page = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
-            directoryState.pageSize = Number.isFinite(pageSizeParam) && pageSizeParam > 0
-                ? Math.min(pageSizeParam, MAX_PAGE_SIZE)
-                : DEFAULT_PAGE_SIZE;
-        }
+        const qs = params.toString();
+        const nextUrl = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
+        window.history.replaceState({}, '', nextUrl);
+    }
 
-        function syncControlsFromState() {
-            document.getElementById('searchInput').value = directoryState.q;
-            document.getElementById('pageSizeSelect').value = String(directoryState.pageSize);
-
-            const payTermsSelect = document.getElementById('payTermsFilter');
-            if (directoryState.payTerms && ![...payTermsSelect.options].some(o => o.value === directoryState.payTerms)) {
-                const opt = document.createElement('option');
-                opt.value = directoryState.payTerms;
-                opt.textContent = directoryState.payTerms;
-                payTermsSelect.appendChild(opt);
-            }
-            payTermsSelect.value = directoryState.payTerms;
-
-            if (directoryState.payTerms || directoryState.pageSize !== DEFAULT_PAGE_SIZE) {
-                document.getElementById('filterPanel').classList.remove('hidden');
-            }
-
-            document.querySelectorAll('#statusFilterTabs .tab-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.status === directoryState.status);
-            });
-        }
-
-        function syncUrlFromState() {
-            const params = new URLSearchParams();
-            if (directoryState.q) params.set('q', directoryState.q);
-            if (directoryState.status !== 'active') params.set('status', directoryState.status);
-            if (directoryState.payTerms) params.set('payTerms', directoryState.payTerms);
-            if (directoryState.page > 1) params.set('page', String(directoryState.page));
-            if (directoryState.pageSize !== DEFAULT_PAGE_SIZE) params.set('pageSize', String(directoryState.pageSize));
-
-            const qs = params.toString();
-            const nextUrl = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
-            window.history.replaceState({}, '', nextUrl);
-        }
-
-        async function checkSession() {
-            try {
-                const response = await fetch('/api/dashboard', { credentials: 'include' });
-                if (!response.ok) {
-                    window.location.href = '/login.html';
-                    return;
-                }
-                const data = await response.json();
-                const sessionData = data.userSessionData;
-
-                currentUserId = sessionData?.userId || sessionData?.user_id || sessionData?.id;
-                currentUserRoleId = Number(sessionData?.roleId || sessionData?.role_id || 3);
-
-                const firstName = sessionData?.firstName || sessionData?.first_name || '';
-                const lastName = sessionData?.lastName || sessionData?.last_name || '';
-                const fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'Superadmin';
-                
-                document.getElementById('userProfileInfo').innerText = fullName;
-            } catch (err) {
-                console.error('Session check failed:', err);
+    async function checkSession() {
+        try {
+            const response = await fetch('/api/dashboard', { credentials: 'include' });
+            if (!response.ok) {
                 window.location.href = '/login.html';
+                return;
             }
+            const data = await response.json();
+            const sessionData = data.userSessionData;
+
+            currentUserId = sessionData?.userId || sessionData?.user_id || sessionData?.id;
+            currentUserRoleId = Number(sessionData?.roleId || sessionData?.role_id || 3);
+
+            if (currentUserRoleId === 3) {
+                const tabs = document.getElementById('statusFilterTabs');
+                if (tabs) tabs.classList.add('hidden');
+            }
+
+            const firstName = sessionData?.firstName || sessionData?.first_name || '';
+            const lastName = sessionData?.lastName || sessionData?.last_name || '';
+            const fullName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'Superadmin';
+
+            document.getElementById('userProfileInfo').innerText = fullName;
+        } catch (err) {
+            console.error('Session check failed:', err);
+            window.location.href = '/login.html';
+        }
+    }
+
+    async function fetchCustomerDirectory() {
+        const errorContainer = document.getElementById('errorContainer');
+        errorContainer.innerText = '';
+        syncUrlFromState();
+
+        const queryParams = new URLSearchParams({
+            q: directoryState.q,
+            status: directoryState.status,
+            page: String(directoryState.page),
+            pageSize: String(directoryState.pageSize)
+        });
+        if (directoryState.payTerms) {
+            queryParams.set('payTerms', directoryState.payTerms);
         }
 
-        async function fetchCustomerDirectory() {
-            const errorContainer = document.getElementById('errorContainer');
-            errorContainer.innerText = '';
-            syncUrlFromState();
-
-            const queryParams = new URLSearchParams({
-                q: directoryState.q,
-                status: directoryState.status,
-                page: String(directoryState.page),
-                pageSize: String(directoryState.pageSize)
+        try {
+            const response = await fetch(`/api/admin/customers?${queryParams.toString()}`, {
+                credentials: 'include'
             });
-            if (directoryState.payTerms) {
-                queryParams.set('payTerms', directoryState.payTerms);
-            }
 
-            try {
-                const response = await fetch(`/api/admin/customers?${queryParams.toString()}`, {
-                    credentials: 'include'
-                });
-
-                if (response.status === 401) {
-                    window.location.href = '/login.html';
-                    return;
-                }
-
-                if (response.status === 403) {
-                    document.getElementById('directoryWorkspace').classList.add('hidden');
-                    document.getElementById('statusFilterTabs').classList.add('hidden');
-                    document.getElementById('forbiddenBanner').classList.remove('hidden');
-                    return;
-                }
-
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.error || 'Failed to load customer records.');
-
-                customersData = data.customers || [];
-                const pagination = data.pagination || {
-                    page: directoryState.page,
-                    pageSize: directoryState.pageSize,
-                    totalCount: customersData.length,
-                    totalPages: customersData.length > 0 ? 1 : 0
-                };
-
-                directoryState.page = pagination.page;
-                directoryState.pageSize = pagination.pageSize;
-                directoryState.totalCount = pagination.totalCount;
-                directoryState.totalPages = pagination.totalPages;
-
-                renderCustomerTable(customersData);
-                renderPaginationControls(pagination);
-            } catch (err) {
-                console.error('Error loading customers:', err);
-                errorContainer.innerText = 'Error loading customer records: ' + err.message;
-            }
-        }
-
-        function renderCustomerTable(customers) {
-            const tbody = document.getElementById('customerTableBody');
-
-            if (!Array.isArray(customers) || customers.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-gray-400">No customer records found matching your filters.</td></tr>`;
+            if (response.status === 401) {
+                window.location.href = '/login.html';
                 return;
             }
 
-            tbody.innerHTML = customers.map(customer => {
-                const custno = customer.custno || 'N/A';
-                const custname = customer.custname || 'N/A';
-                const address = customer.address || 'N/A';
-                const payterm = customer.payterm || 'COD';
-                const isDeleted = Boolean(customer.is_deleted);
-                const isBlocked = Boolean(customer.is_blocked);
-                const stamp = customer.stamp || '—';
-
-                let statusBadge = `
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">
-                        <i class="fa-solid fa-circle" style="font-size: 0.4rem;"></i> Active
-                    </span>`;
-                if (isDeleted) {
-                    statusBadge = `
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-700">
-                            <i class="fa-solid fa-circle" style="font-size: 0.4rem;"></i> Deleted
-                        </span>`;
-                } else if (isBlocked) {
-                    statusBadge = `
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-amber-100 text-amber-700">
-                            <i class="fa-solid fa-circle" style="font-size: 0.4rem;"></i> Blocked
-                        </span>`;
-                }
-
-                const actionsHtml = isDeleted
-                    ? `<span class="text-xs text-gray-400 italic">Archived</span>`
-                    : `<div class="inline-flex items-center gap-2 justify-end">
-                           <button onclick="openCustomerModal('${escapeHtml(String(custno))}')" class="action-icon-btn" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
-                           <button onclick="deleteCustomer('${escapeHtml(String(custno))}')" class="action-icon-btn text-red-600 hover:text-red-800" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
-                       </div>`;
-
-                return `
-                    <tr class="hover:bg-gray-50/80 transition border-b border-gray-100 ${isDeleted ? 'bg-gray-50/60 text-gray-500' : ''}">
-                        <td class="py-4 px-6 font-mono font-semibold text-xs text-blue-600 align-middle">${escapeHtml(String(custno))}</td>
-                        <td class="py-4 px-6 font-medium ${isDeleted ? 'text-gray-500 line-through' : 'text-gray-900'} align-middle">${escapeHtml(String(custname))}</td>
-                        <td class="py-4 px-6 text-xs text-gray-600 max-w-xs truncate align-middle" title="${escapeHtml(String(address))}">${escapeHtml(String(address))}</td>
-                        <td class="py-4 px-6 align-middle">
-                            <span class="px-2.5 py-1 text-xs font-medium rounded bg-gray-100 text-gray-800">${escapeHtml(String(payterm))}</span>
-                        </td>
-                        <td class="py-4 px-6 align-middle">${statusBadge}</td>
-                        <td class="py-4 px-6 text-xs text-gray-500 font-mono align-middle">${escapeHtml(String(stamp))}</td>
-                        <td class="py-4 px-6 text-right align-middle">${actionsHtml}</td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function renderPaginationControls({ page, pageSize, totalCount, totalPages }) {
-            const infoEl = document.getElementById('paginationInfo');
-            const indicatorEl = document.getElementById('pageIndicator');
-            const prevBtn = document.getElementById('prevPageBtn');
-            const nextBtn = document.getElementById('nextPageBtn');
-
-            if (totalCount === 0) {
-                infoEl.innerText = 'Showing 0–0 of 0';
-                indicatorEl.innerText = 'Page 1 of 1';
-                prevBtn.disabled = true;
-                nextBtn.disabled = true;
+            if (response.status === 403) {
+                document.getElementById('directoryWorkspace').classList.add('hidden');
+                document.getElementById('statusFilterTabs').classList.add('hidden');
+                document.getElementById('forbiddenBanner').classList.remove('hidden');
                 return;
             }
 
-            const start = (page - 1) * pageSize + 1;
-            const end = Math.min(page * pageSize, totalCount);
-            infoEl.innerText = `Showing ${start}–${end} of ${totalCount}`;
-            indicatorEl.innerText = `Page ${page} of ${Math.max(1, totalPages)}`;
-            prevBtn.disabled = page <= 1;
-            nextBtn.disabled = totalPages === 0 || page >= totalPages;
-        }
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Failed to load customer records.');
 
-        function handleSearchInput() {
-            clearTimeout(searchDebounceTimer);
-            searchDebounceTimer = setTimeout(() => {
-                directoryState.q = document.getElementById('searchInput').value.trim();
-                directoryState.page = 1;
-                fetchCustomerDirectory();
-            }, 300);
-        }
-
-        function switchCustomerTab(status, event) {
-            directoryState.status = VALID_STATUSES.has(status) ? status : 'active';
-            directoryState.page = 1;
-
-            document.querySelectorAll('#statusFilterTabs .tab-btn').forEach(b => b.classList.remove('active'));
-            if (event && event.currentTarget) event.currentTarget.classList.add('active');
-
-            fetchCustomerDirectory();
-        }
-
-        function toggleFilterPanel() {
-            document.getElementById('filterPanel').classList.toggle('hidden');
-        }
-
-        function handlePayTermsChange() {
-            directoryState.payTerms = document.getElementById('payTermsFilter').value;
-            directoryState.page = 1;
-            fetchCustomerDirectory();
-        }
-
-        function handlePageSizeChange() {
-            const parsed = Number.parseInt(document.getElementById('pageSizeSelect').value, 10);
-            directoryState.pageSize = Number.isFinite(parsed) && parsed > 0
-                ? Math.min(parsed, MAX_PAGE_SIZE)
-                : DEFAULT_PAGE_SIZE;
-            directoryState.page = 1;
-            fetchCustomerDirectory();
-        }
-
-        function resetDirectoryFilters() {
-            directoryState.q = '';
-            directoryState.status = 'active';
-            directoryState.payTerms = '';
-            directoryState.page = 1;
-            directoryState.pageSize = DEFAULT_PAGE_SIZE;
-            syncControlsFromState();
-            fetchCustomerDirectory();
-        }
-
-        function changePage(delta) {
-            const target = directoryState.page + delta;
-            if (target < 1 || (directoryState.totalPages > 0 && target > directoryState.totalPages)) {
-                return;
-            }
-            directoryState.page = target;
-            fetchCustomerDirectory();
-        }
-
-        function openCustomerModal(custno = null) {
-            const modal = document.getElementById('customerModal');
-            const title = document.getElementById('modalTitle');
-            const errDiv = document.getElementById('modalFormError');
-            errDiv.innerText = '';
-            document.getElementById('customerForm').reset();
-            document.getElementById('modalOriginalCustNo').value = '';
-            document.getElementById('custno').removeAttribute('readonly');
-
-            if (custno && custno !== 'N/A') {
-                title.innerText = 'Edit Customer';
-                const customer = customersData.find(c => String(c.custno) === String(custno));
-                if (customer) {
-                    document.getElementById('modalOriginalCustNo').value = custno;
-                    document.getElementById('custno').value = customer.custno || '';
-                    document.getElementById('custno').setAttribute('readonly', true);
-                    document.getElementById('custname').value = customer.custname || '';
-                    document.getElementById('address').value = customer.address || '';
-                    document.getElementById('payterm').value = customer.payterm || 'COD';
-                }
-            } else {
-                title.innerText = 'Add New Customer';
-            }
-
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeCustomerModal() {
-            document.getElementById('customerModal').classList.remove('flex');
-            document.getElementById('customerModal').classList.add('hidden');
-        }
-
-        async function handleFormSubmit(event) {
-            event.preventDefault();
-            const originalCustNo = document.getElementById('modalOriginalCustNo').value;
-            const errDiv = document.getElementById('modalFormError');
-            errDiv.innerText = '';
-
-            const payload = {
-                custno: document.getElementById('custno').value.trim(),
-                custname: document.getElementById('custname').value.trim(),
-                address: document.getElementById('address').value.trim(),
-                payterm: document.getElementById('payterm').value
+            customersData = data.customers || [];
+            const pagination = data.pagination || {
+                page: directoryState.page,
+                pageSize: directoryState.pageSize,
+                totalCount: customersData.length,
+                totalPages: customersData.length > 0 ? 1 : 0
             };
 
-            const url = originalCustNo ? `/api/admin/customers/${originalCustNo}` : '/api/admin/customers';
-            const method = originalCustNo ? 'PUT' : 'POST';
+            directoryState.page = pagination.page;
+            directoryState.pageSize = pagination.pageSize;
+            directoryState.totalCount = pagination.totalCount;
+            directoryState.totalPages = pagination.totalPages;
 
-            try {
-                const res = await fetch(url, {
-                    method: method,
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify(payload)
-                });
+            renderCustomerTable(customersData);
+            renderPaginationControls(pagination);
+        } catch (err) {
+            console.error('Error loading customers:', err);
+            errorContainer.innerText = 'Error loading customer records: ' + err.message;
+        }
+    }
 
-                const resData = await res.json();
-                if (!res.ok) throw new Error(resData.error || 'Failed to save customer');
+    function canRestoreCustomer() {
+        if (currentUserRoleId === 1 || currentUserRoleId === 2) return true;
+        if (typeof window.hasRight === 'function') {
+            return window.hasRight('restore-customer') || window.hasRight('customer.restore');
+        }
+        return false;
+    }
 
-                closeCustomerModal();
-                await fetchCustomerDirectory();
-            } catch (err) {
-                errDiv.innerText = err.message;
-            }
+    function renderCustomerTable(customers) {
+        const tbody = document.getElementById('customerTableBody');
+
+        if (!Array.isArray(customers) || customers.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-gray-400">No customer records found matching your filters.</td></tr>`;
+            return;
         }
 
-        function escapeHtml(str) {
-            return (str || '').toString().replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+        const allowRestore = canRestoreCustomer();
+
+        tbody.innerHTML = customers.map(customer => {
+            const custno = customer.custno || 'N/A';
+            const custname = customer.custname || 'N/A';
+            const address = customer.address || 'N/A';
+            const payterm = customer.payterm || 'COD';
+            const isDeleted = Boolean(customer.is_deleted);
+            const isBlocked = Boolean(customer.is_blocked);
+            const stamp = customer.stamp || '—';
+
+            let statusBadge = `
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">
+                    <i class="fa-solid fa-circle" style="font-size: 0.4rem;"></i> Active
+                </span>`;
+            if (isDeleted) {
+                statusBadge = `
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-700">
+                        <i class="fa-solid fa-circle" style="font-size: 0.4rem;"></i> Inactive
+                    </span>`;
+            } else if (isBlocked) {
+                statusBadge = `
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-amber-100 text-amber-700">
+                        <i class="fa-solid fa-circle" style="font-size: 0.4rem;"></i> Blocked
+                    </span>`;
+            }
+
+            const actionsHtml = isDeleted
+                ? (allowRestore
+                    ? `<div class="inline-flex items-center gap-2 justify-end">
+                           <button
+                               type="button"
+                               onclick="restoreCustomer('${escapeHtml(String(custno))}')"
+                               class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition"
+                               title="Restore Customer">
+                               <i class="fa-solid fa-rotate-left"></i> Restore
+                           </button>
+                       </div>`
+                    : `<span class="text-xs text-gray-400 italic">Inactive</span>`)
+                : `<div class="inline-flex items-center gap-2 justify-end">
+                       <button onclick="openCustomerModal('${escapeHtml(String(custno))}')" class="action-icon-btn" title="Edit"><i class="fa-regular fa-pen-to-square"></i></button>
+                       <button onclick="deleteCustomer('${escapeHtml(String(custno))}')" class="action-icon-btn text-red-600 hover:text-red-800" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
+                   </div>`;
+
+            return `
+                <tr class="hover:bg-gray-50/80 transition border-b border-gray-100 ${isDeleted ? 'bg-gray-50/60 text-gray-500' : ''}">
+                    <td class="py-4 px-6 font-mono font-semibold text-xs text-blue-600 align-middle">${escapeHtml(String(custno))}</td>
+                    <td class="py-4 px-6 font-medium ${isDeleted ? 'text-gray-500' : 'text-gray-900'} align-middle">${escapeHtml(String(custname))}</td>
+                    <td class="py-4 px-6 text-xs text-gray-600 max-w-xs truncate align-middle" title="${escapeHtml(String(address))}">${escapeHtml(String(address))}</td>
+                    <td class="py-4 px-6 align-middle">
+                        <span class="px-2.5 py-1 text-xs font-medium rounded bg-gray-100 text-gray-800">${escapeHtml(String(payterm))}</span>
+                    </td>
+                    <td class="py-4 px-6 align-middle">${statusBadge}</td>
+                    <td class="py-4 px-6 text-xs text-gray-500 font-mono align-middle">${escapeHtml(String(stamp))}</td>
+                    <td class="py-4 px-6 text-right align-middle">${actionsHtml}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function renderPaginationControls({ page, pageSize, totalCount, totalPages }) {
+        const infoEl = document.getElementById('paginationInfo');
+        const indicatorEl = document.getElementById('pageIndicator');
+        const prevBtn = document.getElementById('prevPageBtn');
+        const nextBtn = document.getElementById('nextPageBtn');
+
+        if (totalCount === 0) {
+            infoEl.innerText = 'Showing 0–0 of 0';
+            indicatorEl.innerText = 'Page 1 of 1';
+            prevBtn.disabled = true;
+            nextBtn.disabled = true;
+            return;
         }
 
-        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
-            e.preventDefault();
-            try {
-                await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
-                window.location.href = '/login.html';
-            } catch (err) {
-                window.location.href = '/login.html';
-            }
-        });
+        const start = (page - 1) * pageSize + 1;
+        const end = Math.min(page * pageSize, totalCount);
+        infoEl.innerText = `Showing ${start}–${end} of ${totalCount}`;
+        indicatorEl.innerText = `Page ${page} of ${Math.max(1, totalPages)}`;
+        prevBtn.disabled = page <= 1;
+        nextBtn.disabled = totalPages === 0 || page >= totalPages;
+    }
 
-        async function deleteCustomer(custno) {
-            if (!await AppDialog.confirm(`Are you sure you want to delete customer #${custno}?`)) {
-                return;
-            }
+    function handleSearchInput() {
+        clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(() => {
+            directoryState.q = document.getElementById('searchInput').value.trim();
+            directoryState.page = 1;
+            fetchCustomerDirectory();
+        }, 300);
+    }
 
-            try {
-                const res = await fetch(`/api/admin/customers/${custno}`, {
-                    method: 'DELETE',
-                    credentials: 'include'
-                });
+    function switchCustomerTab(status, event) {
+        directoryState.status = VALID_STATUSES.has(status) ? status : 'active';
+        directoryState.page = 1;
 
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error || 'Failed to delete customer');
+        document.querySelectorAll('#statusFilterTabs .tab-btn').forEach(b => b.classList.remove('active'));
+        if (event && event.currentTarget) event.currentTarget.classList.add('active');
 
-                await fetchCustomerDirectory();
-            } catch (err) {
-                await AppDialog.alert('Error deleting customer: ' + err.message);
-            }
+        fetchCustomerDirectory();
+    }
+
+    function toggleFilterPanel() {
+        document.getElementById('filterPanel').classList.toggle('hidden');
+    }
+
+    function handlePayTermsChange() {
+        directoryState.payTerms = document.getElementById('payTermsFilter').value;
+        directoryState.page = 1;
+        fetchCustomerDirectory();
+    }
+
+    function handlePageSizeChange() {
+        const parsed = Number.parseInt(document.getElementById('pageSizeSelect').value, 10);
+        directoryState.pageSize = Number.isFinite(parsed) && parsed > 0
+            ? Math.min(parsed, MAX_PAGE_SIZE)
+            : DEFAULT_PAGE_SIZE;
+        directoryState.page = 1;
+        fetchCustomerDirectory();
+    }
+
+    function resetDirectoryFilters() {
+        directoryState.q = '';
+        directoryState.status = 'active';
+        directoryState.payTerms = '';
+        directoryState.page = 1;
+        directoryState.pageSize = DEFAULT_PAGE_SIZE;
+        syncControlsFromState();
+        fetchCustomerDirectory();
+    }
+
+    function changePage(delta) {
+        const target = directoryState.page + delta;
+        if (target < 1 || (directoryState.totalPages > 0 && target > directoryState.totalPages)) {
+            return;
         }
-    </script>
-    <script src="/js/permissions.js"></script>
-    <script src="/js/layout.js"></script>
-    <script src="/js/dialog.js"></script>
+        directoryState.page = target;
+        fetchCustomerDirectory();
+    }
+
+    function openCustomerModal(custno = null) {
+        const modal = document.getElementById('customerModal');
+        const title = document.getElementById('modalTitle');
+        const errDiv = document.getElementById('modalFormError');
+        errDiv.innerText = '';
+        document.getElementById('customerForm').reset();
+        document.getElementById('modalOriginalCustNo').value = '';
+        document.getElementById('custno').removeAttribute('readonly');
+
+        if (custno && custno !== 'N/A') {
+            title.innerText = 'Edit Customer';
+            const customer = customersData.find(c => String(c.custno) === String(custno));
+            if (customer) {
+                document.getElementById('modalOriginalCustNo').value = custno;
+                document.getElementById('custno').value = customer.custno || '';
+                document.getElementById('custno').setAttribute('readonly', true);
+                document.getElementById('custname').value = customer.custname || '';
+                document.getElementById('address').value = customer.address || '';
+                document.getElementById('payterm').value = customer.payterm || 'COD';
+            }
+        } else {
+            title.innerText = 'Add New Customer';
+        }
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeCustomerModal() {
+        document.getElementById('customerModal').classList.remove('flex');
+        document.getElementById('customerModal').classList.add('hidden');
+    }
+
+    async function handleFormSubmit(event) {
+        event.preventDefault();
+        const originalCustNo = document.getElementById('modalOriginalCustNo').value;
+        const errDiv = document.getElementById('modalFormError');
+        errDiv.innerText = '';
+
+        const payload = {
+            custno: document.getElementById('custno').value.trim(),
+            custname: document.getElementById('custname').value.trim(),
+            address: document.getElementById('address').value.trim(),
+            payterm: document.getElementById('payterm').value
+        };
+
+        const url = originalCustNo ? `/api/admin/customers/${originalCustNo}` : '/api/admin/customers';
+        const method = originalCustNo ? 'PUT' : 'POST';
+
+        try {
+            const res = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(payload)
+            });
+
+            const resData = await res.json();
+            if (!res.ok) throw new Error(resData.error || 'Failed to save customer');
+
+            closeCustomerModal();
+            await fetchCustomerDirectory();
+        } catch (err) {
+            errDiv.innerText = err.message;
+        }
+    }
+
+    function escapeHtml(str) {
+        return (str || '').toString().replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+        e.preventDefault();
+        try {
+            await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+            window.location.href = '/login.html';
+        } catch (err) {
+            window.location.href = '/login.html';
+        }
+    });
+
+    async function deleteCustomer(custno) {
+        if (!await AppDialog.confirm(`Are you sure you want to delete customer #${custno}?`)) {
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/admin/customers/${custno}`, {
+                method: 'DELETE',
+                credentials: 'include'
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to delete customer');
+
+            await fetchCustomerDirectory();
+        } catch (err) {
+            await AppDialog.alert('Error deleting customer: ' + err.message);
+        }
+    }
+
+    async function restoreCustomer(custno) {
+        if (!await AppDialog.confirm(`Restore customer #${custno} back to active status?`)) {
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/admin/customers/${encodeURIComponent(custno)}/restore`, {
+                method: 'PATCH',
+                credentials: 'include'
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to restore customer');
+
+            await fetchCustomerDirectory();
+        } catch (err) {
+            await AppDialog.alert('Error restoring customer: ' + err.message);
+        }
+    }
+</script>
+<script src="/js/permissions.js"></script>
+<script src="/js/layout.js"></script>
+<script src="/js/dialog.js"></script>
 </body>
 </html>

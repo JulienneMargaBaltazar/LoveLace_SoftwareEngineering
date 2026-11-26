@@ -7,7 +7,7 @@ import { requireAnyRight, requireOneOfRights } from '../middleware/requireRight.
 const router = express.Router();
 
 const rightsModules = {
-    customer: ['add-customer', 'delete-customer', 'edit-customer'],
+    customer: ['add-customer', 'delete-customer', 'edit-customer', 'restore-customer'],
     product: ['add-product', 'delete-product', 'edit-product', 'add-price', 'edit-price', 'delete-price'],
     'human-resources': ['add-job', 'delete-job', 'edit-job', 'add-department', 'delete-department', 'edit-department', 'add-employee', 'delete-employee', 'edit-employee', 'view-job-history', 'add-job-history', 'delete-job-history', 'edit-job-history'],
     sales: ['add-sale', 'edit-sale', 'delete-sale', 'add-sale-detail', 'view-sale-details', 'edit-sale-detail', 'delete-sale-detail'],
@@ -260,7 +260,6 @@ const escapeLikePattern = (value) =>
 router.get(
     '/customers',
     requireAuth,
-    requireModuleRight('customer', 'view-customer'),
     async (req, res) => {
         try {
             const rawQ = typeof req.query.q === 'string' ? req.query.q.trim() : '';
@@ -395,19 +394,67 @@ router.put('/customers/:custno', requireAuth, requireModuleRight('customer', 'ed
 
 router.delete('/customers/:custno', requireAuth, requireModuleRight('customer', 'delete-customer'), async (req, res) => {
     try {
-        const { error } = await supabase
+        const custno = String(req.params.custno || '').trim();
+        if (!custno) {
+            return res.status(400).json({ error: 'Customer number is required.' });
+        }
+
+        const { data, error } = await supabase
             .from('customer')
-            .delete()
-            .eq('custno', req.params.custno);
+            .update({ is_deleted: true })
+            .eq('custno', custno)
+            .select('custno, is_deleted')
+            .single();
 
         if (error) throw error;
+        if (!data) {
+            return res.status(404).json({ error: 'Customer not found.' });
+        }
 
-        res.status(200).json({ success: true, message: 'Customer deleted successfully.' });
+        res.status(200).json({
+            success: true,
+            message: 'Customer deleted successfully.',
+            customer: data
+        });
     } catch (err) {
         console.error('Error deleting customer:', err.message);
         res.status(500).json({ error: 'Failed to delete customer: ' + err.message });
     }
 });
+router.patch(
+    '/customers/:custno/restore',
+    requireAuth,
+    requireModuleRight('customer', 'restore-customer'),
+    async (req, res) => {
+        try {
+            const custno = String(req.params.custno || '').trim();
+            if (!custno) {
+                return res.status(400).json({ error: 'Customer number is required.' });
+            }
+
+            const { data, error } = await supabase
+                .from('customer')
+                .update({ is_deleted: false })
+                .eq('custno', custno)
+                .select('custno, is_deleted')
+                .single();
+
+            if (error) throw error;
+            if (!data) {
+                return res.status(404).json({ error: 'Customer not found.' });
+            }
+
+            return res.status(200).json({
+                success: true,
+                message: 'Customer restored successfully.',
+                customer: data
+            });
+        } catch (err) {
+            console.error('Error restoring customer:', err.message);
+            return res.status(500).json({ error: 'Failed to restore customer: ' + err.message });
+        }
+    }
+);
 
 router.patch('/customers/:custno/status', requireAuth, requireModuleRight('customer', 'edit-customer'), async (req, res) => {
     const { custno } = req.params;
@@ -1097,6 +1144,8 @@ router.put('/users/:id/rights', async (req, res) => {
     try {
         // Ensure the logged-in user has admin privileges
         const userRoleId = Number(req.session.roleId);
+        const defaultStatus = userRoleId == 3 ? 'all' : 'active';
+        const statusParam = typeof req.query.status == 'string' ? req.query.status.toLowerCase() : defaultStatus;
         if (userRoleId !== 1 && userRoleId !== 2) { 
             return res.status(403).json({ error: 'Forbidden. Administrator privileges required.' });
         }
