@@ -250,21 +250,96 @@ router.patch('/users/:userId/role', requireSuperadmin, async (req, res) => {
 // CUSTOMER MANAGEMENT ROUTES (Protected by requireAdmin)
 // ---------------------------------------------------------
 
-router.get('/customers', requireAuth, async (req, res) => {
-    try {
-        const { data, error } = await supabase
-            .from('customer')
-            .select('*')
-            .order('stamp', { ascending: false });
+const MAX_CUSTOMER_PAGE_SIZE = 100;
+const DEFAULT_CUSTOMER_PAGE_SIZE = 25;
 
-        if (error) throw error;
+// Escape Postgres LIKE/ILIKE wildcards so search terms are bound safely as literals
+const escapeLikePattern = (value) =>
+    value.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_');
 
-        res.status(200).json({ customers: data || [] });
-    } catch (err) {
-        console.error('Error fetching customers:', err.message);
-        res.status(500).json({ error: 'Failed to load customer records: ' + err.message });
+router.get(
+    '/customers',
+    requireAuth,
+    requireModuleRight('customer', 'view-customer'),
+    async (req, res) => {
+        try {
+            const rawQ = typeof req.query.q === 'string' ? req.query.q.trim() : '';
+            const statusParam = typeof req.query.status === 'string'
+                ? req.query.status.trim().toLowerCase()
+                : 'active';
+            const payTerms = typeof req.query.payTerms === 'string' && req.query.payTerms.trim()
+                ? req.query.payTerms.trim()
+                : null;
+
+            const status = ['active', 'deleted', 'all'].includes(statusParam)
+                ? statusParam
+                : 'active';
+
+            const parsedPage = Number.parseInt(req.query.page, 10);
+            const page = Number.isFinite(parsedPage) && parsedPage > 0 ? parsedPage : 1;
+
+            const parsedPageSize = Number.parseInt(req.query.pageSize, 10);
+            const pageSize = Number.isFinite(parsedPageSize) && parsedPageSize > 0
+                ? Math.min(parsedPageSize, MAX_CUSTOMER_PAGE_SIZE)
+                : DEFAULT_CUSTOMER_PAGE_SIZE;
+
+            const from = (page - 1) * pageSize;
+            const to = from + pageSize - 1;
+
+            // Default ('active') uses S2-DBA-01's v_active_customers view (is_deleted = FALSE);
+            // 'deleted' and 'all' query base customer so is_deleted can be filtered/included.
+            const useActiveView = status === 'active';
+            let query = useActiveView
+                ? supabase
+                    .from('v_active_customers')
+                    .select('custno, custname, address, payterm, is_blocked', { count: 'exact' })
+                : supabase
+                    .from('customer')
+                    .select('custno, custname, address, payterm, is_blocked, is_deleted', { count: 'exact' });
+
+            if (status === 'deleted') {
+                query = query.eq('is_deleted', true);
+            }
+
+            if (payTerms) {
+                query = query.eq('payterm', payTerms);
+            }
+
+            if (rawQ.length > 0) {
+                const pattern = `%${escapeLikePattern(rawQ)}%`;
+                query = query.or(
+                    `custno.ilike.${pattern},custname.ilike.${pattern},address.ilike.${pattern}`
+                );
+            }
+
+            const { data, error, count } = await query
+                .order('custname', { ascending: true })
+                .order('custno', { ascending: true })
+                .range(from, to);
+
+            if (error) throw error;
+
+            const totalCount = count ?? 0;
+            const totalPages = totalCount === 0 ? 0 : Math.ceil(totalCount / pageSize);
+
+            return res.status(200).json({
+                customers: (data || []).map((row) => ({
+                    ...row,
+                    is_deleted: useActiveView ? false : Boolean(row.is_deleted)
+                })),
+                pagination: {
+                    page,
+                    pageSize,
+                    totalCount,
+                    totalPages
+                }
+            });
+        } catch (err) {
+            console.error('Error fetching customers:', err.message);
+            return res.status(500).json({ error: 'Failed to load customer records: ' + err.message });
+        }
     }
-});
+);
 
 router.post('/customers', requireAuth, requireModuleRight('customer', 'add-customer'), async (req, res) => {
     const { custno, custname, address, payterm } = req.body;
