@@ -3,6 +3,17 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import authMiddleware from '../middleware/authMiddleware.js';
 import { supabase } from '../config/supabaseClient.js';
+import {
+  issueVerificationToken,
+  checkResendRateLimit,
+  consumeAndVerifyToken
+} from '../services/emailVerificationService.js';
+import nodemailer from 'nodemailer';
+
+const mailer = nodemailer.createTransport({
+  service: 'gmail',
+  auth: { user: process.env.MAIL_USER, pass: process.env.MAIL_PASS }
+});
 
 const router = express.Router();
 
@@ -70,6 +81,17 @@ router.post('/signup', async (req, res) => {
     const newUser = insertData[0];
     if (newUser) {
       delete newUser.password_hash;
+      try {
+        await issueVerificationToken({
+          userId: newUser.user_id,
+          email: newUser.email,
+          firstName: newUser.first_name,
+          purpose: 'email_verification',
+          invalidateExisting: false
+        });
+      } catch (verifyErr) {
+        console.error('Failed to dispatch verification email on signup:', verifyErr.message);
+      }
     }
 
     return res.status(201).json({
@@ -266,11 +288,25 @@ router.post('/forgotpassword', async (req, res) => {
       return res.status(500).json({ error: 'Internal server error.' });
     }
 
-    const resetLink = `http://localhost:3000/passwordreset.html?token=${resetToken}`;
-    console.log(`\n🔗 [SIMULATED EMAIL DISPATCH] ----------------------------------------`);
-    console.log(`To: ${email}`);
-    console.log(`Password Reset Link: ${resetLink}`);
-    console.log(`----------------------------------------------------------------------\n`);
+    const baseUrl = process.env.APP_URL || 'http://localhost:3000';
+const resetLink = `${baseUrl}/passwordreset.html?token=${resetToken}`;
+
+try {
+  await mailer.sendMail({
+    from: `"Love Lace ERP" <${process.env.MAIL_USER}>`,
+    to: user.email,
+    subject: 'Reset your Love Lace ERP password',
+    html: `
+      <p>Hello,</p>
+      <p>We received a request to reset your password. Click the link below (valid for 15 minutes):</p>
+      <p><a href="${resetLink}">${resetLink}</a></p>
+      <p>If you did not request this, you can ignore this email.</p>
+    `
+  });
+  console.log(`✅ Reset email sent to ${user.email}`);
+} catch (mailErr) {
+  console.error('❌ Failed to send reset email:', mailErr.message);
+}
 
     return res.status(200).json({ 
       message: 'If that email address is registered, a password reset link has been dispatched.' 
@@ -347,4 +383,188 @@ router.post('/passwordreset', async (req, res) => {
     return res.status(500).json({ error: 'Internal server error.' });
   }
 });
+
+import { createClient } from "@supabase/supabase-js";
+
+const opts = { auth: { autoRefreshToken: false, persistSession: false } };
+const authClient = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY,
+  opts
+);
+const admin = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY,
+  opts
+);
+
+// Step 1: request a password reset code
+router.post("/request-password-reset", async (req, res) => {
+  const email = typeof req.body.email === "string" ? req.body.email.trim() : "";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ error: "Enter a valid email address." });
+  }
+
+  try {
+    const { error } = await authClient.auth.resetPasswordForEmail(email);
+    if (error) {
+      console.error("Password reset email error:", error);
+      return res.status(error.status === 429 ? 429 : 502).json({
+        error: "Unable to send a reset code. Please try again later."
+      });
+    }
+    res.json({ message: "If an account exists for this email, a verification code has been sent." });
+  } catch (err) {
+    console.error("Password reset email error:", err);
+    res.status(500).json({ error: "Unable to send a reset code. Please try again later." });
+  }
+});
+
+// Step 2: verify the 8-digit code using a fresh client
+router.post("/verify-password-reset", async (req, res) => {
+  const email = typeof req.body.email === "string" ? req.body.email.trim() : "";
+  const code = typeof req.body.code === "string" ? req.body.code.trim() : "";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !/^\d{8}$/.test(code)) {
+    return res.status(400).json({ error: "Enter a valid email address and eight-digit code." });
+  }
+
+  try {
+    const recoveryClient = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY,
+      opts
+    );
+    const { data, error } = await recoveryClient.auth.verifyOtp({
+      email,
+      token: code,
+      type: "recovery"
+    });
+    if (error || !data.session) {
+      return res.status(400).json({ error: "The verification code is invalid or expired." });
+    }
+    res.json({ access_token: data.session.access_token });
+  } catch (err) {
+    console.error("Password reset verification error:", err);
+    res.status(500).json({ error: "Unable to verify the reset code. Please try again." });
+  }
+});
+
+// Step 3: set the new password using the recovery token from step 2
+router.post("/reset-password", async (req, res) => {
+  const token = (req.headers.authorization || "").replace(/^Bearer\s+/i, "");
+  const { newPassword } = req.body;
+  if (!token) return res.status(401).json({ error: "Password reset verification is required." });
+  if (typeof newPassword !== "string" || newPassword.length < 8) {
+    return res.status(400).json({ error: "Password must be at least 8 characters." });
+  }
+
+  try {
+    const { data, error: tokenError } = await admin.auth.getUser(token);
+    if (tokenError || !data.user) {
+      return res.status(401).json({ error: "The reset session is invalid or expired. Request a new code." });
+    }
+
+    const { error } = await admin.auth.admin.updateUserById(data.user.id, { password: newPassword });
+    if (error) return res.status(400).json({ error: error.message });
+    res.json({ message: "Password reset successfully." });
+  } catch (err) {
+    console.error("Password reset error:", err);
+    res.status(500).json({ error: "Unable to reset the password. Please try again." });
+  }
+});
+
+
+// ==========================================
+// EMAIL VERIFICATION ROUTES (S1-DBA-07)
+// ==========================================
+const handleVerifyEmail = async (req, res) => {
+  try {
+    const rawToken =
+      typeof req.query.token === 'string'
+        ? req.query.token
+        : typeof req.body?.token === 'string'
+        ? req.body.token
+        : '';
+
+    const result = await consumeAndVerifyToken(rawToken);
+    if (result.status !== 200) {
+      return res.status(result.status).json({
+        error: result.error,
+        can_resend: Boolean(result.canResend),
+        ...(result.email ? { email: result.email } : {})
+      });
+    }
+
+    return res.status(200).json({
+      message: result.purpose === 'email_change'
+        ? 'New email address verified and updated successfully.'
+        : 'Email address verified successfully.',
+      verified: true,
+      email: result.email,
+      email_verified_at: result.emailVerifiedAt
+    });
+  } catch (err) {
+    console.error('Email verification error:', err);
+    return res.status(500).json({ error: 'Unable to verify email right now. Please try again later.' });
+  }
+};
+
+router.get('/verify-email', handleVerifyEmail);
+router.post('/verify-email', handleVerifyEmail);
+
+router.post('/resend-verification', async (req, res) => {
+  const genericResponse = {
+    message: 'If an unverified account exists for this email, a new verification link has been sent.'
+  };
+
+  try {
+    const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ error: 'Enter a valid email address.' });
+    }
+
+    const { data: user, error: userError } = await supabase
+      .from('app_user')
+      .select('user_id, email, first_name, is_verified, email_verified_at')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (userError) {
+      console.error('Resend verification user lookup error:', userError);
+      return res.status(200).json(genericResponse);
+    }
+
+    // Enumeration protection: return generic 200 if user does not exist or is already verified
+    if (!user || Boolean(user.is_verified || user.email_verified_at)) {
+      return res.status(200).json(genericResponse);
+    }
+
+    const rateCheck = await checkResendRateLimit(user.user_id);
+    if (!rateCheck.allowed) {
+      if (rateCheck.reason === 'cooldown') {
+        return res.status(429).json({
+          error: `Please wait ${rateCheck.retryAfterSeconds} seconds before requesting another verification email.`,
+          retry_after_seconds: rateCheck.retryAfterSeconds
+        });
+      }
+      return res.status(429).json({
+        error: 'Too many verification emails requested. Please try again later.'
+      });
+    }
+
+    await issueVerificationToken({
+      userId: user.user_id,
+      email: user.email,
+      firstName: user.first_name,
+      purpose: 'email_verification',
+      invalidateExisting: true
+    });
+
+    return res.status(200).json(genericResponse);
+  } catch (err) {
+    console.error('Resend verification error:', err);
+    return res.status(500).json({ error: 'Unable to process verification request right now.' });
+  }
+});
+
 export default router;

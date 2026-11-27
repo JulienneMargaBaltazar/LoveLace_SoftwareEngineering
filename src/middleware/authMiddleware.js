@@ -67,5 +67,35 @@ export const requireUser = async (req, res, next) => {
 };
 
 // Support BOTH default and named imports across your project
+
+export const requireVerifiedEmail = async (req, res, next) => {
+  authMiddleware(req, res, async () => {
+    try {
+      const { data: user, error } = await supabase
+        .from("app_user")
+        .select("is_verified, email_verified_at")
+        .eq("user_id", req.session.userId)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Email verification check error:", error);
+        return res.status(500).json({ error: "Failed to verify account status." });
+      }
+
+      if (!Boolean(user?.is_verified || user?.email_verified_at)) {
+        return res.status(403).json({
+          error: "Please verify your email address to access this resource.",
+          code: "EMAIL_NOT_VERIFIED"
+        });
+      }
+
+      return next();
+    } catch (err) {
+      console.error("Email verification middleware error:", err);
+      return res.status(500).json({ error: "Failed to verify account status." });
+    }
+  });
+};
+
 export const requireAuth = authMiddleware;
 export default authMiddleware;
