@@ -1,5 +1,5 @@
 window.RIGHTS_CATALOGUE = {
-  customers: ['customer.view', 'customer.add', 'customer.edit', 'customer.delete', 'customer.export'],
+  customers: ['customer.view', 'customer.add', 'customer.edit', 'customer.delete', 'customer.export', 'customer.restore'],
   products: ['product.view', 'product.add', 'product.edit', 'product.delete', 'product.adjust_stock', 'product.export'],
   hr: ['hr.view', 'hr.add', 'hr.edit', 'hr.delete', 'hr.view_job_history', 'hr.edit_job_history', 'hr.manage_departments', 'hr.export'],
   sales: ['sales.view', 'sales.add', 'sales.edit', 'sales.void', 'sales.view_invoices', 'sales.export'],
