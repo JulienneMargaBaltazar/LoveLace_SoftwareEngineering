@@ -14,6 +14,13 @@ const rightsModules = {
     reports: ['top-customers', 'top-products', 'all-employees', 'active-employees', 'employee-job-history', 'top-sales', 'product-master-list']
 };
 
+const ALLOWED_PAY_TERMS = new Set(['COD', '30D', '45D', '60D']);
+const MAX_CUSTOMER_PAGE_SIZE = 100;
+const DEFAULT_CUSTOMER_PAGE_SIZE = 25;
+
+const escapeLikePattern = (value) =>
+    value.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_');
+
 export const requireModuleRight = (module, action) => async (req, res, next) => {
     if (req.session.roleId === 1 || req.session.roleId === 2) return next();
 
@@ -48,105 +55,104 @@ const requireEmployeeRight = action => requireOneOfRights('human-resources', [ac
 
 // 1. GET /api/admin/users - Retrieve user directory
 router.get('/users', requireAdmin, async (req, res) => {
-  try {
-    const requesterRoleId = req.session.roleId;
+    try {
+        const requesterRoleId = req.session.roleId;
 
-    let query = supabase
-      .from('app_user')
-      .select('user_id, first_name, last_name, email, role_id, is_blocked, status, stamp');
+        let query = supabase
+            .from('app_user')
+            .select('user_id, first_name, last_name, email, role_id, is_blocked, status, stamp');
 
-    if (requesterRoleId === 2) {
-      query = query.neq('role_id', 1);
+        if (requesterRoleId === 2) {
+            query = query.neq('role_id', 1);
+        }
+
+        const { data: users, error } = await query;
+        if (error) throw error;
+
+        res.status(200).json({ users });
+    } catch (err) {
+        console.error('Error fetching user directory:', err.message);
+        res.status(500).json({ error: 'Internal server error while fetching users.' });
     }
-
-    const { data: users, error } = await query;
-    if (error) throw error;
-
-    res.status(200).json({ users });
-  } catch (err) {
-    console.error('Error fetching user directory:', err.message);
-    res.status(500).json({ error: 'Internal server error while fetching users.' });
-  }
 });
 
 // 2. POST /api/admin/users - Add a new user
 router.post('/users', requireAdmin, async (req, res) => {
-  try {
-    const { email, password } = req.body; 
+    try {
+        const { email, password } = req.body;
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-    const { data, error } = await supabase
-      .from('app_user')
-      .insert([{
-        email,
-        password_hash: hashedPassword,
-        role_id: 3, // FORCE new users to be regular users by default
-        status: 'active',
-        is_blocked: false
-      }])
-      .select();
+        const { data, error } = await supabase
+            .from('app_user')
+            .insert([{
+                email,
+                password_hash: hashedPassword,
+                role_id: 3, // FORCE new users to be regular users by default
+                status: 'active',
+                is_blocked: false
+            }])
+            .select();
 
-    if (error) throw error;
+        if (error) throw error;
 
-    res.status(201).json({ message: 'User created successfully', user: data[0] });
-  } catch (err) {
-    console.error('Error creating user:', err.message);
-    res.status(500).json({ error: 'Internal server error while creating user.' });
-  }
+        res.status(201).json({ message: 'User created successfully', user: data[0] });
+    } catch (err) {
+        console.error('Error creating user:', err.message);
+        res.status(500).json({ error: 'Internal server error while creating user.' });
+    }
 });
 
 // 3. PATCH /api/admin/users/:userId/status - Toggle block/unblock status
 router.patch('/users/:userId/status', requireAdmin, async (req, res) => {
-  try {
-    const requesterRoleId = req.session.roleId;
-    const { userId } = req.params;
-    const { is_blocked } = req.body;
+    try {
+        const requesterRoleId = req.session.roleId;
+        const { userId } = req.params;
+        const { is_blocked } = req.body;
 
-    const { data: targetUser, error: fetchError } = await supabase
-      .from('app_user')
-      .select('role_id, is_blocked')
-      .eq('user_id', userId)
-      .single();
+        const { data: targetUser, error: fetchError } = await supabase
+            .from('app_user')
+            .select('role_id, is_blocked')
+            .eq('user_id', userId)
+            .single();
 
-    if (fetchError || !targetUser) {
-      return res.status(404).json({ error: 'Target user not found.' });
+        if (fetchError || !targetUser) {
+            return res.status(404).json({ error: 'Target user not found.' });
+        }
+
+        if (requesterRoleId === 2 && targetUser.role_id === 1) {
+            return res.status(403).json({ error: 'Unauthorized: Cannot modify Superadmin status.' });
+        }
+
+        if (targetUser.role_id === 1 && is_blocked === true) {
+            const { count, error: countError } = await supabase
+                .from('app_user')
+                .select('user_id', { count: 'exact', head: true })
+                .eq('role_id', 1)
+                .eq('is_blocked', false);
+
+            if (countError) throw countError;
+
+            if (count <= 1) {
+                return res.status(400).json({
+                    error: 'Action blocked: Cannot disable or block the last remaining Superadmin.'
+                });
+            }
+        }
+
+        const { error: updateError } = await supabase
+            .from('app_user')
+            .update({ is_blocked })
+            .eq('user_id', userId);
+
+        if (updateError) throw updateError;
+
+        res.status(200).json({ message: `User successfully ${is_blocked ? 'blocked' : 'unblocked'}.` });
+    } catch (err) {
+        console.error('Error updating user status:', err.message);
+        res.status(500).json({ error: 'Internal server error while updating user status.' });
     }
-
-    if (requesterRoleId === 2 && targetUser.role_id === 1) {
-      return res.status(403).json({ error: 'Unauthorized: Cannot modify Superadmin status.' });
-    }
-
-    if (targetUser.role_id === 1 && is_blocked === true) {
-      const { count, error: countError } = await supabase
-        .from('app_user')
-        .select('user_id', { count: 'exact', head: true })
-        .eq('role_id', 1)
-        .eq('is_blocked', false);
-
-      if (countError) throw countError;
-
-      if (count <= 1) {
-        return res.status(400).json({ 
-          error: 'Action blocked: Cannot disable or block the last remaining Superadmin.' //Blocks the last superadmin from being blocked or disabled
-        });
-      }
-    }
-
-    const { error: updateError } = await supabase
-      .from('app_user')
-      .update({ is_blocked })
-      .eq('user_id', userId);
-
-    if (updateError) throw updateError;
-
-    res.status(200).json({ message: `User successfully ${is_blocked ? 'blocked' : 'unblocked'}.` });
-  } catch (err) {
-    console.error('Error updating user status:', err.message);
-    res.status(500).json({ error: 'Internal server error while updating user status.' });
-  }
 });
-
 
 // ---------------------------------------------------------
 // SUPERADMIN-ONLY ROUTES (Protected by requireSuperadmin)
@@ -154,241 +160,281 @@ router.patch('/users/:userId/status', requireAdmin, async (req, res) => {
 
 // 4. GET /api/admin/pending-users - Review pending registrations
 router.get('/pending-users', requireSuperadmin, async (req, res) => {
-  try {
-    const { data: users, error } = await supabase
-      .from('app_user')
-      .select('user_id, first_name, last_name, email, role_id, status, stamp')
-      .eq('status', 'pending');
+    try {
+        const { data: users, error } = await supabase
+            .from('app_user')
+            .select('user_id, first_name, last_name, email, role_id, status, stamp')
+            .eq('status', 'pending');
 
-    if (error) throw error;
-    res.status(200).json({ users });
-  } catch (err) {
-    console.error('Error fetching pending users:', err.message);
-    res.status(500).json({ error: 'Internal server error while fetching pending users.' });
-  }
+        if (error) throw error;
+        res.status(200).json({ users });
+    } catch (err) {
+        console.error('Error fetching pending users:', err.message);
+        res.status(500).json({ error: 'Internal server error while fetching pending users.' });
+    }
 });
 
 // 5. PATCH /api/admin/users/:userId/approve - Approve pending user
 router.patch('/users/:userId/approve', requireSuperadmin, async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const { role_id } = req.body;
+    try {
+        const { userId } = req.params;
+        const { role_id } = req.body;
 
-    const updatePayload = { status: 'active' };
-    if (role_id) updatePayload.role_id = role_id;
+        const updatePayload = { status: 'active' };
+        if (role_id) updatePayload.role_id = role_id;
 
-    const { data, error } = await supabase
-      .from('app_user')
-      .update(updatePayload)
-      .eq('user_id', userId)
-      .select();
+        const { data, error } = await supabase
+            .from('app_user')
+            .update(updatePayload)
+            .eq('user_id', userId)
+            .select();
 
-    if (error) throw error;
-    res.status(200).json({ message: 'User approved and activated successfully.', user: data[0] });
-  } catch (err) {
-    console.error('Error approving user:', err.message);
-    res.status(500).json({ error: 'Internal server error while approving user.' });
-  }
+        if (error) throw error;
+        res.status(200).json({ message: 'User approved and activated successfully.', user: data[0] });
+    } catch (err) {
+        console.error('Error approving user:', err.message);
+        res.status(500).json({ error: 'Internal server error while approving user.' });
+    }
 });
 
 // 6. PATCH /api/admin/users/:userId/role - Elevate or modify roles
 router.patch('/users/:userId/role', requireSuperadmin, async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const { target_role_id } = req.body; 
-    const currentSessionUserId = req.session.userId;
+    try {
+        const { userId } = req.params;
+        const { target_role_id } = req.body;
+        const currentSessionUserId = req.session.userId;
 
-    if (currentSessionUserId && userId === currentSessionUserId) {
-      return res.status(403).json({ 
-        error: 'Action blocked: You cannot modify your own account role from the user directory.' 
-      });
+        if (currentSessionUserId && userId === currentSessionUserId) {
+            return res.status(403).json({
+                error: 'Action blocked: You cannot modify your own account role from the user directory.'
+            });
+        }
+
+        const { data: targetUser, error: fetchError } = await supabase
+            .from('app_user')
+            .select('role_id, is_blocked')
+            .eq('user_id', userId)
+            .single();
+
+        if (fetchError || !targetUser) {
+            return res.status(404).json({ error: 'Target user not found.' });
+        }
+
+        if (targetUser.role_id === 1 && Number(target_role_id) !== 1) {
+            const { count, error: countError } = await supabase
+                .from('app_user')
+                .select('user_id', { count: 'exact', head: true })
+                .eq('role_id', 1)
+                .eq('is_blocked', false);
+
+            if (countError) throw countError;
+
+            if (count <= 1) {
+                return res.status(400).json({
+                    error: 'Action blocked: Cannot demote the last remaining Superadmin account.'
+                });
+            }
+        }
+
+        const { data, error: updateError } = await supabase
+            .from('app_user')
+            .update({ role_id: Number(target_role_id) })
+            .eq('user_id', userId)
+            .select('user_id, email, role_id, is_blocked');
+
+        if (updateError) throw updateError;
+
+        res.status(200).json({ message: 'User role updated successfully.', user: data[0] });
+    } catch (err) {
+        console.error('Error updating user role:', err.message);
+        res.status(500).json({ error: 'Internal server error while updating user role.' });
     }
-
-    const { data: targetUser, error: fetchError } = await supabase
-      .from('app_user')
-      .select('role_id, is_blocked')
-      .eq('user_id', userId)
-      .single();
-
-    if (fetchError || !targetUser) {
-      return res.status(404).json({ error: 'Target user not found.' });
-    }
-
-    if (targetUser.role_id === 1 && Number(target_role_id) !== 1) {
-      const { count, error: countError } = await supabase
-        .from('app_user')
-        .select('user_id', { count: 'exact', head: true })
-        .eq('role_id', 1)
-        .eq('is_blocked', false);
-
-      if (countError) throw countError;
-
-      if (count <= 1) {
-        return res.status(400).json({ 
-          error: 'Action blocked: Cannot demote the last remaining Superadmin account.' 
-        });
-      }
-    }
-
-    const { data, error: updateError } = await supabase
-      .from('app_user')
-      .update({ role_id: Number(target_role_id) })
-      .eq('user_id', userId)
-      .select('user_id, email, role_id, is_blocked');
-
-    if (updateError) throw updateError;
-
-    res.status(200).json({ message: 'User role updated successfully.', user: data[0] });
-  } catch (err) {
-    console.error('Error updating user role:', err.message);
-    res.status(500).json({ error: 'Internal server error while updating user role.' });
-  }
 });
 
-
 // ---------------------------------------------------------
-// CUSTOMER MANAGEMENT ROUTES (Protected by requireAdmin)
+// CUSTOMER MANAGEMENT ROUTES
 // ---------------------------------------------------------
 
-const MAX_CUSTOMER_PAGE_SIZE = 100;
-const DEFAULT_CUSTOMER_PAGE_SIZE = 25;
+router.get('/customers', requireAuth, async (req, res) => {
+    try {
+        const rawQ = typeof req.query.q === 'string' ? req.query.q.trim() : '';
+        const statusParam = typeof req.query.status === 'string'
+            ? req.query.status.trim().toLowerCase()
+            : 'active';
+        const payTerms = typeof req.query.payTerms === 'string' && req.query.payTerms.trim()
+            ? req.query.payTerms.trim()
+            : null;
 
-// Escape Postgres LIKE/ILIKE wildcards so search terms are bound safely as literals
-const escapeLikePattern = (value) =>
-    value.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_');
+        const status = ['active', 'deleted', 'all'].includes(statusParam)
+            ? statusParam
+            : 'active';
 
-router.get(
-    '/customers',
-    requireAuth,
-    async (req, res) => {
-        try {
-            const rawQ = typeof req.query.q === 'string' ? req.query.q.trim() : '';
-            const statusParam = typeof req.query.status === 'string'
-                ? req.query.status.trim().toLowerCase()
-                : 'active';
-            const payTerms = typeof req.query.payTerms === 'string' && req.query.payTerms.trim()
-                ? req.query.payTerms.trim()
-                : null;
+        const parsedPage = Number.parseInt(req.query.page, 10);
+        const page = Number.isFinite(parsedPage) && parsedPage > 0 ? parsedPage : 1;
 
-            const status = ['active', 'deleted', 'all'].includes(statusParam)
-                ? statusParam
-                : 'active';
+        const parsedPageSize = Number.parseInt(req.query.pageSize, 10);
+        const pageSize = Number.isFinite(parsedPageSize) && parsedPageSize > 0
+            ? Math.min(parsedPageSize, MAX_CUSTOMER_PAGE_SIZE)
+            : DEFAULT_CUSTOMER_PAGE_SIZE;
 
-            const parsedPage = Number.parseInt(req.query.page, 10);
-            const page = Number.isFinite(parsedPage) && parsedPage > 0 ? parsedPage : 1;
+        const from = (page - 1) * pageSize;
+        const to = from + pageSize - 1;
 
-            const parsedPageSize = Number.parseInt(req.query.pageSize, 10);
-            const pageSize = Number.isFinite(parsedPageSize) && parsedPageSize > 0
-                ? Math.min(parsedPageSize, MAX_CUSTOMER_PAGE_SIZE)
-                : DEFAULT_CUSTOMER_PAGE_SIZE;
+        const useActiveView = status === 'active';
+        let query = useActiveView
+            ? supabase
+                .from('v_active_customers')
+                .select('custno, custname, address, payterm, is_blocked', { count: 'exact' })
+            : supabase
+                .from('customer')
+                .select('custno, custname, address, payterm, is_blocked, is_deleted', { count: 'exact' });
 
-            const from = (page - 1) * pageSize;
-            const to = from + pageSize - 1;
-
-            // Default ('active') uses S2-DBA-01's v_active_customers view (is_deleted = FALSE);
-            // 'deleted' and 'all' query base customer so is_deleted can be filtered/included.
-            const useActiveView = status === 'active';
-            let query = useActiveView
-                ? supabase
-                    .from('v_active_customers')
-                    .select('custno, custname, address, payterm, is_blocked', { count: 'exact' })
-                : supabase
-                    .from('customer')
-                    .select('custno, custname, address, payterm, is_blocked, is_deleted', { count: 'exact' });
-
-            if (status === 'deleted') {
-                query = query.eq('is_deleted', true);
-            }
-
-            if (payTerms) {
-                query = query.eq('payterm', payTerms);
-            }
-
-            if (rawQ.length > 0) {
-                const pattern = `%${escapeLikePattern(rawQ)}%`;
-                query = query.or(
-                    `custno.ilike.${pattern},custname.ilike.${pattern},address.ilike.${pattern}`
-                );
-            }
-
-            const { data, error, count } = await query
-                .order('custname', { ascending: true })
-                .order('custno', { ascending: true })
-                .range(from, to);
-
-            if (error) throw error;
-
-            const totalCount = count ?? 0;
-            const totalPages = totalCount === 0 ? 0 : Math.ceil(totalCount / pageSize);
-
-            return res.status(200).json({
-                customers: (data || []).map((row) => ({
-                    ...row,
-                    is_deleted: useActiveView ? false : Boolean(row.is_deleted)
-                })),
-                pagination: {
-                    page,
-                    pageSize,
-                    totalCount,
-                    totalPages
-                }
-            });
-        } catch (err) {
-            console.error('Error fetching customers:', err.message);
-            return res.status(500).json({ error: 'Failed to load customer records: ' + err.message });
+        if (status === 'deleted') {
+            query = query.eq('is_deleted', true);
         }
+
+        if (payTerms) {
+            query = query.eq('payterm', payTerms);
+        }
+
+        if (rawQ.length > 0) {
+            const pattern = `%${escapeLikePattern(rawQ)}%`;
+            query = query.or(
+                `custno.ilike.${pattern},custname.ilike.${pattern},address.ilike.${pattern}`
+            );
+        }
+
+        const { data, error, count } = await query
+            .order('custname', { ascending: true })
+            .order('custno', { ascending: true })
+            .range(from, to);
+
+        if (error) throw error;
+
+        const totalCount = count ?? 0;
+        const totalPages = totalCount === 0 ? 0 : Math.ceil(totalCount / pageSize);
+
+        return res.status(200).json({
+            customers: (data || []).map((row) => ({
+                ...row,
+                is_deleted: useActiveView ? false : Boolean(row.is_deleted)
+            })),
+            pagination: {
+                page,
+                pageSize,
+                totalCount,
+                totalPages
+            }
+        });
+    } catch (err) {
+        console.error('Error fetching customers:', err.message);
+        return res.status(500).json({ error: 'Failed to load customer records: ' + err.message });
     }
-);
+});
 
 router.post('/customers', requireAuth, requireModuleRight('customer', 'add-customer'), async (req, res) => {
-    const { custno, custname, address, payterm } = req.body;
+    const custno = typeof req.body.custno === 'string' ? req.body.custno.trim() : '';
+    const custname = typeof req.body.custname === 'string' ? req.body.custname.trim() : '';
+    const address = typeof req.body.address === 'string' ? req.body.address.trim() : '';
+    const payterm = typeof req.body.payterm === 'string' ? req.body.payterm.trim() : '';
 
-    if (!custno || !custname || !address || !payterm) {
-        return res.status(400).json({ error: 'All required fields must be provided.' });
+    const fields = {};
+    if (!custno) fields.custno = 'Customer number is required.';
+    else if (custno.length > 20) fields.custno = 'Customer number must be 20 characters or fewer.';
+
+    if (!custname) fields.custname = 'Customer name is required.';
+    else if (custname.length > 120) fields.custname = 'Customer name must be 120 characters or fewer.';
+
+    if (!address) fields.address = 'Address is required.';
+    else if (address.length > 255) fields.address = 'Address must be 255 characters or fewer.';
+
+    if (!payterm || !ALLOWED_PAY_TERMS.has(payterm)) {
+        fields.payterm = 'Select a valid payment term.';
+    }
+
+    if (Object.keys(fields).length > 0) {
+        return res.status(400).json({ error: 'Validation failed.', fields });
     }
 
     try {
         const { error } = await supabase
             .from('customer')
-            .insert([{ 
-                custno, 
-                custname, 
-                address, 
-                payterm, 
-                stamp: new Date().toISOString(), 
-                is_blocked: false 
+            .insert([{
+                custno,
+                custname,
+                address,
+                payterm,
+                stamp: new Date().toISOString(),
+                is_blocked: false,
+                is_deleted: false
             }]);
 
         if (error) throw error;
 
-        res.status(200).json({ success: true, message: 'Customer created successfully.' });
+        return res.status(201).json({ success: true, message: 'Customer created successfully.' });
     } catch (err) {
+        if (err?.code === '23505') {
+            return res.status(409).json({ error: 'Error: customer already exists' });
+        }
+
         console.error('Error creating customer:', err.message);
-        res.status(500).json({ error: 'Failed to create customer: ' + err.message });
+        return res.status(500).json({ error: 'Failed to create customer: ' + err.message });
     }
 });
 
 router.put('/customers/:custno', requireAuth, requireModuleRight('customer', 'edit-customer'), async (req, res) => {
-    const { custno } = req.params;
-    const { custname, address, payterm } = req.body;
+    const custno = typeof req.params.custno === 'string' ? req.params.custno.trim() : '';
+    const custname = typeof req.body.custname === 'string' ? req.body.custname.trim() : '';
+    const address = typeof req.body.address === 'string' ? req.body.address.trim() : '';
+    const payterm = typeof req.body.payterm === 'string' ? req.body.payterm.trim() : '';
+
+    const fields = {};
+    if (!custno) fields.custno = 'Customer number is required.';
+    if (!custname) fields.custname = 'Customer name is required.';
+    else if (custname.length > 120) fields.custname = 'Customer name must be 120 characters or fewer.';
+
+    if (!address) fields.address = 'Address is required.';
+    else if (address.length > 255) fields.address = 'Address must be 255 characters or fewer.';
+
+    if (!payterm || !ALLOWED_PAY_TERMS.has(payterm)) {
+        fields.payterm = 'Select a valid payment term.';
+    }
+
+    if (Object.keys(fields).length > 0) {
+        return res.status(400).json({ error: 'Validation failed.', fields });
+    }
 
     try {
+        const { data: existing, error: fetchError } = await supabase
+            .from('customer')
+            .select('custno, is_deleted')
+            .eq('custno', custno)
+            .maybeSingle();
+
+        if (fetchError) throw fetchError;
+        if (!existing) {
+            return res.status(404).json({ error: 'Customer not found.' });
+        }
+        if (existing.is_deleted) {
+            return res.status(409).json({ error: 'Soft-deleted customers cannot be edited unless restored first.' });
+        }
+
         const { error } = await supabase
             .from('customer')
-            .update({ 
-                custname, 
-                address, 
-                payterm, 
-                stamp: new Date().toISOString() 
+            .update({
+                custname,
+                address,
+                payterm,
+                stamp: new Date().toISOString()
             })
             .eq('custno', custno);
 
         if (error) throw error;
 
-        res.status(200).json({ success: true, message: 'Customer updated successfully.' });
+        return res.status(200).json({ success: true, message: 'Customer updated successfully.' });
     } catch (err) {
         console.error('Error updating customer:', err.message);
-        res.status(500).json({ error: 'Failed to update customer: ' + err.message });
+        return res.status(500).json({ error: 'Failed to update customer: ' + err.message });
     }
 });
 
@@ -421,6 +467,7 @@ router.delete('/customers/:custno', requireAuth, requireModuleRight('customer', 
         res.status(500).json({ error: 'Failed to delete customer: ' + err.message });
     }
 });
+
 router.patch(
     '/customers/:custno/restore',
     requireAuth,
@@ -463,9 +510,9 @@ router.patch('/customers/:custno/status', requireAuth, requireModuleRight('custo
     try {
         const { error } = await supabase
             .from('customer')
-            .update({ 
-                is_blocked: !!is_blocked, 
-                stamp: new Date().toISOString() 
+            .update({
+                is_blocked: !!is_blocked,
+                stamp: new Date().toISOString()
             })
             .eq('custno', custno);
 
@@ -479,7 +526,7 @@ router.patch('/customers/:custno/status', requireAuth, requireModuleRight('custo
 });
 
 // ---------------------------------------------------------
-// PRODUCT MANAGEMENT ROUTES (Protected by requireAdmin)
+// PRODUCT MANAGEMENT ROUTES
 // ---------------------------------------------------------
 
 router.get('/product', requireAuth, async (req, res) => {
@@ -684,7 +731,7 @@ router.delete('/employees/:empno', requireAuth, requireEmployeeRight('delete-emp
 });
 
 // ---------------------------------------------------------
-// SALES MANAGEMENT ROUTES (Protected by requireAdmin)
+// SALES MANAGEMENT ROUTES
 // ---------------------------------------------------------
 
 router.get('/sales/options', requireAuth, async (req, res) => {
@@ -778,7 +825,6 @@ router.post('/sales', requireAuth, requireModuleRight('sales', 'add-sale'), asyn
 });
 
 router.get('/sales', requireAuth, async (req, res) => {
-    console.log('[API] GET /api/admin/sales called');
     try {
         const { data: salesRecords, error: salesError } = await supabase
             .from('sales')
@@ -803,8 +849,8 @@ router.get('/sales', requireAuth, async (req, res) => {
         (customerRes.data || []).forEach(c => { customerMap[c.custno] = c.custname; });
 
         const employeeMap = {};
-        (employeeRes.data || []).forEach(e => { 
-            employeeMap[e.empno] = `${e.firstname || ''} ${e.lastname || ''}`.trim(); 
+        (employeeRes.data || []).forEach(e => {
+            employeeMap[e.empno] = `${e.firstname || ''} ${e.lastname || ''}`.trim();
         });
 
         const latestPrices = {};
@@ -839,12 +885,11 @@ router.get('/sales', requireAuth, async (req, res) => {
         });
 
         res.status(200).json({ success: true, sales: formattedSales });
-    } catch (err) { 
+    } catch (err) {
         console.error('Error fetching sales:', err.message);
         res.status(500).json({ error: 'Failed to load sales records: ' + err.message });
     }
 });
-
 
 // ---------------------------------------------------------
 // REPORT ROUTES (Read-only)
@@ -912,7 +957,7 @@ async function requireReportRight(req, res, next) {
     }
 }
 
-router.get('/reports/options', requireAnyRight('reports'), async (req, res) => {
+router.get('/reports/options', requireAuth, requireAnyRight('reports'), async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('employee_active')
@@ -1105,14 +1150,10 @@ router.delete('/reports/rights/:userId/:reportKey', requireAdmin, async (req, re
     res.status(204).send();
 });
 
-
 // ---------------------------------------------------------
 // GRANULAR RIGHTS MANAGEMENT ROUTES (Protected by requireAdmin)
 // ---------------------------------------------------------
 
-// ==========================================
-// GET User Rights
-// ==========================================
 router.get('/users/:userId/rights', requireAdmin, async (req, res) => {
     const { userId } = req.params;
 
@@ -1122,7 +1163,7 @@ router.get('/users/:userId/rights', requireAdmin, async (req, res) => {
             .select('module_name, action_key, is_allowed')
             .eq('user_id', String(userId))
             .eq('is_deleted', false)
-            .eq('is_allowed', true); // Ensures only active permissions are fetched
+            .eq('is_allowed', true);
 
         if (error) throw error;
 
@@ -1137,19 +1178,8 @@ router.get('/users/:userId/rights', requireAdmin, async (req, res) => {
     }
 });
 
-// ==========================================
-// PUT Update User Right (Supports Single Toggles & Arrays)
-// ==========================================
-router.put('/users/:id/rights', async (req, res) => {
+router.put('/users/:id/rights', requireAdmin, async (req, res) => {
     try {
-        // Ensure the logged-in user has admin privileges
-        const userRoleId = Number(req.session.roleId);
-        const defaultStatus = userRoleId == 3 ? 'all' : 'active';
-        const statusParam = typeof req.query.status == 'string' ? req.query.status.toLowerCase() : defaultStatus;
-        if (userRoleId !== 1 && userRoleId !== 2) { 
-            return res.status(403).json({ error: 'Forbidden. Administrator privileges required.' });
-        }
-
         const targetUserId = req.params.id;
         const body = req.body;
 
@@ -1169,7 +1199,6 @@ router.put('/users/:id/rights', async (req, res) => {
             return res.status(400).json({ error: 'Invalid payload: no valid rights data provided.' });
         }
 
-        // Loop and upsert into Supabase user_rights table
         for (const right of rightsToProcess) {
             const { error: upsertError } = await supabase
                 .from('user_rights')
@@ -1195,17 +1224,15 @@ router.put('/users/:id/rights', async (req, res) => {
     }
 });
 
-// ==========================================
-// REPORTS & ANALYTICS API ENDPOINTS
-// ==========================================
+// ---------------------------------------------------------
+// ADDITIONAL REPORTS & LOOKUP ROUTES
+// ---------------------------------------------------------
 
-// 1. Top Customers by Sales
 router.get('/reports/top-customers', requireAuth, async (req, res) => {
     try {
-        const { fromDate, toDate, topN = 10 } = req.query;
-        // Adjust table/column names to fit your exact schema if needed
+        const { topN = 10 } = req.query;
         const { data, error } = await supabase
-            .from('sales_summary_view') // or your custom join query
+            .from('sales_summary_view')
             .select('custno, custname, totalSales')
             .order('totalSales', { ascending: false })
             .limit(Number(topN));
@@ -1218,11 +1245,10 @@ router.get('/reports/top-customers', requireAuth, async (req, res) => {
     }
 });
 
-// 2. Product Master List
 router.get('/reports/product-master', requireAuth, async (req, res) => {
     try {
         const { data, error } = await supabase
-            .from('app_product') // Adjust to your product table name
+            .from('app_product')
             .select('prodcode, description, unit, unitprice')
             .order('prodcode', { ascending: true });
 
@@ -1234,7 +1260,6 @@ router.get('/reports/product-master', requireAuth, async (req, res) => {
     }
 });
 
-// 3. Top Products by Sales
 router.get('/reports/top-products', requireAuth, async (req, res) => {
     try {
         const { topN = 10 } = req.query;
@@ -1252,7 +1277,6 @@ router.get('/reports/top-products', requireAuth, async (req, res) => {
     }
 });
 
-// 4. Active Employees Directory
 router.get('/reports/active-employees', requireAuth, async (req, res) => {
     try {
         const { data, error } = await supabase
@@ -1269,7 +1293,6 @@ router.get('/reports/active-employees', requireAuth, async (req, res) => {
     }
 });
 
-// 5. Complete Employee Roster
 router.get('/reports/all-employees', requireAuth, async (req, res) => {
     try {
         const { data, error } = await supabase
@@ -1285,36 +1308,13 @@ router.get('/reports/all-employees', requireAuth, async (req, res) => {
     }
 });
 
-// 6. Employee Options Dropdown (Used for Employee History filter)
-router.get('/reports/options', requireAnyRight('reports'), async (req, res) => {
-    try {
-        const { data, error } = await supabase
-            .from('employee')
-            .select('empno, firstname, lastname')
-            .eq('is_deleted', false);
-
-        if (error) throw error;
-        const employees = (data || []).map(e => ({
-            empno: e.empno,
-            empname: e.empname || `${e.firstname || ''} ${e.lastname || ''}`.trim()
-        }));
-
-        return res.status(200).json({ employees });
-    } catch (err) {
-        console.error('Error fetching employee options:', err);
-        return res.status(500).json({ error: 'Failed to load options.' });
-    }
-});
-
-// 7. Employee Job & Salary History
-router.get('/reports/employee-history', async (req, res) => {
+router.get('/reports/employee-history', requireAuth, async (req, res) => {
     try {
         const { empNo } = req.query;
         if (!empNo) {
             return res.status(400).json({ error: 'empno is required' });
         }
 
-        // Fetch employee info
         const { data: emp, error: empErr } = await supabase
             .from('employee')
             .select('*')
@@ -1323,7 +1323,6 @@ router.get('/reports/employee-history', async (req, res) => {
 
         if (empErr) throw empErr;
 
-        // Fetch job history for this employee
         const { data: history, error: histErr } = await supabase
             .from('jobhistory')
             .select('*')
@@ -1350,7 +1349,7 @@ router.get('/reports/employee-history', async (req, res) => {
         res.status(500).json({ error: 'Failed to generate report.' });
     }
 });
-// 8. Top Sales Transactions
+
 router.get('/reports/top-sales', requireAuth, async (req, res) => {
     try {
         const { topN = 10 } = req.query;
@@ -1368,53 +1367,7 @@ router.get('/reports/top-sales', requireAuth, async (req, res) => {
     }
 });
 
-// ==========================================
-// GET Employees with Latest Job & Department
-// ==========================================
-router.use(requireAuth);
-router.get('/employees', async (req, res) => {
-    try {
-        // Query employees along with their job history records
-        const { data: employees, error } = await supabase
-            .from('employee')
-            .select(`
-                *,
-                jobhistory (
-                    empno,
-                    jobcode,
-                    deptcode,
-                    effdate,
-                    is_deleted
-                )
-            `)
-
-        if (error) throw error;
-
-        // Process records to extract the latest active job and department code
-        const formattedEmployees = (employees || []).map(emp => {
-            const historyList = (emp.jobhistory || [])
-                .filter(jh => !jh.is_deleted)
-                .sort((a, b) => new Date(b.effdate) - new Date(a.effdate));
-
-            const latest = historyList[0] || {};
-
-            return {
-                empno: emp.empno,
-                empname: emp.empname || `${emp.first_name || ''} ${emp.last_name || ''}`.trim(),
-                jobcode: latest.jobcode || emp.jobcode || 'N/A',
-                deptcode: latest.deptcode || emp.deptcode || 'N/A',
-                status: emp.status || 'Active'
-            };
-        });
-
-        res.status(200).json({ employees: formattedEmployees });
-    } catch (err) {
-        console.error('Error fetching employees:', err);
-        res.status(500).json({ error: err.message });
-    }
-});
-// --- 2. JOBS REGISTRY ---
-router.get('/jobs', async (req, res) => {
+router.get('/jobs', requireAuth, async (req, res) => {
     try {
         const { data, error } = await supabase.from('job').select('*');
         if (error) throw error;
@@ -1424,8 +1377,7 @@ router.get('/jobs', async (req, res) => {
     }
 });
 
-// GET /api/admin/departments
-router.get('/departments', async (req, res) => {
+router.get('/departments', requireAuth, async (req, res) => {
     try {
         const { data: depts, error } = await supabase
             .from('department')
@@ -1438,4 +1390,5 @@ router.get('/departments', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
 export default router;
