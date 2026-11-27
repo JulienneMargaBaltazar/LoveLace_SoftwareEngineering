@@ -437,64 +437,168 @@ router.put('/customers/:custno', requireAuth, requireModuleRight('customer', 'ed
         return res.status(500).json({ error: 'Failed to update customer: ' + err.message });
     }
 });
-
-router.delete('/customers/:custno', requireAuth, requireModuleRight('customer', 'delete-customer'), async (req, res) => {
+const logCustomerAudit = async ({ actorUserId, action, custno, details }) => {
     try {
-        const custno = String(req.params.custno || '').trim();
+        const { error } = await supabase
+            .from('audit_log')
+            .insert([{
+                user_id: actorUserId ? String(actorUserId) : null,
+                module_name: 'customer',
+                action,
+                target_id: custno,
+                details: typeof details === 'string' ? details : JSON.stringify(details),
+                stamp: new Date().toISOString()
+            }]);
+
+        if (error) {
+            console.error('Audit log insert warning:', error.message);
+        }
+    } catch (err) {
+        console.error('Audit log error:', err.message);
+    }
+};
+
+const findBlockingCustomerRecords = async (custno) => {
+    const blockers = [];
+
+    // Check active sales records linked to this customer
+    const { data: salesRows, error: salesError } = await supabase
+        .from('sales')
+        .select('transno, salesdate, is_deleted')
+        .eq('custno', custno)
+        .eq('is_deleted', false)
+        .limit(10);
+
+    if (salesError) throw salesError;
+
+    if (salesRows && salesRows.length > 0) {
+        blockers.push({
+            type: 'sales',
+            count: salesRows.length,
+            sampleIds: salesRows.map(row => row.transno),
+            reason: `Customer has ${salesRows.length} active sale transaction(s) (${salesRows.map(r => r.transno).join(', ')}).`
+        });
+    }
+
+    return blockers;
+};
+
+// Soft-delete customer (NEVER physical DELETE)
+router.delete(
+    '/customers/:custno',
+    requireAuth,
+    requireModuleRight('customer', 'delete-customer'),
+    async (req, res) => {
+        const custno = typeof req.params.custno === 'string' ? req.params.custno.trim() : '';
         if (!custno) {
             return res.status(400).json({ error: 'Customer number is required.' });
         }
 
-        const { data, error } = await supabase
-            .from('customer')
-            .update({ is_deleted: true })
-            .eq('custno', custno)
-            .select('custno, is_deleted')
-            .single();
+        try {
+            const { data: existing, error: fetchError } = await supabase
+                .from('customer')
+                .select('custno, custname, is_deleted, deleted_at')
+                .eq('custno', custno)
+                .maybeSingle();
 
-        if (error) throw error;
-        if (!data) {
-            return res.status(404).json({ error: 'Customer not found.' });
+            if (fetchError) throw fetchError;
+            if (!existing) {
+                return res.status(404).json({ error: 'Customer not found.' });
+            }
+
+            if (existing.is_deleted || existing.deleted_at) {
+                return res.status(409).json({ error: 'Customer is already archived.' });
+            }
+
+            const blockers = await findBlockingCustomerRecords(custno);
+            if (blockers.length > 0) {
+                return res.status(409).json({
+                    error: `Cannot archive customer ${custno}: ${blockers.map(b => b.reason).join(' ')}`,
+                    blockers
+                });
+            }
+
+            const now = new Date().toISOString();
+            const { data: updated, error: updateError } = await supabase
+                .from('customer')
+                .update({
+                    is_deleted: true,
+                    deleted_at: now,
+                    stamp: now
+                })
+                .eq('custno', custno)
+                .select('custno, custname, is_deleted, deleted_at')
+                .single();
+
+            if (updateError) throw updateError;
+
+            await logCustomerAudit({
+                actorUserId: req.session.userId,
+                action: 'SOFT_DELETE_CUSTOMER',
+                custno,
+                details: { custname: existing.custname, deleted_at: now }
+            });
+
+            return res.status(200).json({
+                success: true,
+                message: 'Customer archived successfully.',
+                customer: updated
+            });
+        } catch (err) {
+            console.error('Error soft-deleting customer:', err.message);
+            return res.status(500).json({ error: 'Failed to archive customer: ' + err.message });
         }
-
-        res.status(200).json({
-            success: true,
-            message: 'Customer deleted successfully.',
-            customer: data
-        });
-    } catch (err) {
-        console.error('Error deleting customer:', err.message);
-        res.status(500).json({ error: 'Failed to delete customer: ' + err.message });
     }
-});
+);
 
+// Restore archived customer (sets deleted_at = NULL and is_deleted = false)
 router.patch(
     '/customers/:custno/restore',
     requireAuth,
     requireModuleRight('customer', 'restore-customer'),
     async (req, res) => {
+        const custno = typeof req.params.custno === 'string' ? req.params.custno.trim() : '';
+        if (!custno) {
+            return res.status(400).json({ error: 'Customer number is required.' });
+        }
+
         try {
-            const custno = String(req.params.custno || '').trim();
-            if (!custno) {
-                return res.status(400).json({ error: 'Customer number is required.' });
-            }
-
-            const { data, error } = await supabase
+            const { data: existing, error: fetchError } = await supabase
                 .from('customer')
-                .update({ is_deleted: false })
+                .select('custno, custname, is_deleted, deleted_at')
                 .eq('custno', custno)
-                .select('custno, is_deleted')
-                .single();
+                .maybeSingle();
 
-            if (error) throw error;
-            if (!data) {
+            if (fetchError) throw fetchError;
+            if (!existing) {
                 return res.status(404).json({ error: 'Customer not found.' });
             }
+
+            const now = new Date().toISOString();
+            const { data: restored, error: restoreError } = await supabase
+                .from('customer')
+                .update({
+                    is_deleted: false,
+                    deleted_at: null,
+                    stamp: now
+                })
+                .eq('custno', custno)
+                .select('custno, custname, is_deleted, deleted_at')
+                .single();
+
+            if (restoreError) throw restoreError;
+
+            await logCustomerAudit({
+                actorUserId: req.session.userId,
+                action: 'RESTORE_CUSTOMER',
+                custno,
+                details: { custname: existing.custname, restored_at: now }
+            });
 
             return res.status(200).json({
                 success: true,
                 message: 'Customer restored successfully.',
-                customer: data
+                customer: restored
             });
         } catch (err) {
             console.error('Error restoring customer:', err.message);
@@ -502,7 +606,6 @@ router.patch(
         }
     }
 );
-
 router.patch('/customers/:custno/status', requireAuth, requireModuleRight('customer', 'edit-customer'), async (req, res) => {
     const { custno } = req.params;
     const { is_blocked } = req.body;
